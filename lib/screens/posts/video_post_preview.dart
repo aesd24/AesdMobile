@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:aesd_app/functions/file_functions.dart';
 import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:aesd_app/components/bottom_sheets.dart';
@@ -50,7 +51,7 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
   submit() async {
     if(_formKey.currentState!.validate()){
       if (_date == null){
-        showSnackBar(context: context, message: "Veuillez choisir une date", type: "warning");
+        showSnackBar(context: context, message: "Veuillez choisir une date", type: SnackBarType.warning);
         return;
       }
       try {
@@ -65,24 +66,24 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
         });
 
         if (response.statusCode == 201){
-          showSnackBar(context: context, message: "Vidéo posté avec succès !", type: "success");
+          showSnackBar(context: context, message: "Vidéo posté avec succès !", type: SnackBarType.success);
           Navigator.of(context).pop();
         } else {
-          showSnackBar(context: context, message: "Echec de la publication de la vidéo", type:"danger");
+          showSnackBar(context: context, message: "Echec de la publication de la vidéo", type:SnackBarType.danger);
         }
       } on DioException catch(e) {
         e.printError();
-        showSnackBar(context: context, message: "Vérifiez votre connexion internet et rééssayez", type: "warning");
+        showSnackBar(context: context, message: "Vérifiez votre connexion internet et rééssayez", type: SnackBarType.warning);
       } catch (e) {
         e.printError();
-        showSnackBar(context: context, message: "Une erreur est survenu !", type: "danger");
+        showSnackBar(context: context, message: "Une erreur est survenu !", type: SnackBarType.danger);
       } finally {
         setState(() {
           processing = false;
         });
       }
     } else {
-      showSnackBar(context: context, message: "Renseignez correctement le formulaire", type: "warning");
+      showSnackBar(context: context, message: "Renseignez correctement le formulaire", type: SnackBarType.warning);
     }
   }
 
@@ -117,6 +118,16 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
     setState(() {});
   }
 
+  init() async {
+    var result = await verifyVideoSize(widget.video);
+    if(!result['result']){
+      showSnackBar(context: context, message: "La vidéo est trop grande. taille: ${result['length']}Mo", type: SnackBarType.warning);
+      Navigator.of(context).pop();
+      return;
+    }
+    initializeVideoPlayer(widget.video);
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -127,7 +138,7 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
   @override
   initState(){
     super.initState();
-    initializeVideoPlayer(widget.video);
+    init();
   }
 
   @override
@@ -213,7 +224,7 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
                       ElevatedButton.icon(
                         onPressed: (){
                           setVideo(dynamic file) async{
-                            File? video = file;
+                            File? video = await file;
                             if (video != null){
                               initializeVideoPlayer(video);
                             }
@@ -221,7 +232,8 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
                           pickModeSelectionBottomSheet(
                             context: context,
                             setter: setVideo,
-                            photo: false
+                            photo: false,
+                            optionnalText: "La taille de la vidéo ne doit pas excéder 300Mo"
                           );
                         },
                         icon: const Icon(Icons.replay),

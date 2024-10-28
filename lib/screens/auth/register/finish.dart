@@ -19,51 +19,36 @@ class FinishPage extends StatefulWidget {
 }
 
 class _FinishPageState extends State<FinishPage> {
-
   String _message = "";
   IconData _icons = Icons.screen_search_desktop_sharp;
   bool _success = false;
   bool _isLoading = false;
 
   Future<void> _init() async {
-    try{
+    try {
       // recupérer les données enregistrées dans le provider
       Map data = Provider.of<User>(context, listen: false).registerData;
 
       // Lancer la fonction d'enregistrement des données
-      dynamic response = await Provider.of<Auth>(context, listen: false).register(data: data);
+      dynamic response =
+          await Provider.of<Auth>(context, listen: false).register(data: data);
 
       // récupérer le résultat de l'operation et la reponse du serveur
-      //print(response);
+      print(response);
       setState(() {
         _success = response["success"] ?? false;
-        _message = response["errors"] != null ?
-        "Des champs ont été mal renseignés !"
-        :
-        response["message"];
-
+        _message = response["errors"] != null
+            ? "Des champs ont été mal renseignés !"
+            : response["message"];
         _icons = _success ? Icons.check_circle_sharp : Icons.cancel;
       });
-    } on HttpException catch (e){
+    } on HttpException catch (e) {
       setState(() {
         _success = false;
         _message = e.toString();
         _icons = Icons.cancel;
       });
-    } on DioException catch(e) {
-      e.printError();
-      setState(() {
-        _success = false;
-        _message = "Vérifiez la connexion internet et rééssayez !";
-        _icons = Icons.cancel;
-      });
-      showSnackBar(
-        context: context,
-        message: "Mauvaise reponse du serveur !",
-        type: "danger"
-      );
-    }
-     catch (e){
+    } on DioException catch (e) {
       e.printError();
       setState(() {
         _success = false;
@@ -71,10 +56,20 @@ class _FinishPageState extends State<FinishPage> {
         _icons = Icons.cancel;
       });
       showSnackBar(
-        context: context,
-        message: "Une erreur s'est produite !",
-        type: "danger"
-      );
+          context: context,
+          message: "Vérifiez la connexion internet et rééssayez",
+          type: SnackBarType.danger);
+    } catch (e) {
+      e.printError();
+      setState(() {
+        _success = false;
+        _message = "L'enregistrement à échoué !";
+        _icons = Icons.cancel;
+      });
+      showSnackBar(
+          context: context,
+          message: "Une erreur s'est produite",
+          type: SnackBarType.danger);
     } finally {
       setState(() {
         _isLoading = false;
@@ -92,12 +87,9 @@ class _FinishPageState extends State<FinishPage> {
       _message = "Traitement en cours. Patientez...";
     });
 
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        _init();
-      }
-    );
+    Future.delayed(const Duration(seconds: 2), () {
+      _init();
+    });
   }
 
   @override
@@ -119,13 +111,14 @@ class _FinishPageState extends State<FinishPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
-      
                     const SizedBox(height: 10),
-      
                     Icon(
                       _icons,
-                      color : _icons == Icons.cancel ? Colors.red : _success == true ?
-                      Colors.green : Colors.grey,
+                      color: _icons == Icons.cancel
+                          ? Colors.red
+                          : _success == true
+                              ? Colors.green
+                              : Colors.grey,
                       size: 100,
                     )
                   ],
@@ -134,27 +127,31 @@ class _FinishPageState extends State<FinishPage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: customButton(
-                  context: context,
-                  text: _success ? "Retour à la page de connexion" : "Rééssayer",
-                  trailing: Icon(_success ? Icons.login : Icons.restore, color: Colors.white,),
-                  onPressed: (){
-                    if (_success){
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
-                      );
-                    }
-                    else {
-                      // avertir l'utilisateur du début du traitement
-                      setState(() {
-                        _isLoading = true;
-                        _icons = Icons.screen_search_desktop_sharp;
-                        _message = "Traitement en cours. Patientez...";
-                      });
+                    context: context,
+                    text: _success
+                        ? "Retour à la page de connexion"
+                        : "Rééssayer",
+                    trailing: Icon(
+                      _success ? Icons.login : Icons.restore,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      if (_success) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
+                        );
+                      } else {
+                        // avertir l'utilisateur du début du traitement
+                        setState(() {
+                          _isLoading = true;
+                          _icons = Icons.screen_search_desktop_sharp;
+                          _message = "Traitement en cours. Patientez...";
+                        });
 
-                      _init();
-                    }
-                  }
-                ),
+                        _init();
+                      }
+                    }),
               ),
             ],
           ),

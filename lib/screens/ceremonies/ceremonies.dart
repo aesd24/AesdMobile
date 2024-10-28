@@ -16,7 +16,6 @@ class VideoList extends StatefulWidget {
 }
 
 class _VideoListState extends State<VideoList> {
-
   List? ceremonies;
 
   @override
@@ -26,15 +25,21 @@ class _VideoListState extends State<VideoList> {
   }
 
   getCeremonies() async {
-    try{
+    try {
       ceremonies = await Provider.of<Ceremonies>(context, listen: false).all();
       setState(() {});
-    } on DioException catch(e) {
+    } on DioException catch (e) {
       e.printError();
-      showSnackBar(context: context, message: "vérifiez votre connexion internet et rééssayez !", type: 'warning');
-    } catch (e){
+      showSnackBar(
+          context: context,
+          message: "vérifiez votre connexion internet et rééssayez !",
+          type: SnackBarType.warning);
+    } catch (e) {
       e.printError();
-      showSnackBar(context: context, message: "Une erreur s'est produite", type: 'danger');
+      showSnackBar(
+          context: context,
+          message: "Une erreur s'est produite",
+          type: SnackBarType.danger);
     }
   }
 
@@ -46,45 +51,38 @@ class _VideoListState extends State<VideoList> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: Builder(
-          builder: (context) {
-            if (ceremonies == null){
-              return const Center(
-                child: CircularProgressIndicator()
-              );
-            }
-            return SingleChildScrollView(
-              child: Column(
-                children: List.generate(ceremonies!.length, (index){
-                  return previewBox(item: ceremonies![index]);
-                }),
-              ),
-            );
+        child: Builder(builder: (context) {
+          if (ceremonies == null) {
+            return const Center(child: CircularProgressIndicator());
           }
-        ),
+          return SingleChildScrollView(
+            child: Column(
+              children: List.generate(ceremonies!.length, (index) {
+                return previewBox(item: ceremonies![index]);
+              }),
+            ),
+          );
+        }),
       ),
     );
   }
 
-  Widget previewBox({
-    required CeremonyModel item
-  }){
-
+  Widget previewBox({required CeremonyModel item}) {
     return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => CeremonyViewer(ceremony: item.toJson()))
-        );
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CeremonyViewer(ceremony: item.toJson())));
       },
       child: Container(
         margin: const EdgeInsets.all(7),
         padding: const EdgeInsets.all(10),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.grey, offset: Offset(2, 2))]
-        ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: const [
+              BoxShadow(blurRadius: 4, color: Colors.grey, offset: Offset(2, 2))
+            ]),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,14 +100,14 @@ class _VideoListState extends State<VideoList> {
             Text(
               "de: ${item.churchOwner.name}",
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Colors.black45,
-              ),
+                    color: Colors.black45,
+                  ),
             ),
             Text(
               item.description,
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Colors.black45,
-              ),
+                    color: Colors.black45,
+                  ),
             )
           ],
         ),

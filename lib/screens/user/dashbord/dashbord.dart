@@ -15,27 +15,23 @@ class Dashbord extends StatefulWidget {
 }
 
 class _DashbordState extends State<Dashbord> {
-
   bool isLoading = false;
 
   init() async {
-    try{
+    try {
       setState(() {
         isLoading = true;
       });
 
       await Provider.of<Servant>(context, listen: false).getServant();
-    } catch(e){
+    } catch (e) {
       e.printError();
-      Navigator.of(context).pushReplacementNamed(
-        '/home'
-      );
+      Navigator.of(context).pushReplacementNamed('/home');
       showSnackBar(
-        context: context,
-        message: "Impossible de vérifier que vous êtes un serviteur !",
-        type: "danger"
-      );
-    } finally{
+          context: context,
+          message: "Impossible de vérifier que vous êtes un serviteur !",
+          type: SnackBarType.danger);
+    } finally {
       setState(() {
         isLoading = false;
       });
@@ -50,7 +46,6 @@ class _DashbordState extends State<Dashbord> {
 
   @override
   Widget build(BuildContext context) {
-
     return LoadingOverlay(
       isLoading: isLoading,
       child: DefaultTabController(
@@ -60,7 +55,8 @@ class _DashbordState extends State<Dashbord> {
             title: const Text("Tableau de bord"),
           ),
           body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
               return [
                 SliverOverlapAbsorber(
                   sliver: SliverAppBar(
@@ -82,22 +78,15 @@ class _DashbordState extends State<Dashbord> {
                       ],
                     ),
                   ),
-                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 )
               ];
             },
             body: const TabBarView(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: PersonnalDashbord()
-                ),
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: ChurchDashbord()
-                )
+                SafeArea(top: false, bottom: false, child: PersonnalDashbord()),
+                SafeArea(top: false, bottom: false, child: ChurchDashbord())
               ],
             ),
           ),

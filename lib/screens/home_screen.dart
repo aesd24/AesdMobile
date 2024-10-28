@@ -32,21 +32,20 @@ class _HomeScreenState extends State<HomeScreen> {
   _getUserInfo() async {
     try {
       await Provider.of<Auth>(context, listen: false).getUserInfoFromCache();
-    } catch (e){
+    } catch (e) {
       showSnackBar(
-        context: context,
-        message: "Impossible d'obtenir les données de l'utilisateur !",
-        type: "danger"
-      );
+          context: context,
+          message: "Impossible d'obtenir les données de l'utilisateur !",
+          type: SnackBarType.danger);
       e.printError();
     }
   }
 
   _logout() async {
-    setState(){
+    setState() {
       _loading = true;
     }
-    
+
     await Provider.of<Auth>(context, listen: false).logout().then((value) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const SplashScreen()),
@@ -86,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
-          actionsIconTheme:
-              const IconThemeData(size: 30.0, color: Colors.black, opacity: 10.0),
+          actionsIconTheme: const IconThemeData(
+              size: 30.0, color: Colors.black, opacity: 10.0),
         ),
         body: Column(
           children: <Widget>[

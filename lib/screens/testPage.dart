@@ -16,7 +16,6 @@ class TestImage extends StatefulWidget {
 }
 
 class _TestImageState extends State<TestImage> {
-
   File? image;
 
   @override
@@ -29,32 +28,40 @@ class _TestImageState extends State<TestImage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (image != null) Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: SizedBox(
-                height: 300,
-                width: 150,
-                child: Image.file(image!, fit: BoxFit.cover,),
-              )
-            ),
-
+            if (image != null)
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: SizedBox(
+                    height: 300,
+                    width: 150,
+                    child: Image.file(
+                      image!,
+                      fit: BoxFit.cover,
+                    ),
+                  )),
             ElevatedButton(
               onPressed: () async {
-                try{
+                try {
                   image = await pickImage();
                   setState(() {});
-                  var response = await Provider.of<Auth>(context, listen: false).sendFileTest(image!);
+                  var response = await Provider.of<Auth>(context, listen: false)
+                      .sendFileTest(image!);
 
-                  if (response.statusCode == 200){
-                    showSnackBar(context: context, message: "Succès de l'opération", type: 'success');
+                  if (response.statusCode == 200) {
+                    showSnackBar(
+                        context: context,
+                        message: "Succès de l'opération",
+                        type: SnackBarType.success);
                   } else {
-                    showSnackBar(context: context, message: "Echec de l'opération", type: 'danger');
+                    showSnackBar(
+                        context: context,
+                        message: "Echec de l'opération",
+                        type: SnackBarType.danger);
                   }
                   print(response.data);
-                } on DioException catch(e) {
+                } on DioException catch (e) {
                   e.printError();
-                }
-                catch (e){
+                } catch (e) {
                   e.printError();
                 }
               },

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 void pickModeSelectionBottomSheet({
   required BuildContext context,
   bool photo = true,
+  String? optionnalText,
+  Color? OptionnalTextColor,
   required void Function(dynamic) setter
 }){
   showModalBottomSheet(
@@ -22,6 +24,12 @@ void pickModeSelectionBottomSheet({
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  if(optionnalText != null) Text(
+                    "($optionnalText)",
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: OptionnalTextColor ?? Colors.red.shade300
+                    ),
+                  ),
                   Text(
                     "Prendre ${photo ? "la photo" : "la vidéo"} depuis la",
                     style: Theme.of(context).textTheme.titleMedium

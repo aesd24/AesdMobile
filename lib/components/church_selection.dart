@@ -6,6 +6,7 @@ Widget churchSelectionTile({
   required String name,
   required String mainPastor,
   required String zone,
+  String? image_url,
   void Function()? onClick
 }){
   return GestureDetector(
@@ -16,8 +17,8 @@ Widget churchSelectionTile({
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        image: const DecorationImage(
-          image: AssetImage("assets/images/bg-5.jpg"),
+        image: DecorationImage(
+          image: image_url != null ? NetworkImage(image_url) : const AssetImage("assets/images/bg-5.jpg"),
           fit: BoxFit.cover,
         ),
       ),

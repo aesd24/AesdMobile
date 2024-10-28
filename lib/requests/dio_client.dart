@@ -8,9 +8,9 @@ import 'package:dio/dio.dart';
 
 class DioClient {
   final String baseUrl = "https://eglisesetserviteursdedieu.com/api/v1/";
-  final connectTimeout = const Duration(seconds: 7);
-  final receiveTimeout = const Duration(seconds: 5);
-  final sendTimeout = const Duration(seconds: 5);
+  final connectTimeout = const Duration(seconds: 10);
+  final receiveTimeout = const Duration(seconds: 15);
+  final sendTimeout = const Duration(seconds: 10);
 
   Future<Dio> getApiClient({String? contentType}) async {
     final Dio dio = Dio(BaseOptions(
@@ -23,8 +23,7 @@ class DioClient {
       },
       headers: {
         'accept': "application/json",
-        'content-Type': contentType ?? 'application/json',
-      },
+      }
     ));
 
     dio.interceptors.add(

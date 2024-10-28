@@ -95,8 +95,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
       showSnackBar(
         context: context,
         message: "Cette section est momentanément indisponible !",
-        bgColor: Colors.blue,
-        icon: Icons.info
+        type: SnackBarType.info
       );
     }
 
@@ -133,7 +132,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
         'icon': const Icon(Icons.video_chat_rounded),
         'function': (){
           setVideo(dynamic file) async {
-            File? video = file;
+            File? video = await file;
             if (video != null){
               changeForm(VideoPostPreview(video: video));
             }
@@ -141,7 +140,8 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
           pickModeSelectionBottomSheet(
             context: context,
             setter: setVideo,
-            photo: false
+            photo: false,
+            optionnalText: "La taille de la vidéo ne doit pas excéder 300Mo"
           );
         }
       },
@@ -187,7 +187,8 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
                           id: churchId!,
                           name: church['name'] ?? "",
                           mainPastor: owner['name'],
-                          zone: church['address']
+                          zone: church['address'],
+                          image_url: "${church['logo']}"
                         );
                       } else {
                         return Container(

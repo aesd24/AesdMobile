@@ -27,8 +27,7 @@ class _PersonnalDashbordState extends State<PersonnalDashbord> {
       showSnackBar(
         context: context,
         message: "Cette section est momentanément indisponible !",
-        bgColor: Colors.blue,
-        icon: Icons.info
+        type: SnackBarType.info
       );
     }
 

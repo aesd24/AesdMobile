@@ -34,13 +34,17 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
 
   initializeVideo() {
     // initialisation du controller de vidéo
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.ceremony['video_url']));
+    _videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(widget.ceremony['video_url']));
     _videoPlayerController.initialize();
 
     // initialisation du conteneur de vidéo personnalisé
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
-      deviceOrientationsOnEnterFullScreen: [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+      deviceOrientationsOnEnterFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ],
       deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
     );
 
@@ -48,22 +52,27 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
   }
 
   makeDonation() async {
-    try{
+    try {
       setState(() {
         isLoading = true;
       });
 
       // vérifier que le formulaire a été validé
-      if (!_formKey.currentState!.validate()){
-        return showSnackBar(context: context, message: "Entrez un montant correct !", type: "danger");
+      if (!_formKey.currentState!.validate()) {
+        return showSnackBar(
+            context: context,
+            message: "Entrez un montant correct !",
+            type: SnackBarType.danger);
       }
 
       // initier un paiement cinetpay
-      var response = await Provider.of<CinetPay>(context, listen: false).makePayment(
+      var response =
+          await Provider.of<CinetPay>(context, listen: false).makePayment(
         context,
         amount: int.parse(amountController.text),
         description: "description",
-        notifyUrl: "https://www.eglisesetserviteursdedieu.com/api/v1/notifyPayment",
+        notifyUrl:
+            "https://www.eglisesetserviteursdedieu.com/api/v1/notifyPayment",
         returnUrl: "https://www.eglisesetserviteursdedieu.com/api/v1/returnUrl",
       );
 
@@ -73,14 +82,16 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
         var json = jsonDecode(response.body);
         var data = json["data"];
         Uri paymentUrl = Uri.parse(data['payment_url']);
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => CustomWebView(url: paymentUrl.toString(), title: "Faire un paiement",))
-        );
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CustomWebView(
+                  url: paymentUrl.toString(),
+                  title: "Faire un paiement",
+                )));
       } else {
         //print(response.statusCode);
       }
       //print(response.body);
-    } catch(e){
+    } catch (e) {
       e.printError();
     } finally {
       setState(() {
@@ -101,97 +112,92 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
     return LoadingOverlay(
       isLoading: isLoading,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.ceremony['title'])
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${widget.ceremony['date'].day}/${widget.ceremony['date'].month}/${widget.ceremony['date'].year}",
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              Text(
-                widget.ceremony['description'],
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Colors.black45
-                ),
-              ),
-      
-              const SizedBox(height: 15),
-      
-              // la vidéo
-              if(_chewieController != null) SizedBox(
-                height: size.height * .3,
-                width: size.width,
-                child: Chewie(
-                  controller: _chewieController!
-                ),
-              ),
-      
-              if(_chewieController == null) const Center(
-                child: Text("La vidéo n'est pas disponible !")
-              ),
-      
-              // partie des offrandes
-              Form(
-                key: _formKey,
-                child: Row(
+          appBar: AppBar(title: Text(widget.ceremony['title'])),
+          body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: customTextField(
-                        label: "Montant",
-                        placeholder: "Combien voulez vous offrir ?",
-                        type: TextInputType.number,
-                        controller: amountController,
-                        onChanged: (value){
-                          if (int.tryParse(value) == null){
-                            return showSnackBar(
-                              context: context,
-                              message: "Renseignez une valeur entière",
-                              type: "warning"
-                            );
-                          }
-                        },
-                        validator: (value){
-                          if(int.tryParse(value) == null){
-                            return "Entrez une valeur entière uniquement !";
-                          }
-                          if (int.parse(value) % 5 != 0){
-                            return "Le montant doit être multiple de 5 !";
-                          }
-                          return null;
-                        }
+                    Text(
+                      "${widget.ceremony['date'].day}/${widget.ceremony['date'].month}/${widget.ceremony['date'].year}",
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.ceremony['description'],
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.black45),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    // la vidéo
+                    if (_chewieController != null)
+                      SizedBox(
+                        height: size.height * .3,
+                        width: size.width,
+                        child: Chewie(controller: _chewieController!),
+                      ),
+
+                    if (_chewieController == null)
+                      const Center(
+                          child: Text("La vidéo n'est pas disponible !")),
+
+                    // partie des offrandes
+                    Form(
+                      key: _formKey,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: customTextField(
+                                label: "Montant",
+                                placeholder: "Combien voulez vous offrir ?",
+                                type: TextInputType.number,
+                                controller: amountController,
+                                onChanged: (value) {
+                                  if (int.tryParse(value) == null) {
+                                    return showSnackBar(
+                                        context: context,
+                                        message:
+                                            "Renseignez une valeur entière",
+                                        type: SnackBarType.warning);
+                                  }
+                                },
+                                validator: (value) {
+                                  if (int.tryParse(value) == null) {
+                                    return "Entrez une valeur entière uniquement !";
+                                  }
+                                  if (int.parse(value) % 5 != 0) {
+                                    return "Le montant doit être multiple de 5 !";
+                                  }
+                                  return null;
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              "Fr",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        "Fr",
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-      
-              customButton(
-                context: context,
-                text: "Faire une offrande",
-                onPressed: () async {
-                  await makeDonation();
-                }
-              )
-            ]
-          )
-        )
-      ),
+
+                    customButton(
+                        context: context,
+                        text: "Faire une offrande",
+                        onPressed: () async {
+                          await makeDonation();
+                        })
+                  ]))),
     );
   }
 }

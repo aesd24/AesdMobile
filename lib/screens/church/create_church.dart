@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:aesd_app/components/bottom_sheets.dart';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/drop_down.dart';
@@ -7,9 +6,11 @@ import 'package:aesd_app/components/picture_containers.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/constants/dictionnary.dart';
+import 'package:aesd_app/functions/file_functions.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/screens/user/dashbord/dashbord.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -25,7 +26,7 @@ class CreateChurchPage extends StatefulWidget {
 }
 
 class _CreateChurchPageState extends State<CreateChurchPage> {
-    bool isLoading = false;
+  bool isLoading = false;
 
   // clé de formulaire
   final _formKey = GlobalKey<FormState>();
@@ -49,77 +50,85 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
 
   // fonction de création d'une nouvelle église
   _createChurch() async {
-    if (_formKey.currentState!.validate()){
-      if(_churchImage == null){
+    if (_formKey.currentState!.validate()) {
+      if (_churchImage == null) {
         showSnackBar(
-          context: context,
-          message: "Chargez d'abords une image",
-          type: 'warning'
-        );
-      } else {
-        try{
-          setState(() {
-            isLoading = true;
-          });
+            context: context,
+            message: "Chargez d'abords une image",
+            type: SnackBarType.warning);
+        return;
+      }
 
-          await Provider.of<Church>(context, listen: false).create(data: {
-            'name': _nameController.text,
-            'email': _addressController.text,
-            'phone': _contactController.text,
-            'location': _locationController.text,
-            'description': _descriptionController.text,
-            'churchType': churchType,
-            'image': _churchImage
-          }).then((response){
-            if (response.statusCode < 210){
-              showSnackBar(
+      if (await verifyImageSize(_churchImage!)) {
+        showSnackBar(
+            context: context,
+            message: "La taille de votre image ne doit pas dépasser 20Mo",
+            type: SnackBarType.warning);
+        return;
+      }
+
+      try {
+        setState(() {
+          isLoading = true;
+        });
+
+        await Provider.of<Church>(context, listen: false).create(data: {
+          'name': _nameController.text,
+          'email': _addressController.text,
+          'phone': _contactController.text,
+          'location': _locationController.text,
+          'description': _descriptionController.text,
+          'churchType': churchType,
+          'image': _churchImage
+        }).then((response) {
+          print(response);
+          if (response.statusCode == 201) {
+            showSnackBar(
                 context: context,
                 message: "Enregistrement de l'église réussi",
-                type: 'success'
-              );
+                type: SnackBarType.success);
 
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Dashbord())
-              );
-            } else if(response.statusCode == 422) {
-              showSnackBar(
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const Dashbord()));
+          } else if (response.statusCode == 422) {
+            showSnackBar(
                 context: context,
                 message: "Données invalides ou déjà existante !",
-                type: 'danger'
-              );
-            } else {
-              showSnackBar(
+                type: SnackBarType.danger);
+          } else {
+            showSnackBar(
                 context: context,
                 message: "L'enregistrement à échoué !",
-                type: 'danger'
-              );
-            }
-
-            //print(response);
-          });
-        } catch(e) {
-          e.printError();
-          showSnackBar(
+                type: SnackBarType.danger);
+          }
+        });
+      } on DioException catch (e) {
+        e.printError();
+        showSnackBar(
+            context: context,
+            message: "Erreur lors de l'envoi des données",
+            type: SnackBarType.danger);
+      } catch (e) {
+        e.printError();
+        showSnackBar(
             context: context,
             message: "Une erreur s'est produite !",
-            type: 'danger'
-          );
-
-          //print(e);
-        } finally{
-          setState(() {
-            isLoading = false;
-          });
-        }
+            type: SnackBarType.danger);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
 
   init() async {
     try {
-      setState(() {isLoading = true;});
+      setState(() {
+        isLoading = true;
+      });
 
-      if (widget.editMode == true){
+      if (widget.editMode == true) {
         // obtention de l'église du serviteur
         var result = await Provider.of<Church>(context, listen: false).one();
         ChurchModel church = ChurchModel.fromJson(result.data['church']);
@@ -131,16 +140,18 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
         _descriptionController.text = church.description;
         _locationController.text = church.address;
 
-        for (var type in churchTypes){
-          if (church.type.code == type.code){
+        for (var type in churchTypes) {
+          if (church.type.code == type.code) {
             churchType = type.name;
           }
         }
       }
-    } catch(e){
+    } catch (e) {
       e.printError();
     } finally {
-      setState(() {isLoading = false;});
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -159,8 +170,7 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
       opacity: .3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(update ? 'Modifier mon église' : 'Créer une église')
-        ),
+            title: Text(update ? 'Modifier mon église' : 'Créer une église')),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Form(
@@ -174,21 +184,20 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: (){
-                              pickModeSelectionBottomSheet(
-                                context: context,
-                                setter: setChurchImage
-                              );
-                            },
-                            child: customRoundedAvatar(
-                              image: _churchImage,
-                              overlayText: "Cliquez pour ajoutez une photo"
-                            )
-                          ),
+                              onTap: () {
+                                pickModeSelectionBottomSheet(
+                                    context: context, setter: setChurchImage);
+                              },
+                              child: customRoundedAvatar(
+                                  image: _churchImage,
+                                  overlayText:
+                                      "Cliquez pour ajoutez une photo")),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: Text(
-                              _nameController.text == "" ? "Renseignez le nom de l'église" : _nameController.text,
+                              _nameController.text == ""
+                                  ? "Renseignez le nom de l'église"
+                                  : _nameController.text,
                               style: Theme.of(context).textTheme.titleLarge,
                               textAlign: TextAlign.center,
                             ),
@@ -197,78 +206,81 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
                       ),
                     ),
                   ),
-        
+
                   // nom de l'église
                   customTextField(
-                    label: "Nom de votre église",
-                    placeholder: "Ex: AESD",
-                    prefixIcon: const Icon(Icons.church_outlined),
-                    controller: _nameController,
-                    onChanged: (value){
-                      setState(() {});
-                    }
-                  ),
-                  
+                      label: "Nom de votre église",
+                      placeholder: "Ex: AESD",
+                      prefixIcon: const Icon(Icons.church_outlined),
+                      controller: _nameController,
+                      onChanged: (value) {
+                        setState(() {});
+                      }),
+
                   // adresse email de l'église
                   customTextField(
-                    label: "Adresse email",
-                    placeholder: "Ex: AESD@mail.ch",
-                    type: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    controller: _addressController
-                  ),
-        
+                      label: "Adresse email",
+                      placeholder: "Ex: AESD@mail.ch",
+                      type: TextInputType.emailAddress,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      controller: _addressController),
+
                   //contact de l'église
                   customTextField(
-                    label: "Contact de l'église",
-                    placeholder: "Ex: 0122334455",
-                    type: TextInputType.number,
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                    controller: _contactController
-                  ),
-        
+                      label: "Contact de l'église",
+                      placeholder: "Ex: 0122334455",
+                      type: TextInputType.number,
+                      prefixIcon: const Icon(Icons.phone_outlined),
+                      controller: _contactController),
+
                   // type d'église
                   customDropDownField(
-                    prefixIcon: const Icon(Icons.wb_sunny_outlined),
-                    label: "Type d'église",
-                    placeholder: "Quel est le type de votre église ?",
-                    value: churchType,
-                    items: List.generate(churchTypes.length, (index){
-                      return churchTypes[index].toMap();
-                    }),
-                    onChange: (value){
-                      churchType = value;
-                    },
-                    validator: (value){
-                      if(value == null){
-                        return "Veuillez choisir un type d'église";
-                      }
-                      return null;
-                    }
-                  ),
-        
+                      prefixIcon: const Icon(Icons.wb_sunny_outlined),
+                      label: "Type d'église",
+                      placeholder: "Quel est le type de votre église ?",
+                      value: churchType,
+                      items: List.generate(churchTypes.length, (index) {
+                        return churchTypes[index].toMap();
+                      }),
+                      onChange: (value) {
+                        churchType = value;
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return "Veuillez choisir un type d'église";
+                        }
+                        return null;
+                      }),
+
                   // localisation de l'église
                   customTextField(
-                    label: "Localisation",
-                    placeholder: "Ex: Yopougon toit rouge gendarmerie",
-                    prefixIcon: const Icon(Icons.location_on_outlined),
-                    controller: _locationController
-                  ),
-        
+                      label: "Localisation",
+                      placeholder: "Ex: Yopougon toit rouge gendarmerie",
+                      prefixIcon: const Icon(Icons.location_on_outlined),
+                      controller: _locationController),
+
                   // description de l'église
                   customMultilineField(
-                    label: "Description de l'église",
-                    controller: _descriptionController
-                  ),
-        
+                      label: "Description de l'église",
+                      controller: _descriptionController,
+                      maxLength: 100,
+                      validator: (value) {
+                        if (value == null || value.toString().isEmpty) {
+                          return "Remplissez ce champ !";
+                        }
+                        if (value.toString().length < 20) {
+                          return "Donnez une description un peu plus concrète";
+                        }
+                        return null;
+                      }),
+
                   // bouton de validation
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: customButton(
-                      context: context,
-                      text: "Soumettre",
-                      onPressed: () => _createChurch()
-                    ),
+                        context: context,
+                        text: "Soumettre",
+                        onPressed: () => _createChurch()),
                   )
                 ],
               ),
