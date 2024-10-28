@@ -29,7 +29,7 @@ class _ForumMainState extends State<ForumMain> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,10 +70,11 @@ class _ForumMainState extends State<ForumMain> {
       {required String title,
       required int responseNumber,
       required void Function()? onClick}) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onClick,
       child: Container(
-        width: 190,
+        width: (size.width * .5) - 20,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
             border: Border.all(color: Colors.grey, width: 2),

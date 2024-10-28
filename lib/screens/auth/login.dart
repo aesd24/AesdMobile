@@ -3,7 +3,9 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/components/toggle_form.dart';
 import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
+import 'package:aesd_app/screens/auth/forgot_password.dart';
 import 'package:aesd_app/screens/auth/register/choose_account.dart';
 import 'package:aesd_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -246,20 +248,23 @@ class _LoginPageState extends State<LoginPage> {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 10),
-                              child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Text(
-                                      "Mot de passe oublié ?",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                            color: Colors.green,
-                                          ),
-                                    ),
-                                  )),
+                              child: GestureDetector(
+                                onTap: () => pushForm(context, destination: const ForgotPasswordPage()),
+                                child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      onTap: () => pushForm(context, destination: const ForgotPasswordPage()),
+                                      child: Text(
+                                        "Mot de passe oublié ?",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                              color: Colors.green,
+                                            ),
+                                      ),
+                                    )),
+                              ),
                             ),
 
                             // bouton valider

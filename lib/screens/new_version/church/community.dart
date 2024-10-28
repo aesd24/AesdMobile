@@ -34,12 +34,14 @@ class _ChurchCommunityState extends State<ChurchCommunity> {
           customTitle(context, text: "Liste des fidèles"),
           customTextField(
               label: "Recherchez", prefixIcon: const Icon(Icons.search)),
-          Wrap(
-            spacing: 5,
-            runSpacing: 5,
-            children: List.generate(5, (index) {
-              return faithfulBox(context, name: "Nom du fidèle $index");
-            }),
+          Center(
+            child: Wrap(
+              spacing: 5,
+              runSpacing: 7,
+              children: List.generate(5, (index) {
+                return faithfulBox(context, name: "Nom du fidèle $index");
+              }),
+            ),
           )
         ],
       ),
@@ -47,9 +49,10 @@ class _ChurchCommunityState extends State<ChurchCommunity> {
   }
 
   Container faithfulBox(BuildContext context, {required String name}) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       padding: const EdgeInsets.all(10),
-      width: 180,
+      width: (size.width * .5) - 25,
       decoration: BoxDecoration(
           border: Border.all(width: 1.5, color: Colors.green),
           borderRadius: BorderRadius.circular(5)),
