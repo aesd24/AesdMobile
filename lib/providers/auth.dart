@@ -1,133 +1,118 @@
 import 'dart:io';
-import 'package:aesd_app/models/user_model.dart';
-import 'package:aesd_app/requests/dio_client.dart';
+//import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/requests/auth_request.dart';
 import 'package:aesd_app/services/cache/un_expired_cache.dart';
-import 'package:aesd_app/services/session/storage_auth_token_session.dart';
-import 'package:aesd_app/services/web/auth_web_service.dart';
+//import 'package:aesd_app/services/session/storage_auth_token_session.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-//import 'package:get/get.dart';
 
 class Auth extends ChangeNotifier {
-  StorageAuthTokenSession _authToken = StorageAuthTokenSession(type: '', token: '');
+/*   StorageAuthTokenSession _authToken =
+      StorageAuthTokenSession(type: '', token: ''); */
+
+  // Token d'accès
+  String _accessToken = "";
+  String get accessToken => _accessToken;
+
   final UnExpiredCache _unExpiredCache = UnExpiredCache();
-  final AuthWebService _authService = AuthWebService();
-  late UserModel user;
 
-  Future<Map<String, dynamic>> login(
-    {
-      required String email,
-      required String password,
-    }) async {
-    Map<String, dynamic> returned = {};
+  final request = AuthRequest();
 
-    var client = await DioClient().getApiClient();
-    final response = await client.post("auth/token", data: {
-      "email": email,
-      "password": password,
-      "device_name": "xxxxx"
-    });
+  Future login({
+    required String login,
+    required String password,
+  }) async {
+    final response =
+        await request.login(data: {'login': login, 'password': password});
 
-    final data = response.data;
-
-    if (response.statusCode == 200){
-      if (data['success']){
-        setUserData(UserModel.fromJson(data['user']));
-
-        _authToken.storeOnSecureStorage(
-          type: data['token_type'],
-          token: data['token']
-        ).then((StorageAuthTokenSession authToken) => {
-          setToken(type: authToken.type, token: authToken.token)
-        });
-
-        returned["success"] = true;
-        returned["message"] = "C'est partit 😉 !!";
-      }
-    } else if (response.statusCode! >= 400){
-      returned["success"] = false;
-      returned["message"] = "Information de connexion incorrects !";
+    if (response.statusCode == 200) {
+      setToken(
+          type: response.data['token_type'],
+          token: response.data['access_token']);
+    } else {
+      throw const HttpException(
+          'Informations de connexion érronées. Rééssayez');
     }
 
-    return returned;
+    return response;
   }
 
   Future register({required Map data}) async {
     // Création du formulaire pour l'envoie des fichiers
     FormData formData = FormData.fromMap({
-      "account_type": data['account_type'],
       "name": data["name"],
       "email": data["email"],
       "phone": data['phone'],
+      "account_type": data['account_type'],
       "password": data["password"],
-      "password_confirmation": data["password_confirmation"],
-      "device_name": "xxxxx",
-      "terms": data["terms"],
+      "password_confirmation": data['password_confirmation'],
+      "adresse": data['adress'],
       "call": data['call'],
-      "id_picture": data["account_type"].toLowerCase() != "ftf" ? await MultipartFile.fromFile(data['id_picture'].path, filename: "${data["name"]}_id_pic.jpg") : null,
-      "id_card_recto": data["account_type"].toLowerCase() != "ftf" ? await MultipartFile.fromFile(data['id_card_recto'].path, filename: "${data["name"]}_card_recto.jpg") : null,
-      "id_card_verso": data["account_type"].toLowerCase() != "ftf" ? await MultipartFile.fromFile(data['id_card_verso'].path, filename: "${data["name"]}_card_verso.jpg") : null
+      /* "id_picture": data["account_type"].toLowerCase() != "fidele"
+          ? await MultipartFile.fromFile(data['id_picture'].path,
+              filename: "${data["name"]}_id_pic.jpg")
+          : null, */
+      "id_card_recto": data["account_type"].toLowerCase() != "fidele"
+          ? await MultipartFile.fromFile(data['id_card_recto'].path,
+              filename: "${data["name"]}_card_recto.jpg")
+          : null,
+      "id_card_verso": data["account_type"].toLowerCase() != "fidele"
+          ? await MultipartFile.fromFile(data['id_card_verso'].path,
+              filename: "${data["name"]}_card_verso.jpg")
+          : null
     });
-    
-    var client = await DioClient().getApiClient(
-      contentType: "multipart/form-data; boundary=${formData.boundary}"
-    );
 
     // envoie de la requête et le résultat est stocké dans la variable "response"
-    final response = await client.post("auth/register", data : formData);
+    final response = await request.register(data: formData);
 
-    return response.data;
-  }
+    print(response.data);
 
-  Future sendFileTest(File image) async {
-    final formData = FormData.fromMap({
-      "image" : await MultipartFile.fromFile(image.path, filename: "image.jpg")
-    });
-
-    var client = await DioClient().getApiClient(
-      contentType: "multipart/form-data; boundary=${formData.boundary}"
-    );
-
-    return client.post("auth/test", data: formData);
+    if (response.statusCode == 201) {
+      return response;
+    } else {
+      String message = "";
+      if (response.data['errors'] != null) {
+        response.data['errors'].forEach((key, value) {
+          message += "${value[0]}\n";
+        });
+      }
+      throw HttpException("${response.data['message']} \n$message");
+    }
   }
 
   void setToken({required String type, required String token}) {
-    _authToken = StorageAuthTokenSession(type: type, token: token);
+    //_authToken = StorageAuthTokenSession(type: type, token: token);
+    _accessToken = "$type $token";
+    _unExpiredCache.put(key: "access_token");
     notifyListeners();
   }
 
-  StorageAuthTokenSession getAuthToken() {
+  /* StorageAuthTokenSession getAuthToken() {
     return _authToken;
-  }
-
-  bool isLogged() {
-    return _authToken.token != '';
-  }
+  } */
 
   Future<void> logout() async {
-    await _authService.logout().then((value) async {
-      await Future.wait([
-        _unExpiredCache.remove('user_info'),
-        _authToken.deleteOnSecureStorage().then(
-          (v) => {setToken(type: '', token: '')}
-        )
-      ]);
+    await request.logout().then((value) async {
+      _accessToken = "";
     });
 
     notifyListeners();
   }
 
-  Future<void> setUserData(UserModel userModel) async {
-    user = userModel;
+  Future<String?> getToken() async {
+    String? token;
+    await _unExpiredCache.get(key: "access_token").then((value) {
+      if (value != null) {
+        token = value;
+      }
+    });
 
-    await _unExpiredCache.put(key: 'user_info', value: user.toJson());
-
-    notifyListeners();
+    return token;
   }
 
-  Future<UserModel> getUserInfoFromCache() async {
+  /* Future<UserModel> getUserInfoFromCache() async {
     await _unExpiredCache.get(key: 'user_info').then((value) async {
-      if (value != null){
+      if (value != null) {
         user = UserModel.fromJson(value);
         await _unExpiredCache.put(key: 'user_info', value: user.toJson());
       }
@@ -136,5 +121,5 @@ class Auth extends ChangeNotifier {
     notifyListeners();
 
     return user;
-  }
+  } */
 }

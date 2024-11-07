@@ -4,14 +4,15 @@ import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/church_selection.dart';
 import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/providers/auth.dart';
+//import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/servant.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/church/choose_church.dart';
 import 'package:aesd_app/screens/church/create_church.dart';
 //import 'package:aesd_app/screens/events/create_event.dart';
 import 'package:aesd_app/screens/posts/video_post_preview.dart';
-import 'package:aesd_app/screens/user/dashbord/wallet.dart';
+import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
 /* import 'package:aesd_app/screens/quiz/create_quiz.dart';
 import 'package:aesd_app/screens/users/common/followers.dart'; */
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
-                  if (owner['id'] == Provider.of<Auth>(context, listen: false).user.id!){
+                  if (owner['id'] == Provider.of<User>(context, listen: false).user.id!){
                     return CreateChurchPage(editMode: true);
                   } else {
                     return const ChooseChurch();

@@ -1,5 +1,6 @@
 import 'package:aesd_app/models/chat_model.dart';
-import 'package:aesd_app/providers/auth.dart';
+//import 'package:aesd_app/providers/auth.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,7 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Auth>(builder: (context, auth, child) {
+    return Consumer<User>(builder: (context, auth, child) {
       return InkWell(
         onTap: press,
         child: Padding(

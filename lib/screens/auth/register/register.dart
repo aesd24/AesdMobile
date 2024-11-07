@@ -4,7 +4,7 @@ import "package:aesd_app/components/snack_bar.dart";
 import "package:aesd_app/components/text_field.dart";
 import "package:aesd_app/components/toggle_form.dart";
 import "package:aesd_app/constants/dictionnary.dart";
-import "package:aesd_app/providers/auth.dart";
+//import "package:aesd_app/providers/auth.dart";
 import "package:aesd_app/providers/user.dart";
 import "package:aesd_app/screens/auth/login.dart";
 import "package:aesd_app/screens/auth/register/finish.dart";
@@ -16,7 +16,7 @@ import "package:provider/provider.dart";
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({super.key, required this.accountType, this.update});
-  String accountType;
+  Type accountType;
   bool? update = false;
 
   @override
@@ -32,9 +32,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _telController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _adressController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _descriptionController = TextEditingController();
-
   String? call; // l'appel du serviteur (pasteur, evangéliste...)
 
   // accept terms
@@ -47,10 +47,9 @@ class _RegisterPageState extends State<RegisterPage> {
   // fonction d'enregistrement de fidèle
   void _startRegistering() async {
     Widget? destinationPage; // page de destination
-
-    if (widget.accountType.toLowerCase() == "ftf") {
+    if (widget.accountType == Type.faithFul) {
       destinationPage = const FinishPage();
-    } else if (widget.accountType.toLowerCase() == "svt") {
+    } else if (widget.accountType == Type.servant) {
       destinationPage = const AddPhotoPage();
     } else {
       destinationPage = const LoginPage();
@@ -61,12 +60,11 @@ class _RegisterPageState extends State<RegisterPage> {
       "name": _nameController.text,
       "email": _emailController.text,
       "phone": _telController.text,
+      "adress": _adressController.text,
       "password": _passwordController.text,
       "password_confirmation": _confirmPasswordController.text,
       "description": _descriptionController.text,
       "call": call,
-      "terms": terms,
-      "device_name": "xxxxx"
     });
 
     Navigator.of(context)
@@ -79,12 +77,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // obtention des données utilisateur pour la modification
     if (widget.update == true) {
-      var userData = Provider.of<Auth>(context).user;
+      var userData = Provider.of<User>(context).user;
 
       _nameController.text = userData.name;
       _emailController.text = userData.email;
       _telController.text = userData.phone;
-      call = "PAS";
+      _adressController.text = userData.adress;
+      call = "pastor";
     }
 
     return Scaffold(
@@ -227,8 +226,25 @@ class _RegisterPageState extends State<RegisterPage> {
                                       return null;
                                     }),
 
+                                customTextField(
+                                    controller: _adressController,
+                                    prefixIcon:
+                                        const Icon(Icons.location_on_outlined),
+                                    label: "Adresse",
+                                    placeholder: "Où habitez vous ?",
+                                    validator: (value) {
+                                      // vérification que le champs est remplis
+                                      if (value == null ||
+                                          value.toString().isEmpty) {
+                                        return "Remplissez le champs SVP !";
+                                      }
+
+                                      return null;
+                                    }),
+
                                 // champs de choix de l'appel du serviteur
-                                if (widget.accountType.toLowerCase() == "svt")
+                                if (widget.accountType.code ==
+                                    Type.servant.code)
                                   customDropDownField(
                                       label: 'Quel est votre appel ?',
                                       value: call,
@@ -249,7 +265,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                           (index) {
                                         var current = servantTypes[index];
                                         return {
-                                          "id": current.id,
                                           "code": current.code,
                                           "name": current.name
                                         };
@@ -335,7 +350,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       }),
 
                                 if (widget.update == null)
-                                  if (widget.accountType.toLowerCase() == "svt")
+                                  if (widget.accountType == Type.servant)
                                     customMultilineField(
                                         label: "Décrivez vous !",
                                         controller: _descriptionController),

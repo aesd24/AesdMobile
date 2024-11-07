@@ -47,7 +47,7 @@ class PostListItem extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage(post.image), fit: BoxFit.cover),
+                    image: NetworkImage(post.image!), fit: BoxFit.cover),
                 borderRadius: BorderRadius.circular(12.0),
               ),
             ),

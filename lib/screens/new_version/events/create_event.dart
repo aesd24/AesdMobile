@@ -58,8 +58,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   ? GestureDetector(
                       onTap: () async {
                         // selectionner une photo depuis la galérie
-                        image = await pickImage(camera: true);
-                        setState(() {});
+                        File? file = await pickImage(camera: true);
+                        if (file != null) {
+                          image = file;
+                          setState(() {});
+                        }
                       },
                       child: Container(
                         width: double.infinity,

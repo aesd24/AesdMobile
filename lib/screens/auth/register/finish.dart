@@ -20,7 +20,7 @@ class FinishPage extends StatefulWidget {
 
 class _FinishPageState extends State<FinishPage> {
   String _message = "";
-  IconData _icons = Icons.screen_search_desktop_sharp;
+  IconData _icon = Icons.screen_search_desktop_sharp;
   bool _success = false;
   bool _isLoading = false;
 
@@ -34,26 +34,25 @@ class _FinishPageState extends State<FinishPage> {
           await Provider.of<Auth>(context, listen: false).register(data: data);
 
       // récupérer le résultat de l'operation et la reponse du serveur
-      print(response);
-      setState(() {
-        _success = response["success"] ?? false;
-        _message = response["errors"] != null
-            ? "Des champs ont été mal renseignés !"
-            : response["message"];
-        _icons = _success ? Icons.check_circle_sharp : Icons.cancel;
-      });
+      if (response.statusCode == 201) {
+        setState(() {
+          _success = true;
+          _message = response.data['message'];
+          _icon = Icons.check_circle;
+        });
+      }
     } on HttpException catch (e) {
       setState(() {
         _success = false;
-        _message = e.toString();
-        _icons = Icons.cancel;
+        _message = e.message;
+        _icon = Icons.cancel;
       });
     } on DioException catch (e) {
       e.printError();
       setState(() {
         _success = false;
         _message = "L'enregistrement à échoué !";
-        _icons = Icons.cancel;
+        _icon = Icons.cancel;
       });
       showSnackBar(
           context: context,
@@ -64,7 +63,7 @@ class _FinishPageState extends State<FinishPage> {
       setState(() {
         _success = false;
         _message = "L'enregistrement à échoué !";
-        _icons = Icons.cancel;
+        _icon = Icons.cancel;
       });
       showSnackBar(
           context: context,
@@ -103,25 +102,27 @@ class _FinishPageState extends State<FinishPage> {
             children: [
               Align(
                 alignment: Alignment.center,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _message,
-                      style: Theme.of(context).textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                    Icon(
-                      _icons,
-                      color: _icons == Icons.cancel
-                          ? Colors.red
-                          : _success == true
-                              ? Colors.green
-                              : Colors.grey,
-                      size: 100,
-                    )
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _message,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 10),
+                      Icon(
+                        _icon,
+                        color: _icon == Icons.cancel
+                            ? Colors.red
+                            : _success == true
+                                ? Colors.green
+                                : Colors.grey,
+                        size: 100,
+                      )
+                    ],
+                  ),
                 ),
               ),
               Align(
@@ -145,7 +146,7 @@ class _FinishPageState extends State<FinishPage> {
                         // avertir l'utilisateur du début du traitement
                         setState(() {
                           _isLoading = true;
-                          _icons = Icons.screen_search_desktop_sharp;
+                          _icon = Icons.screen_search_desktop_sharp;
                           _message = "Traitement en cours. Patientez...";
                         });
 

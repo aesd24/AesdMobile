@@ -9,7 +9,7 @@ Widget customButton({
   Color? foregroundColor,
   Color? highlightColor,
   BorderSide? border,
-  Icon? trailing
+  Widget? trailing
 }){
   return SizedBox(
     width: double.infinity,

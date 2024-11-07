@@ -1,13 +1,16 @@
+import 'dart:io';
+
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/components/toggle_form.dart';
-import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
+//import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/auth/forgot_password.dart';
 import 'package:aesd_app/screens/auth/register/choose_account.dart';
-import 'package:aesd_app/screens/home_screen.dart';
+//import 'package:aesd_app/screens/home_screen.dart';
+import 'package:aesd_app/screens/new_version/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -42,27 +45,17 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Provider.of<Auth>(context, listen: false)
           .login(
-        email: _loginController.text,
+        login: _loginController.text,
         password: _passwordController.text,
-      )
-          .then((result) {
-        //print(result);
-        showSnackBar(
-            context: context,
-            type: result['success'] ? "success" : SnackBarType.warning,
-            message: result['message']);
-
-        if (result['success']) {
-          //Aller a la page 'home';
-          Get.offAll(() => const HomeScreen());
+      ).then((response) {
+        if (response.statusCode == 200) {
+          // Aller a la page 'home';
+          Get.offAll(() => const HomePage());
         }
       });
-    } on HttpFormValidationException {
+    } on HttpException catch (e) {
       showSnackBar(
-        context: context,
-        type: SnackBarType.warning,
-        message: 'Login ou mot de passe incorrecte !',
-      );
+          context: context, message: e.message, type: SnackBarType.warning);
     } catch (e) {
       e.printInfo();
       showSnackBar(
@@ -249,11 +242,14 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 10),
                               child: GestureDetector(
-                                onTap: () => pushForm(context, destination: const ForgotPasswordPage()),
+                                onTap: () => pushForm(context,
+                                    destination: const ForgotPasswordPage()),
                                 child: Align(
                                     alignment: Alignment.centerRight,
                                     child: GestureDetector(
-                                      onTap: () => pushForm(context, destination: const ForgotPasswordPage()),
+                                      onTap: () => pushForm(context,
+                                          destination:
+                                              const ForgotPasswordPage()),
                                       child: Text(
                                         "Mot de passe oublié ?",
                                         style: Theme.of(context)

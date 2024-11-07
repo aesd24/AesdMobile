@@ -1,12 +1,10 @@
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/screens/new_version/home.dart';
-import 'package:dio/dio.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/requests/dio_client.dart';
 import 'package:aesd_app/screens/auth/login.dart';
 //import 'package:aesd_app/screens/home_screen.dart';
-import 'package:aesd_app/services/session/storage_auth_token_session.dart';
+//import 'package:aesd_app/services/session/storage_auth_token_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -18,76 +16,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final Future<StorageAuthTokenSession> _futureAuthToken =
-      StorageAuthTokenSession.getFormSecureStorage();
-
   bool logged = false;
 
   void init() async {
-    if (await checkConnectionState()) {
-      _futureAuthToken.then((StorageAuthTokenSession authToken) => {
-            Provider.of<Auth>(context, listen: false)
-                .setToken(type: authToken.type, token: authToken.token)
-          });
-
-      Future.delayed(const Duration(seconds: 10), () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) =>
-                logged ? const HomePage() : const LoginPage()));
-      });
-    } else {
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Erreur !"),
-              content: const Text(
-                  "Connexion impossible. Vérifiez votre connexion internet et rééssayez !"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    // fermer l'application
-                    SystemNavigator.pop();
-                  },
-                  style: ButtonStyle(
-                      foregroundColor: WidgetStateProperty.all(Colors.red),
-                      overlayColor:
-                          WidgetStateProperty.all(Colors.red.shade200)),
-                  child: const Text("Fermer"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // rééssayer de vérifier le serveur
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => const SplashScreen()),
-                        (route) => false);
-                  },
-                  style: ButtonStyle(
-                      foregroundColor: WidgetStateProperty.all(Colors.blue),
-                      overlayColor:
-                          WidgetStateProperty.all(Colors.blue.shade200)),
-                  child: const Text("Rééssayer"),
-                )
-              ],
-            );
-          });
-    }
-  }
-
-  Future<bool> checkConnectionState() async {
-    try {
-      var client = await DioClient().getApiClient();
-      var response = await client.get("test");
-
-      if (response.statusCode == 200) {
-        return true;
+    await Provider.of<Auth>(context, listen: false)
+        .getToken()
+        .then((value) async {
+      if (value != null) {
+        logged = true;
       }
-      return false;
-    } on DioException {
-      return false;
-    }
+      print(value);
+    });
+
+    Future.delayed(const Duration(seconds: 10), () {
+      pushForm(context,
+          destination: logged ? const HomePage() : const LoginPage());
+    });
   }
 
   // background Image
@@ -101,10 +45,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      logged = Provider.of<Auth>(context).isLogged();
-    });
-
     return FutureBuilder(
         future: precacheImage(background, context),
         builder: (context, snapshot) {

@@ -1,197 +1,193 @@
-import 'package:aesd_app/models/user_model.dart';
+//import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/components/dialog.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/requests/auth_request.dart';
-import 'package:aesd_app/screens/user/dashbord/dashbord.dart';
+import 'package:aesd_app/screens/auth/login.dart';
+import 'package:aesd_app/screens/new_version/home.dart';
+import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class MenuDrawer extends StatefulWidget {
-  MenuDrawer({super.key, this.pageIndex});
+  MenuDrawer({super.key, required this.pageIndex});
 
-  int? pageIndex;
+  int pageIndex;
 
   @override
   State<MenuDrawer> createState() => _MenuDrawerState();
 }
 
 class _MenuDrawerState extends State<MenuDrawer> {
-
-  final AuthRequest _authRequest = AuthRequest();
+  //final AuthRequest _authRequest = AuthRequest();
 
   _refreshUserInfo() async {
     try {
-      final response = await _authRequest.getUserInfo();
+      //final response = await _authRequest.getUserInfo();
 
-      final data = response.data;
-
-      Provider.of<Auth>(context, listen: false).setUserData(UserModel.fromJson(data['user']));
+      //final data = response.data;
     } finally {}
+  }
+
+  logout() async {
+    await Provider.of<Auth>(context, listen: false).logout();
+    Get.offAll(() => const LoginPage());
   }
 
   @override
   Widget build(BuildContext context) {
-    int pageIndex = widget.pageIndex ?? 0;
-
     return RefreshIndicator(
         color: kPrimaryColor,
         backgroundColor: Colors.white,
         onRefresh: () => _refreshUserInfo(),
-      child: Drawer(
-          child: Consumer<Auth>(
-              builder: (context, auth, child) {
-
-                String userInitials = "";
-                for (var word in auth.user.name.split(" ")){
-                  userInitials += word[0];
-                }
-
-                return ListView(
-                  // Important: Remove any padding from the ListView.
-                  padding: EdgeInsets.zero,
-                  children: [
-                    UserAccountsDrawerHeader(
-                      accountName: Text(auth.user.name),
-                      accountEmail: Text(auth.user.email),
-                      decoration: const BoxDecoration(
-                        color: kHeaderColor,
+        child: Drawer(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 50),
+                  padding: const EdgeInsets.all(10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1.5, color: Colors.black),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(100)),
                       ),
-                      currentAccountPicture: CircleAvatar(
-                        backgroundColor: Colors.green.shade50,
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
                         child: Text(
-                          userInitials.toUpperCase(),
-                          style: GoogleFonts.philosopher(
-                            textStyle: TextStyle(
-                              fontSize: 40,
-                              color: Colors.green.shade800,
-                            )
-                          )
+                          "Prénoms et Nom",
+                          style: Theme.of(context).textTheme.titleMedium,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-
-                    _customTileSection(
-                      title: "GENERAL",
-                      tiles: [
-                        _customTile(
-                          title: "Accueil",
-                          icon: Icons.home_filled,
-                          primaryColor: pageIndex == 0
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Text(
+                          "adress@email.com",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: Colors.grey),
+                          textAlign: TextAlign.center,
                         ),
-                        if(!auth.user.isFaithful) _customTile(
-                          title: "Tableau de bord",
-                          icon: Icons.dashboard,
-                          primaryColor: pageIndex == 1,
-                          onTap: (){
-                            Navigator.of(context).push(
-                              MaterialPageRoute( builder: (context) => const Dashbord())
-                            );
-                          }
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Text(
+                          "(+225) 0102030405",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: Colors.grey),
+                          textAlign: TextAlign.center,
                         ),
-                        /* _customTile(
-                          title: "Mon profil",
-                          icon: Icons.person,
-                          primaryColor: _pageIndex == 2
-                        ) */
-                      ]
-                    )
-                    
-                    /* ListTile(
-                      leading: Icon(Icons.money, color: Colors.black,),
-                      title: const Text('Mes jetons'),
-                      trailing: Badge(
-                          label: Text(auth.user.totalCoins.toString())
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CoinsScreen(),
-                          ),
-                        );
-                      },
-                    ), */
-                    /*
-                    if (auth.user.canManage)
-                      ListTile(
-                        leading: const Icon(Icons.follow_the_signs_outlined, color: Colors.black,),
-                        title: const Text('Suivies'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ChurchFollowing(),
-                            ),
-                          );
-                        },
-                      ),
-                    */
-
-                    /*
-                    if (auth.user.canManage)
-                      ListTile(
-                        leading: const Icon(Icons.live_tv_outlined, color: Colors.black,),
-                        title: const Text('Directes'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CoursesFollowing(),
-                            ),
-                          );
-                        },
-                      ),
-                    */
-                    /*ListTile(
-                leading: Icon(Icons.settings, color: Colors.black,),
-                title: const Text('Paramètres'),
-                onTap: () {
-                },
-              ),*/
-                  ],
-                );
-              })
-      ),
-    );
-  }
-
-  Widget _customTile({
-    required String title,
-    required IconData icon,
-    void Function()? onTap,
-    bool primaryColor = false
-  }){
-    return ListTile(
-      leading: Icon(icon),
-      onTap: onTap,
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-          color: primaryColor ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary
-        ),
-      ),
-      iconColor: primaryColor ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
-    );
-  }
-
-  Widget _customTileSection({
-    required String title,
-    required List<Widget> tiles
-  }){
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _customTile(
+                    id: 0,
+                    title: "Accueil",
+                    icon: const FaIcon(FontAwesomeIcons.house),
+                    onTap: () =>
+                        pushForm(context, destination: const HomePage())),
+                _customTile(
+                    id: 1,
+                    title: "Dashboard",
+                    icon: const FaIcon(FontAwesomeIcons.gaugeHigh)),
+                _customTile(
+                  id: 2,
+                  title: "Transactions",
+                  icon: const FaIcon(FontAwesomeIcons.moneyBillTransfer),
+                  onTap: () =>
+                      pushReplaceForm(context, destination: const WalletForm()),
+                ),
+                _customTile(
+                    id: 3,
+                    title: "Nous contacter",
+                    icon: const FaIcon(FontAwesomeIcons.envelope)),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: TextButton.icon(
+                    onPressed: () => messageBox(context,
+                        title: "Déconnexion",
+                        content: const Text(
+                            "Voulez vous vraiment vous déconnecter ?"),
+                        actions: [
+                          TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                      Colors.grey.shade300),
+                                  foregroundColor:
+                                      WidgetStateProperty.all(Colors.grey)),
+                              child: const Text("Annuler")),
+                          TextButton(
+                              onPressed: () async => await logout(),
+                              style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                      Colors.red.shade100),
+                                  foregroundColor:
+                                      WidgetStateProperty.all(Colors.red)),
+                              child: const Text("Déconnexion"))
+                        ]),
+                    label: const Text("Se déconnecter"),
+                    icon: const FaIcon(FontAwesomeIcons.rightFromBracket),
+                    iconAlignment: IconAlignment.end,
+                    style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all(Colors.red.withOpacity(.2)),
+                        foregroundColor: WidgetStateProperty.all(Colors.red),
+                        overlayColor: WidgetStateProperty.all(
+                            Colors.red.withOpacity(.2))),
+                  ),
+                )
+              ],
+            ),
           ),
-          ...tiles
-        ],
-      ),
+        ));
+  }
+
+  Widget _customTile(
+      {required int id,
+      required String title,
+      required Widget icon,
+      void Function()? onTap}) {
+    bool selected = widget.pageIndex == id;
+    return Card(
+      color: !selected ? Colors.green : Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+          side: selected
+              ? const BorderSide(color: Colors.green, width: 1.5)
+              : BorderSide.none,
+          borderRadius: BorderRadius.circular(10)),
+      elevation: 0,
+      child: ListTile(
+          leading: icon,
+          onTap: onTap,
+          title: Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(color: !selected ? Colors.white : Colors.green),
+          ),
+          iconColor: !selected ? Colors.white : Colors.green),
     );
   }
 }

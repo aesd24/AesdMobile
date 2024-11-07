@@ -3,17 +3,19 @@ import "package:flutter/material.dart";
 Widget customTextField({
   required String label,
   String? placeholder,
+  FocusNode? focusNode,
   TextEditingController? controller,
   FormFieldValidator? validator,
   TextInputType? type,
   bool obscureText = false,
-  Icon? prefixIcon,
+  Widget? prefixIcon,
   Widget? suffix,
   void Function(String)? onChanged
 }){
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 10),
     child: TextFormField(
+      focusNode: focusNode,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         border: OutlineInputBorder(

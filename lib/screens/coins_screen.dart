@@ -1,8 +1,9 @@
 
+import 'package:aesd_app/providers/user.dart';
 import 'package:cinetpay/cinetpay.dart';
-import 'package:aesd_app/models/user_model.dart';
-import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/services/web/cinetpay_service.dart';
+//import 'package:aesd_app/models/user_model.dart';
+//import 'package:aesd_app/providers/auth.dart';
+//import 'package:aesd_app/services/web/cinetpay_service.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:aesd_app/widgets/forms/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class CoinsScreen extends StatefulWidget {
 
 class _CoinsScreenState extends State<CoinsScreen> {
   final TextEditingController _coinTotalController = TextEditingController();
-  final CinetPayService _cinetpayService = CinetPayService();
+  //final CinetPayService _cinetpayService = CinetPayService();
   
   num amount = 0;
   @override
@@ -60,17 +61,17 @@ class _CoinsScreenState extends State<CoinsScreen> {
   }
 
   _verifyCinetPayPaiment(id) async {
-    try {
+    /* try {
       final data = await _cinetpayService.verifyJetonBuy(
         transaction: id,
       );
 
-      Provider.of<Auth>(context, listen: false).setUserData(UserModel.fromJson(data['user']));
+      //Provider.of<Auth>(context, listen: false).setUserData(UserModel.fromJson(data['user']));
     } catch (e) {
       //print('erreur');
       // 1ee859ee-2ba2-6100-8bcf-19094b3b6289
       ////print(e);
-    } finally {}
+    } finally {} */
   }
 
   @override
@@ -84,8 +85,8 @@ class _CoinsScreenState extends State<CoinsScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Consumer<Auth>(
-                builder: (context, auth, child) {
+              child: Consumer<User>(
+                builder: (context, cons, child) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -96,7 +97,7 @@ class _CoinsScreenState extends State<CoinsScreen> {
                         children: [
                           const Text('Total jetons', style: TextStyle(color: Colors.blueAccent)),
                           Text(
-                              auth.user.totalCoins.toString(),
+                              cons.user.totalCoins.toString(),
                               style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 34.0)
                           )
                         ],

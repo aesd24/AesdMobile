@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:aesd_app/providers/auth.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -21,7 +21,7 @@ class CinetPay extends ChangeNotifier{
     required String returnUrl,
   }) async {
     // utilisateur connecté
-    final user = Provider.of<Auth>(context, listen: false).user;
+    final user = Provider.of<User>(context, listen: false).user;
 
     Map<String, dynamic> body = {
       'apikey' : _apiKey,

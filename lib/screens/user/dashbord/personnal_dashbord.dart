@@ -2,7 +2,7 @@
 import 'package:aesd_app/components/bottom_sheets.dart'; */
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/screens/user/dashbord/wallet.dart';
+import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
 //import 'package:aesd_app/screens/auth/register/register.dart';
 /* import 'package:aesd_app/screens/posts/create_post.dart';
 import 'package:aesd_app/screens/posts/video_post_preview.dart';

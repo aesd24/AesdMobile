@@ -1,8 +1,10 @@
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:flutter/material.dart';
 
 Widget customSection(BuildContext context, {
   required String title,
   required List<Widget> children,
+  required Widget viewAllPage,
   double childrenHeight = 150,
   Axis scrollDirection = Axis.horizontal,
 }) {
@@ -20,7 +22,7 @@ Widget customSection(BuildContext context, {
                   fontWeight: FontWeight.bold),
             ),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () => pushForm(context, destination: viewAllPage),
               icon: const Icon(Icons.add),
               iconAlignment: IconAlignment.end,
               style: ButtonStyle(

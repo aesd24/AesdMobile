@@ -1,40 +1,39 @@
 class Type {
-  int id;
   String code;
   String name;
-  
-  Type({
-    required this.id,
-    required this.code,
-    required this.name
-  });
 
-  toMap(){
-    return {
-      "id" : id,
-      "code" : code,
-      "name" : name
-    };
+  Type({required this.code, required this.name});
+
+  toMap() {
+    return {"code": code, "name": name};
   }
+
+  // accountTypes
+  static get faithFul => Type(code: "fidele", name: "Fidèle");
+  static get servant =>
+      Type(code: "serviteur_de_dieu", name: "Serviteur de Dieu");
+  static get singer => Type(code: "chantre", name: "Chantre");
+
+  static List get accountTypes => [
+    Type.faithFul,
+    Type.servant,
+    Type.singer
+  ];
+
+  // church types
 }
 
-List<Type> accountTypes = [
-  Type(id: 1, code: "FTF", name: "Fidèle"),
-  Type(id: 2, code: "SVT", name: "Serviteur de Dieu")
-  //Type(id: 3, code: "SIG", name: "Chantre")
-];
-
 List<Type> churchTypes = [
-  Type(id: 4, code: "CAT", name: "Catholique"),
-  Type(id: 5, code: "EVE", name: "Evangélique"),
-  Type(id: 6, code: "ORT", name: "Orthodoxe"),
-  Type(id: 7, code: "PRO", name: "Protestante")
+  Type(code: "CAT", name: "Catholique"),
+  Type(code: "EVE", name: "Evangélique"),
+  Type(code: "ORT", name: "Orthodoxe"),
+  Type(code: "PRO", name: "Protestante")
 ];
 
 List<Type> servantTypes = [
-  Type(id: 8, code: "APO", name: "Apôtre"),
-  Type(id: 9, code: "EVA", name: "Evangéliste"),
-  Type(id: 10, code: "PAS", name: "Pasteur"),
-  Type(id: 11, code: "PRO", name: "Prophète"),
-  Type(id: 12, code: "DOC", name: "Docteur")
+  Type(code: "APO", name: "Apôtre"),
+  Type(code: "EVA", name: "Evangéliste"),
+  Type(code: "PAS", name: "Pasteur"),
+  Type(code: "PRO", name: "Prophète"),
+  Type(code: "DOC", name: "Docteur")
 ];

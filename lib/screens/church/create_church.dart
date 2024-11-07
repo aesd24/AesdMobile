@@ -59,13 +59,13 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
         return;
       }
 
-      if (await verifyImageSize(_churchImage!)) {
+      /* if (await verifyImageSize(_churchImage!)) {
         showSnackBar(
             context: context,
             message: "La taille de votre image ne doit pas dépasser 20Mo",
             type: SnackBarType.warning);
         return;
-      }
+      } */
 
       try {
         setState(() {

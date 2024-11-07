@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:aesd_app/components/event.dart';
 import 'package:aesd_app/components/section.dart';
 import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/screens/new_version/actuality/actualities.dart';
 import 'package:aesd_app/screens/new_version/church/main.dart';
+import 'package:aesd_app/screens/new_version/events/events.dart';
 import 'package:aesd_app/screens/new_version/forum/list.dart';
 import 'package:aesd_app/screens/new_version/quiz/list.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +101,7 @@ class _FrontPageState extends State<FrontPage> {
             child: Column(children: [
               customSection(context,
                   title: "Evènements",
+                  viewAllPage: const AllEvents(),
                   children: List.generate(5, (index) {
                     return customEventBox(
                       context,
@@ -109,6 +112,7 @@ class _FrontPageState extends State<FrontPage> {
               customSection(context,
                   scrollDirection: Axis.vertical,
                   title: "Actualités",
+                  viewAllPage: const AllActualities(),
                   children: List.generate(5, (index) {
                     return customNewsBox(
                       title: "Titre de l'actualité $index",

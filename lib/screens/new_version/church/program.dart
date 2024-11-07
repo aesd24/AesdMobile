@@ -1,5 +1,7 @@
 import 'package:aesd_app/components/event.dart';
 import 'package:aesd_app/components/title.dart';
+import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/screens/new_version/events/create_event.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,25 +13,123 @@ class ChurchProgram extends StatefulWidget {
 }
 
 class _ChurchProgramState extends State<ChurchProgram> {
+  final List<Map<String, dynamic>> _programs = List.generate(5, (index) {
+    return {
+      'day': "Jour $index",
+      'program': List.generate(3, (index) {
+        return {
+          'title': "Programme $index",
+          'time': "${index + 10}h00 - ${index + 11}h00",
+          'place': "Lien $index"
+        };
+      })
+    };
+  });
+
+  late List<Widget>? _programBoxes;
+  int activeProgram = 0;
+  final _pageController = PageController(initialPage: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _programBoxes = List.generate(_programs.length, (index) {
+      var current = _programs[index];
+      return CustomProgramBox(
+        day: current['day'],
+        programs: current['program'],
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          customTitle(context, text: "Programme hebdomadaire"),
-          SizedBox(
-              height: 300,
-              width: double.infinity,
-              child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: List.generate(3, (index) {
-                    return programBox(context);
-                  }))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              customTitle(context, text: "Programme hebdomadaire"),
+              trailButton(
+                onPressed: () {},
+                text: "Ajouter",
+                icon: const FaIcon(
+                  FontAwesomeIcons.plus,
+                  size: 15,
+                ),
+              )
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_programs.length, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _pageController.animateToPage(index,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.bounceIn);
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 1),
+                        color: activeProgram == index ? Colors.green : null,
+                        borderRadius: BorderRadius.circular(100)),
+                  ),
+                );
+              }),
+            ),
+          ),
+          _programBoxes != null
+              ? SizedBox(
+                  height: 350,
+                  child: PageView.builder(
+                    itemCount: _programs.length,
+                    controller: _pageController,
+                    onPageChanged: (value) {
+                      setState(() {
+                        activeProgram = value;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return _programBoxes![index];
+                    },
+                  ),
+                )
+              : Text(
+                  "Aucun programme disponible",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium!
+                      .copyWith(color: Colors.grey.shade300),
+                ),
           const SizedBox(height: 30),
-          customTitle(context, text: "Evènements"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              customTitle(context, text: "Evènements"),
+              trailButton(
+                  onPressed: () =>
+                      pushForm(context, destination: const CreateEventPage()),
+                  text: "Ajouter",
+                  icon: const FaIcon(
+                    FontAwesomeIcons.plus,
+                    size: 15,
+                  ))
+            ],
+          ),
+          const SizedBox(height: 10),
           SizedBox(
-            height: 400,
+            height: 500,
             width: double.infinity,
             child: SingleChildScrollView(
                 child: Column(
@@ -48,7 +148,29 @@ class _ChurchProgramState extends State<ChurchProgram> {
     );
   }
 
-  Container programBox(BuildContext context) {
+  TextButton trailButton(
+      {required String text,
+      required Widget icon,
+      required void Function() onPressed}) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: icon,
+      iconAlignment: IconAlignment.end,
+      label: Text(text),
+      style:
+          ButtonStyle(foregroundColor: WidgetStateProperty.all(Colors.green)),
+    );
+  }
+}
+
+class CustomProgramBox extends StatelessWidget {
+  CustomProgramBox({super.key, required this.day, required this.programs});
+
+  String day;
+  List programs;
+
+  @override
+  Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
       padding: const EdgeInsets.all(10),
@@ -62,23 +184,24 @@ class _ChurchProgramState extends State<ChurchProgram> {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 5),
-            child: Text("Lundi",
+            child: Text(day,
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium!
                     .copyWith(fontWeight: FontWeight.bold)),
           ),
           SizedBox(
-            height: 230,
+            height: 260,
             child: SingleChildScrollView(
               child: Column(
-                children: List.generate(3, (index) {
+                children: List.generate(programs.length, (index) {
+                  var current = programs[index];
                   return Column(
                     children: [
                       programTile(context,
-                          title: "Programme $index",
-                          time: "$index h00 - $index h00",
-                          place: "Lieu $index"),
+                          title: "Programme ${current['title']}",
+                          time: current['time'],
+                          place: current['place']),
                       if (index != 2) const Divider(),
                     ],
                   );
@@ -92,10 +215,10 @@ class _ChurchProgramState extends State<ChurchProgram> {
   }
 
   Widget programTile(
-  BuildContext context, {
-  required String title,
-  required String time,
-  required String place,
+    BuildContext context, {
+    required String title,
+    required String time,
+    required String place,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),

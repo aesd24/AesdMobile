@@ -1,0 +1,14 @@
+------------------------------ commentaires sur l'api ---------------------------------------------------
+
+# Register :
+    *   L'"appel" du serviteur n'est pas pris en compte par l'api lors de la création de
+    compte.
+
+    *   La photo d'identité du serviteur devrait aussi figurer parmis les champs requis pour
+    une eventuelle vérification de la pièce d'identité fournie.
+
+    *   Le paramètre 'isMain' du serviteur doit être null jusqu'au moment ou il crée une eglise
+    et se définit comme serviteur principal ou rejoint une eglise en tant que serviteur secondaire.
+
+********
+Besoin d'un end-point pour récupérer les informations de l'utilisateur connecté.

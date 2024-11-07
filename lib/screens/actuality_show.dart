@@ -58,7 +58,7 @@ class ActualityShow extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.5,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(post.image),
+                image: NetworkImage(post.image!),
                 fit: BoxFit.cover,
               ),
             )),

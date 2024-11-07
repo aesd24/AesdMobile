@@ -1,9 +1,13 @@
+import 'package:aesd_app/components/menu_drawer.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/main/community.dart';
 import 'package:aesd_app/screens/new_version/main/front.dart';
-import 'package:aesd_app/screens/new_version/main/more.dart';
 import 'package:aesd_app/screens/new_version/main/socialHelp.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isLoading = false;
+
   double appBarOpacity = 0;
   setOpacity(double value) {
     setState(() {
@@ -36,44 +42,63 @@ class _HomePageState extends State<HomePage> {
     return Theme.of(context).colorScheme.surface;
   }
 
+  init() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<User>(context, listen: false).getUserData();
+    } catch (e) {
+      e.printError();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('AESD'),
-          backgroundColor: getAppBarColor(),
-          elevation: 0.0,
-          foregroundColor: _currentPageIndex == 0 ? Colors.white : null,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentPageIndex,
-          onTap: (value) => setPageIndex(value),
-          fixedColor: Colors.black,
-          unselectedItemColor: Colors.black45,
-          items: const [
-            BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.house), label: "home"),
-            BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.peopleGroup),
-                label: "Communauté"),
-            BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.earListen),
-                label: "Aide sociale"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.more_vert,
-                  size: 33,
-                ),
-                label: "Plus")
-          ],
-        ),
-        extendBodyBehindAppBar: _currentPageIndex == 0,
-        drawer: const Drawer(),
-        body: [
-          FrontPage(setOpacity: setOpacity),
-          const CommunityPage(),
-          const SocialhelpPage(),
-          const MorePage(),
-        ][_currentPageIndex]);
+    return LoadingOverlay(
+      isLoading: isLoading,
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text('AESD'),
+            backgroundColor: getAppBarColor(),
+            elevation: 0.0,
+            foregroundColor: _currentPageIndex == 0 ? Colors.white : null,
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentPageIndex,
+            onTap: (value) => setPageIndex(value),
+            fixedColor: Colors.black,
+            unselectedItemColor: Colors.black45,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.house), label: "home"),
+              BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.peopleGroup),
+                  label: "Communauté"),
+              BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.earListen),
+                  label: "Aide sociale"),
+            ],
+          ),
+          extendBodyBehindAppBar: _currentPageIndex == 0,
+          drawer: MenuDrawer(
+            pageIndex: 0,
+          ),
+          body: [
+            FrontPage(setOpacity: setOpacity),
+            const CommunityPage(),
+            const SocialhelpPage(),
+          ][_currentPageIndex]),
+    );
   }
 }

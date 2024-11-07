@@ -12,7 +12,6 @@ class DiscutionSubjectPage extends StatefulWidget {
 class _DiscutionSubjectPageState extends State<DiscutionSubjectPage> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(),
         body: Padding(

@@ -2,6 +2,7 @@ import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/category.dart';
 import 'package:aesd_app/screens/posts/single_post.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class PostModel {
@@ -10,7 +11,7 @@ class PostModel {
   late String content;
   late String body;
   late String shortBody;
-  late String image;
+  late String? image;
   late String author;
   late String date;
   List<Category> categories = [];
@@ -24,7 +25,7 @@ class PostModel {
   PostModel.fromJson(Map<String, dynamic> json) {
     title = json['title'] ?? "";
     body = json['body'] ?? "";
-    image = json['image_url'] ?? "";
+    image = json['image_url'];
     shortBody = json['short_body'] ?? "";
 
     //DateTime dateTime = DateTime.parse(json['created_at']);
@@ -80,6 +81,8 @@ class PostModel {
                 )
               ],
             ),
+
+            // Contenu du post
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
@@ -87,35 +90,54 @@ class PostModel {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
+
+            // Image contenu dans le post
+            if (image != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(7))),
+              ),
+
             Padding(
               padding: const EdgeInsets.only(bottom: 10, top: 20),
               child: Row(
                 children: [
-                  Row(
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: Icon(
-                            liked ? Icons.favorite : Icons.favorite_border),
-                        label: Text(likes.toString()),
-                        style: ButtonStyle(
-                            foregroundColor:
-                                WidgetStateProperty.all(Colors.red),
-                            backgroundColor:
-                                WidgetStateProperty.all(Colors.red.shade50)),
-                      ),
-                      const SizedBox(width: 15),
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.message),
-                        label: Text(comments.length.toString()),
-                        style: ButtonStyle(
-                            foregroundColor:
-                                WidgetStateProperty.all(Colors.blue),
-                            backgroundColor:
-                                WidgetStateProperty.all(Colors.blue.shade50)),
-                      )
-                    ],
+                  TextButton.icon(
+                    onPressed: () {
+                      liked = !liked;
+                      liked ? likes++ : likes--;
+                      stateNotifier();
+                    },
+                    icon: FaIcon(
+                      liked
+                          ? FontAwesomeIcons.solidHeart
+                          : FontAwesomeIcons.heart,
+                      color: liked ? Colors.red : Colors.black,
+                    ),
+                    label: Text("$likes likes"),
+                    style: ButtonStyle(
+                        foregroundColor: WidgetStateProperty.all(Colors.black),
+                        overlayColor:
+                            WidgetStateProperty.all(Colors.grey.shade200)),
+                  ),
+                  const SizedBox(width: 50),
+                  TextButton.icon(
+                    onPressed: () => pushForm(context,
+                        destination:
+                            SinglePost(post: this, isCommenting: true)),
+                    icon: const FaIcon(
+                      FontAwesomeIcons.comment,
+                    ),
+                    label: Text("${comments.length} commentaires"),
+                    style: ButtonStyle(
+                        foregroundColor: WidgetStateProperty.all(Colors.black),
+                        overlayColor:
+                            WidgetStateProperty.all(Colors.grey.shade200)),
                   )
                 ],
               ),

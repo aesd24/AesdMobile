@@ -25,7 +25,7 @@ class UserModel {
     isServant = id == null ? false : json['is_servant'];
     isSinger = json['is_singer'] ?? false;
     isFaithful = json['is_faithful'] ?? false;
-    accountType = id == null ? null : isFaithful ? accountTypes[0] : isServant ? accountTypes[1] : isSinger ? accountTypes[2] : null;
+    accountType = id == null ? null : isFaithful ? Type.accountTypes[0] : isServant ? Type.accountTypes[1] : isSinger ? Type.accountTypes[2] : null;
     totalCoins = json['total_coins'] ?? 0;
     canManage = json['can_manage'] ?? false;
   }

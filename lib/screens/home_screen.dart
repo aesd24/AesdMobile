@@ -4,7 +4,7 @@ import 'package:aesd_app/screens/splash_screen.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:aesd_app/widgets/app_overlay_loading.dart';
 import 'package:aesd_app/widgets/grid_dashboard.dart';
-import 'package:aesd_app/components/menu_drawer.dart';
+//import 'package:aesd_app/components/menu_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _getUserInfo() async {
     try {
-      await Provider.of<Auth>(context, listen: false).getUserInfoFromCache();
+      //await Provider.of<Auth>(context, listen: false).getUserInfoFromCache();
     } catch (e) {
       showSnackBar(
           context: context,
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
       loading: _loading,
       child: Scaffold(
         backgroundColor: const Color(0xffffffff),
-        drawer: MenuDrawer(),
+        //drawer: MenuDrawer(),
         appBar: AppBar(
           elevation: 0,
           backgroundColor: kHeaderColor,

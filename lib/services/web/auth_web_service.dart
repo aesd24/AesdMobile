@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
+//import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
 import 'package:aesd_app/requests/auth_request.dart';
 import 'package:get/get.dart';
 
@@ -10,7 +10,7 @@ class AuthWebService {
       {required String email,
       required String password,
       required String deviceName}) async {
-    try {
+    /* try {
       final response = await _authRequest.login(
         email: email, password: password, deviceName: deviceName
       );
@@ -20,7 +20,7 @@ class AuthWebService {
       if (e.response?.statusCode == 422) {
         throw HttpFormValidationException(e.response?.data);
       }
-    }
+    } */
   }
 
   Future<dynamic> register({
@@ -31,7 +31,7 @@ class AuthWebService {
     required String deviceName,
     required bool terms,
   }) async {
-    try {
+    /* try {
       var response = await _authRequest.register(
         name: name,
         email: email,
@@ -47,7 +47,7 @@ class AuthWebService {
       if (e.response?.statusCode == 422) {
         throw HttpFormValidationException(e.response?.data);
       }
-    }
+    } */
   }
 
   Future<void> logout() async {
