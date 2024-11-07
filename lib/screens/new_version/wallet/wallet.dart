@@ -19,7 +19,6 @@ class _WalletFormState extends State<WalletForm> {
   @override
   Widget build(BuildContext context) {
     var themeColors = Theme.of(context).colorScheme;
-    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Solde AESD"),
@@ -142,9 +141,9 @@ class _WalletFormState extends State<WalletForm> {
                   Column(
                       children: List.generate(5, (index) {
                     return customTransactionRow(
-                        label: "Transaction $index",
-                        amount: (index + 1) * 1000,
-                        date: DateTime(index + 2000, index, index),
+                      label: "Transaction $index",
+                      amount: (index + 1) * 1000,
+                      date: DateTime(index + 2000, index, index),
                     );
                   }))
                 ],
@@ -187,11 +186,11 @@ class _WalletFormState extends State<WalletForm> {
     );
   }
 
-  Widget customTransactionRow(
-      {required String label,
-      required int amount,
-      required DateTime date,
-}) {
+  Widget customTransactionRow({
+    required String label,
+    required int amount,
+    required DateTime date,
+  }) {
     return Container(
       height: MediaQuery.of(context).size.height / 9,
       margin: const EdgeInsets.symmetric(vertical: 5),

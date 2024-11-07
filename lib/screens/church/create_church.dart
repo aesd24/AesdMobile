@@ -6,7 +6,6 @@ import 'package:aesd_app/components/picture_containers.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/constants/dictionnary.dart';
-import 'package:aesd_app/functions/file_functions.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/screens/user/dashbord/dashbord.dart';
