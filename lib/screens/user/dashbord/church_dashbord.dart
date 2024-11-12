@@ -8,10 +8,10 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/servant.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/church/choose_church.dart';
-import 'package:aesd_app/screens/church/create_church.dart';
+import 'package:aesd_app/screens/new_version/church/choose_church.dart';
+import 'package:aesd_app/screens/new_version/church/create_church.dart';
 //import 'package:aesd_app/screens/events/create_event.dart';
-import 'package:aesd_app/screens/posts/video_post_preview.dart';
+import 'package:aesd_app/screens/new_version/posts/video_post_preview.dart';
 import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
 /* import 'package:aesd_app/screens/quiz/create_quiz.dart';
 import 'package:aesd_app/screens/users/common/followers.dart'; */

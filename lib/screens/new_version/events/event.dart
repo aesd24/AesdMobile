@@ -42,7 +42,18 @@ class _EventPageState extends State<EventPage> {
               child: Align(
                 alignment: Alignment.bottomRight,
                 child: TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: Image.asset("assets/event.jpg",
+                              fit: BoxFit.contain),
+                        ),
+                      );
+                    },
+                  ),
                   icon: const FaIcon(
                     FontAwesomeIcons.expand,
                     size: 20,

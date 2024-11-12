@@ -161,6 +161,11 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool update = widget.editMode ?? false;
     return LoadingOverlay(

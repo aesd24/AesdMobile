@@ -1,8 +1,8 @@
 import 'package:aesd_app/components/menu_drawer.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/new_version/main/community.dart';
-import 'package:aesd_app/screens/new_version/main/front.dart';
-import 'package:aesd_app/screens/new_version/main/socialHelp.dart';
+import 'package:aesd_app/screens/new_version/posts/community.dart';
+import 'package:aesd_app/screens/new_version/front.dart';
+import 'package:aesd_app/screens/new_version/social/social_demandes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           body: [
             FrontPage(setOpacity: setOpacity),
             const CommunityPage(),
-            const SocialhelpPage(),
+            const SocialDemandes(),
           ][_currentPageIndex]),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/post_model.dart';
-import 'package:aesd_app/screens/posts/create_post.dart';
+import 'package:aesd_app/screens/new_version/posts/create_post.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

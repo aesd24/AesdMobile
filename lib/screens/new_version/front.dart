@@ -84,7 +84,7 @@ class _FrontPageState extends State<FrontPage> {
                                     iconUrl: "assets/icons/church.png",
                                     text: "Mon église",
                                     onTap: () => pushForm(context,
-                                        destination: const ChurchMainPage())),
+                                        destination: ChurchMainPage())),
                                 customNavItem(
                                     iconUrl: "assets/icons/forum.png",
                                     text: "Forum",
