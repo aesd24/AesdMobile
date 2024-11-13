@@ -9,3 +9,7 @@ pushReplaceForm(BuildContext context, {required Widget destination}) {
   Navigator.of(context)
       .pushReplacement(MaterialPageRoute(builder: (context) => destination));
 }
+
+closeForm(BuildContext context) {
+  Navigator.of(context).pop();
+}

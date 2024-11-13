@@ -32,7 +32,7 @@ class _QuizScoreScreenState extends State<QuizScoreScreen> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final newPage =
+      /* final newPage =
           await Provider.of<Participant>(context, listen: false).all(
         slug: widget.quiz.slug,
         queryParameters: {'page': pageKey},
@@ -46,7 +46,7 @@ class _QuizScoreScreenState extends State<QuizScoreScreen> {
       } else {
         final nextPageKey = pageKey + 1;
         _pagingController.appendPage(newNotices, nextPageKey);
-      }
+      } */
     } catch (e) {
       _pagingController.error = e;
     }

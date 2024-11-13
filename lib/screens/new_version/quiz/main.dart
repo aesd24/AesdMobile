@@ -1,10 +1,13 @@
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/models/quiz_model.dart';
 import 'package:aesd_app/screens/new_version/quiz/answer.dart';
 import 'package:flutter/material.dart';
 
 class QuizMainPage extends StatefulWidget {
-  const QuizMainPage({super.key});
+  QuizMainPage({super.key, required this.quiz});
+
+  QuizModel quiz;
 
   @override
   State<QuizMainPage> createState() => _QuizMainPageState();
@@ -13,9 +16,17 @@ class QuizMainPage extends StatefulWidget {
 class _QuizMainPageState extends State<QuizMainPage> {
   @override
   Widget build(BuildContext context) {
+    int minutes = 0;
+    int seconds = widget.quiz.time.inSeconds;
+    while (seconds >= 60) {
+      minutes++;
+      seconds -= 60;
+    }
+    String responseTime = "$minutes:$seconds";
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Intitulé du quiz"),
+        title: Text(widget.quiz.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -27,11 +38,11 @@ class _QuizMainPageState extends State<QuizMainPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "01-01-2024",
+                  "${widget.quiz.date.day}-${widget.quiz.date.month}-${widget.quiz.date.year}",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(
-                  "11 Participations",
+                  "${widget.quiz.participantsCount} Participations",
                   style: Theme.of(context).textTheme.titleLarge,
                 )
               ],
@@ -39,7 +50,7 @@ class _QuizMainPageState extends State<QuizMainPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                "Description du quiz",
+                widget.quiz.description,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
@@ -47,8 +58,11 @@ class _QuizMainPageState extends State<QuizMainPage> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Divider(),
             ),
-            parametersTile(context, label: "Nombre de questions", value: 5),
-            parametersTile(context, label: "Temps de réponse", value: "1m30"),
+            parametersTile(context,
+                label: "Nombre de questions",
+                value: widget.quiz.questions.length),
+            parametersTile(context,
+                label: "Temps de réponse", value: responseTime),
             parametersTile(context, label: "J'ai participé", value: "Non"),
             parametersTile(context, label: "Mon score", value: "--"),
             Padding(
@@ -57,7 +71,7 @@ class _QuizMainPageState extends State<QuizMainPage> {
                   context: context,
                   text: "Commencer",
                   onPressed: () =>
-                      pushForm(context, destination: const AnswerPage())),
+                      pushForm(context, destination: AnswerPage(quiz: widget.quiz))),
             )
           ],
         ),

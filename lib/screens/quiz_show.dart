@@ -34,14 +34,14 @@ class _QuizShowState extends State<QuizShow> {
       _loading = true;
     });
     try {
-      final response = await _quizRequest.show(widget.quiz.slug);
+      /* final response = await _quizRequest.show(widget.quiz.slug);
 
       //print(response.data);
 
       setState(() {
         _canPlay = response.data['canPlay'];
         _loading = false;
-      });
+      }); */
     } catch (e) {
       ////print(e);
     } finally {}
@@ -52,7 +52,7 @@ class _QuizShowState extends State<QuizShow> {
       _loading = true;
     });
     try {
-      final response = await _quizRequest.canPlay(widget.quiz.slug);
+      /* final response = await _quizRequest.canPlay(widget.quiz.slug);
 
       //print(response.data['questions']);
 
@@ -62,7 +62,7 @@ class _QuizShowState extends State<QuizShow> {
         _questions = [];
         response.data['questions'].forEach(
             (question) => {_questions.add(QuestionModel.fromJson(question))});
-      });
+      }); */
     } catch (e) {
       ////print(e);
     } finally {}

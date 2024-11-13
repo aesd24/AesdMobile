@@ -1,9 +1,7 @@
 import 'package:aesd_app/components/text_field.dart';
-import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/new_version/quiz/main.dart';
+import 'package:aesd_app/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
 class QuizzesList extends StatefulWidget {
   const QuizzesList({super.key});
@@ -13,6 +11,70 @@ class QuizzesList extends StatefulWidget {
 }
 
 class _QuizzesListState extends State<QuizzesList> {
+  // liste des quiz
+  final List<QuizModel> _quizzes = List.generate(5, (index) {
+    return QuizModel.fromJson({
+      'id': index,
+      'title': "Quiz numéro ${index + 1}",
+      'date': "200$index-0${index + 1}-0${index + 1}",
+      'participantsCount': index + 2,
+      'description': "Description du quiz numéro $index",
+      'time': (index + 1) * 100,
+      'questions': List.generate(3, (index) {
+        return {
+          'id': index,
+          'question_text': "Intitulé de la question ${index + 1}",
+          'options': List.generate(3, (index) {
+            return {
+              'id': index,
+              'option': "Possibilité de reponse ${index + 1}",
+              'isCorrect': index == 3,
+            };
+          })
+        };
+      })
+    });
+  });
+
+  // controller de recherche
+  final TextEditingController _searchController = TextEditingController();
+
+  // variable de control du trie (trier par)
+  String sortBy = "title";
+
+  List quizFilter() {
+    if (_searchController.text.isEmpty) {
+      return _quizzes;
+    } else {
+      List returned = [];
+      for (var element in _quizzes) {
+        if (element.title
+          .toString()
+          .toLowerCase()
+          .contains(_searchController.text.toLowerCase())) {
+        returned.add(element);
+        }
+      }
+      return returned;
+    }
+  }
+
+  List sortedQuizzes() {
+    List returned = quizFilter();
+    if (sortBy == "title") {
+      // trier par titres
+      returned.sort((a, b) => a.title.compareTo(b.title));
+    } else if (sortBy == "date") {
+      // trier par date (de la plus récente à la plus ancienne)
+      returned.sort((a, b) => b.date.compareTo(a.date));
+    } else if (sortBy == "actors") {
+      // trier par participants
+      returned
+          .sort((a, b) => b.participantsCount.compareTo(a.participantsCount));
+    }
+    return returned;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,62 +100,35 @@ class _QuizzesListState extends State<QuizzesList> {
                   label: "Recherche",
                   placeholder: "Entrez votre recherche ici",
                   prefixIcon: const Icon(Icons.search),
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                   suffix: PopupMenuButton(
                       icon: const FaIcon(FontAwesomeIcons.sort,
                           size: 22, color: Colors.grey),
+                      onSelected: (value) {
+                        setState(() {
+                          sortBy = value;
+                        });
+                      },
                       itemBuilder: (context) {
                         return const [
-                          PopupMenuItem(value: 0, child: Text("Trier par nom")),
                           PopupMenuItem(
-                              value: 0, child: Text("Trier par date")),
+                              value: 'title', child: Text("Trier par titre")),
                           PopupMenuItem(
-                              value: 0, child: Text("Trier par participant")),
+                              value: 'date', child: Text("Trier par date")),
+                          PopupMenuItem(
+                              value: 'actors',
+                              child: Text("Trier par participant")),
                         ];
                       })),
               Column(
-                children: List.generate(5, (index) {
-                  return quizTile(
-                    title: "Quiz numéro $index",
-                    interventions: index + 1,
-                    emitionDate: DateTime.now()
-                        .subtract(Duration(days: (index + 1) * 7)),
-                    onTap: () {
-                      pushForm(context, destination: const QuizMainPage());
-                    },
-                  );
+                children: List.generate(sortedQuizzes().length, (index) {
+                  var current = sortedQuizzes()[index];
+                  return current.toTile(context);
                 }),
               )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  GestureDetector quizTile(
-      {required String title,
-      required int interventions,
-      required DateTime emitionDate,
-      required void Function()? onTap}) {
-    String date = DateFormat("dd-MM-yyyy").format(emitionDate);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.grey),
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: ListTile(
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("$interventions Participations"),
-              Text(date.toString())
             ],
           ),
         ),
