@@ -1,4 +1,4 @@
-import 'package:aesd_app/constants/dictionnary.dart';
+import 'package:aesd_app/models/church_model.dart';
 
 class UserModel {
   late int? id;
@@ -6,34 +6,23 @@ class UserModel {
   late String email;
   late String phone;
   late String photo;
-  late bool isServant;
-  late bool isSinger;
-  late bool isFaithful;
-  late num totalCoins;
-  late Type? accountType;
+  late String adress;
+  late String? accountType;
+  late ChurchModel? church;
   late bool canManage = true;
 
   UserModel();
 
   UserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = id == null ? "" : json['name'];
-    email = id == null ? "" : json['email'] ?? "";
-    phone = id == null ? "" : json['phone'] ?? "";
-    photo = id == null ? "" : json['profile_photo_url'] ?? "";
-    isServant = id == null ? false : json['is_servant'] ?? false;
-    isSinger = json['is_singer'] ?? false;
-    isFaithful = json['is_faithful'] ?? false;
-    accountType = id == null
-        ? null
-        : isFaithful
-            ? Type.accountTypes[0]
-            : isServant
-                ? Type.accountTypes[1]
-                : isSinger
-                    ? Type.accountTypes[2]
-                    : null;
-    totalCoins = json['total_coins'] ?? 0;
+    name = json['name'];
+    email = json['email'] ?? "";
+    adress = json['adress'] ?? "";
+    phone = json['phone'] ?? "";
+    photo = json['profile_photo_url'] ?? "";
+    accountType = json['account_type'];
+    church =
+        json['church'] == null ? null : ChurchModel.fromJson(json['church']);
     canManage = json['can_manage'] ?? false;
   }
 
@@ -43,10 +32,6 @@ class UserModel {
         'email': email,
         'phone': phone,
         'profile_photo_url': photo,
-        'is_servant': isServant,
-        'is_singer': isSinger,
-        'is_faithful': isFaithful,
-        'total_coins': totalCoins,
         'can_manage': canManage,
       };
 }

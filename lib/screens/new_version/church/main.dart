@@ -1,16 +1,16 @@
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/church/choose_church.dart';
 import 'package:aesd_app/screens/new_version/church/ceremonies.dart';
 import 'package:aesd_app/screens/new_version/church/community.dart';
 import 'package:aesd_app/screens/new_version/church/program.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ChurchMainPage extends StatefulWidget {
-  ChurchMainPage({super.key, this.hasChurch = false});
-
-  bool hasChurch;
+  const ChurchMainPage({super.key});
 
   @override
   State<ChurchMainPage> createState() => _ChurchMainPageState();
@@ -26,8 +26,11 @@ class _ChurchMainPageState extends State<ChurchMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasChurch =
+        Provider.of<User>(context, listen: false).user.church != null;
+
     Widget returned;
-    if (widget.hasChurch) {
+    if (hasChurch) {
       returned = Scaffold(
         appBar: AppBar(
           title: const Text("Mon église"),

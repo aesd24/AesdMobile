@@ -7,10 +7,11 @@ import 'package:aesd_app/components/toggle_form.dart';
 //import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/screens/auth/forgot_password.dart';
-import 'package:aesd_app/screens/auth/register/choose_account.dart';
+import 'package:aesd_app/screens/new_version/auth/forgot_password.dart';
+import 'package:aesd_app/screens/new_version/auth/register/register.dart';
 //import 'package:aesd_app/screens/home_screen.dart';
 import 'package:aesd_app/screens/new_version/home.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -47,7 +48,8 @@ class _LoginPageState extends State<LoginPage> {
           .login(
         login: _loginController.text,
         password: _passwordController.text,
-      ).then((response) {
+      )
+          .then((response) {
         if (response.statusCode == 200) {
           // Aller a la page 'home';
           Get.offAll(() => const HomePage());
@@ -56,6 +58,11 @@ class _LoginPageState extends State<LoginPage> {
     } on HttpException catch (e) {
       showSnackBar(
           context: context, message: e.message, type: SnackBarType.warning);
+    } on DioException {
+      showSnackBar(
+          context: context,
+          message: 'Vérifiez votre connexion internet',
+          type: SnackBarType.danger);
     } catch (e) {
       e.printInfo();
       showSnackBar(
@@ -277,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
                             const Spacer(),
                             toggleLink(
                                 context: context,
-                                targetPage: const ChooseAccount(),
+                                targetPage: RegisterPage(),
                                 label: "Vous n'avez pas de compte ?",
                                 linkText: "Enregistrez vous !")
                           ],

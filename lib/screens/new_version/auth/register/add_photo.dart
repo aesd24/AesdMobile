@@ -5,7 +5,7 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
 import 'package:aesd_app/functions/file_functions.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/auth/register/finish.dart';
+import 'package:aesd_app/screens/new_version/auth/register/finish.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,13 +17,21 @@ class AddPhotoPage extends StatefulWidget {
 }
 
 class _AddPhotoPageState extends State<AddPhotoPage> {
-  List<File?> pictures = [null, null];
+  File? idPicture;
+  File? idCardRecto;
+  File? idCardVerso;
 
   // fonction pour charger l'image
   Future<void> _pickImage(int index) async {
     File? picture = await pickImage();
     setState(() {
-      pictures[index] = picture;
+      if (index == 0) {
+        idPicture = picture;
+      } else if (index == 1) {
+        idCardRecto = picture;
+      } else {
+        idCardVerso = picture;
+      }
     });
   }
 
@@ -31,23 +39,20 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
   _finish() async {
     String message = "";
 
-    for (var element in pictures) {
-      // vérification de l'existance des fichiers
-      if (element == null) {
-        if (pictures.indexOf(element) == 0) {
-          message = "Ajoutez le recto de votre pièce d'identité !";
-        } else if (pictures.indexOf(element) == 1) {
-          message = "Ajoutez le verso de votre pièce d'identité !";
-        }
-        showSnackBar(
-            context: context, message: message, type: SnackBarType.warning);
-        return;
-      }
+    if (idPicture == null || idCardRecto == null || idCardVerso == null) {
+      showSnackBar(
+          context: context,
+          message: "Veuillez charger toutes les images necessaires",
+          type: SnackBarType.warning);
+      return;
+    }
 
-      // vérification de la taille des fichiers
-      var verifier = await verifyImageSize(element);
+    // vérification de la taille des fichiers
+    var pictures = [idPicture, idCardRecto, idCardVerso];
+    for (var picture in pictures) {
+      var verifier = await verifyImageSize(picture!);
       if (verifier['result'] == false) {
-        if (pictures.indexOf(element) == 0) {
+        if (pictures.indexOf(picture) == 0) {
           message = "La taille du recto de la pièce ne doit pas excéder 20Mo";
         } else {
           message = "La taille du verso de la pièce ne doit pas excéder 20Mo";
@@ -60,8 +65,11 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
       }
     }
 
-    Provider.of<User>(context, listen: false).setRegisterData(
-        {'id_card_recto': pictures[0]!, 'id_card_verso': pictures[1]!});
+    Provider.of<User>(context, listen: false).setRegisterData({
+      'idPicture': pictures[0],
+      'id_card_recto': pictures[1],
+      'id_card_verso': pictures[2]
+    });
 
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const FinishPage()));
@@ -69,13 +77,6 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
 
   @override
   Widget build(BuildContext context) {
-    // obtenir les images depuis la variable globale
-    Provider.of<User>(context).registerData.forEach((key, value) {
-      if (value is File) {
-        pictures.add(value);
-      }
-    });
-
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -90,11 +91,60 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: size.height * 0.75,
+                  height: size.height * 0.76,
                   child: SingleChildScrollView(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // ajouter une photo de la carte d'identité
+                          Text(
+                            "Photo d'identité",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+
+                          const Divider(
+                            color: Colors.green,
+                            height: 4,
+                            thickness: 2,
+                            endIndent: 100,
+                          ),
+
+                          // photo d'identité
+                          Center(
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: GestureDetector(
+                                  onTap: () => _pickImage(0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        color: Colors.green.shade200,
+                                        boxShadow: const [
+                                          BoxShadow(
+                                              color: Colors.grey, blurRadius: 3)
+                                        ]),
+                                    child: CircleAvatar(
+                                      radius: 70,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: idPicture == null
+                                          ? null
+                                          : FileImage(idPicture!),
+                                      child: idPicture == null
+                                          ? const Text(
+                                              "Ajouter votre photo d'identité",
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                )),
+                          ),
+
+                          const SizedBox(height: 20),
+
                           // ajouter une photo de la carte d'identité
                           Text(
                             "Pièce d'identité",
@@ -111,8 +161,8 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
                           // recto
                           imageSelectionBox(
                               context: context,
-                              picture: pictures[0],
-                              onClick: () => _pickImage(0),
+                              picture: idCardRecto,
+                              onClick: () => _pickImage(1),
                               label: "Le recto de votre carte d'identité svp !",
                               icon: Icons.recent_actors_rounded,
                               height: size.height * .2,
@@ -122,8 +172,8 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
                           // verso
                           imageSelectionBox(
                               context: context,
-                              picture: pictures[1],
-                              onClick: () => _pickImage(1),
+                              picture: idCardVerso,
+                              onClick: () => _pickImage(2),
                               label: "Le verso de votre carte d'identité svp !",
                               icon: Icons.vertical_split_rounded,
                               height: size.height * .2,

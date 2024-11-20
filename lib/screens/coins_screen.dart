@@ -91,15 +91,15 @@ class _CoinsScreenState extends State<CoinsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Column(
+                      const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Total jetons', style: TextStyle(color: Colors.blueAccent)),
-                          Text(
+                          Text('Total jetons', style: TextStyle(color: Colors.blueAccent)),
+                          /* Text(
                               cons.user.totalCoins.toString(),
                               style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 34.0)
-                          )
+                          ) */
                         ],
                       ),
                       Material(

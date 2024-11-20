@@ -1,4 +1,3 @@
-
 import 'package:aesd_app/requests/dio_client.dart';
 
 class ChurchRequest extends DioClient {
@@ -8,13 +7,13 @@ class ChurchRequest extends DioClient {
     return client.get('churchs', queryParameters: queryParameters);
   }
 
-  one () async {
+  one() async {
     final client = await getApiClient();
     return client.get("church");
   }
 
   Future create(Object data) async {
     final client = await getApiClient(contentType: "Multipart/form-data");
-    return await client.post("churchs", data: data);
+    return await client.post("churches", data: data);
   }
 }

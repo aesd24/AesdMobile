@@ -1,7 +1,7 @@
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/new_version/home.dart';
+import 'package:aesd_app/screens/splash_screen.dart';
 //import 'package:aesd_app/screens/splash_screen.dart';
 import '/providers/auth.dart';
 import 'providers/chat.dart';
@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         iconTheme: IconThemeData(color: Colors.grey.shade500),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: const HomePage(),
+      home: const SplashScreen(),
       routes: routes,
     );
   }

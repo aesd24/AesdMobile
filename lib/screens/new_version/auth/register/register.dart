@@ -4,19 +4,19 @@ import "package:aesd_app/components/snack_bar.dart";
 import "package:aesd_app/components/text_field.dart";
 import "package:aesd_app/components/toggle_form.dart";
 import "package:aesd_app/constants/dictionnary.dart";
+import "package:aesd_app/functions/navigation.dart";
 //import "package:aesd_app/providers/auth.dart";
 import "package:aesd_app/providers/user.dart";
-import "package:aesd_app/screens/auth/login.dart";
-import "package:aesd_app/screens/auth/register/finish.dart";
-import "package:aesd_app/screens/auth/register/add_photo.dart";
+import "package:aesd_app/screens/new_version/auth/login.dart";
+import "package:aesd_app/screens/new_version/auth/register/finish.dart";
+import "package:aesd_app/screens/new_version/auth/register/add_photo.dart";
 import "package:aesd_app/screens/webview.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({super.key, required this.accountType, this.update});
-  Type accountType;
+  RegisterPage({super.key, this.update});
   bool? update = false;
 
   @override
@@ -36,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirmPasswordController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? call; // l'appel du serviteur (pasteur, evangéliste...)
+  String accountType = Type.faithFul.code;
 
   // accept terms
   bool terms = false;
@@ -47,16 +48,14 @@ class _RegisterPageState extends State<RegisterPage> {
   // fonction d'enregistrement de fidèle
   void _startRegistering() async {
     Widget? destinationPage; // page de destination
-    if (widget.accountType == Type.faithFul) {
-      destinationPage = const FinishPage();
-    } else if (widget.accountType == Type.servant) {
+    if (accountType == Type.servant.code) {
       destinationPage = const AddPhotoPage();
     } else {
-      destinationPage = const LoginPage();
+      destinationPage = const FinishPage();
     }
 
     Provider.of<User>(context, listen: false).setRegisterData({
-      "account_type": widget.accountType,
+      "account_type": accountType,
       "name": _nameController.text,
       "email": _emailController.text,
       "phone": _telController.text,
@@ -67,8 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
       "call": call,
     });
 
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => destinationPage!));
+    pushForm(context, destination: destinationPage);
   }
 
   @override
@@ -103,9 +101,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // revenir au formulaire précédent
-                          returnButton(context: context),
-
                           // Titre et sous-titre
                           Padding(
                             padding: const EdgeInsets.only(left: 20),
@@ -148,6 +143,24 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: size.height * .66,
                             child: ListView(
                               children: [
+                                customDropDownField(
+                                    label: "Type de compte",
+                                    value: accountType,
+                                    onChange: (value) {
+                                      setState(() {
+                                        accountType = value;
+                                      });
+                                    },
+                                    items: List.generate(
+                                        Type.accountTypes.length, (index) {
+                                      var current = Type.accountTypes[index];
+                                      return DropdownMenuItem(
+                                          value: current.code,
+                                          child: Text(current.name));
+                                    })),
+
+                                const SizedBox(height: 15),
+
                                 // champs de nom et prénoms
                                 customTextField(
                                     controller: _nameController,
@@ -243,8 +256,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     }),
 
                                 // champs de choix de l'appel du serviteur
-                                if (widget.accountType.code ==
-                                    Type.servant.code)
+                                if (accountType == Type.servant.code)
                                   customDropDownField(
                                       label: 'Quel est votre appel ?',
                                       value: call,
@@ -264,10 +276,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                       items: List.generate(servantTypes.length,
                                           (index) {
                                         var current = servantTypes[index];
-                                        return {
-                                          "code": current.code,
-                                          "name": current.name
-                                        };
+                                        return DropdownMenuItem(
+                                            value: current.code,
+                                            child: Text(current.name));
                                       })),
 
                                 // champs de mot de passe
@@ -350,7 +361,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       }),
 
                                 if (widget.update == null)
-                                  if (widget.accountType == Type.servant)
+                                  if (accountType == Type.servant)
                                     customMultilineField(
                                         label: "Décrivez vous !",
                                         controller: _descriptionController),

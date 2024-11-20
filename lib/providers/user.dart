@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:aesd_app/models/user_model.dart';
 import 'package:aesd_app/requests/user_request.dart';
@@ -8,12 +8,15 @@ class User extends ChangeNotifier {
   final _request = UserRequest();
 
   late UserModel _userData;
-  get user => _userData;
+  UserModel get user => _userData;
 
   getUserData() async {
     var response = await _request.getUserData();
     if (response.statusCode == 200) {
-      _userData = UserModel.fromJson(jsonDecode(response.data));
+      _userData = UserModel.fromJson(response.data);
+    } else {
+      throw const HttpException(
+          "Impossible de récupérer les informations de l'utilisateur");
     }
   }
 

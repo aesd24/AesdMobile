@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/models/paginator.dart';
@@ -34,10 +35,10 @@ class Church extends ChangeNotifier {
   }
 
   Future one() async {
-    try{
+    try {
       var response = await ChurchRequest().one();
       return response;
-    } catch (e){
+    } catch (e) {
       print("Une erreur est survenue lors de la récupération de l'église");
     }
   }
@@ -49,12 +50,18 @@ class Church extends ChangeNotifier {
       'phone': data['phone'],
       'email': data['email'],
       'description': data['description'],
-      'type' : data['churchType'],
+      'type_church': data['churchType'],
       'logo': await MultipartFile.fromFile(data['image'].path),
-      'main': data['isMain'],
-      'main_church_id' : data['mainChurchId']
+      'is_main': data['isMain'],
+      'main_church_id': data['mainChurchId']
     });
 
-    return ChurchRequest().create(formData);
+    var response = await ChurchRequest().create(formData);
+    print(response);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      throw const HttpException("La création de l'église à échoué. Rééssayez");
+    }
   }
 }

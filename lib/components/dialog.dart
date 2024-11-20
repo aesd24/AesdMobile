@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 messageBox(BuildContext context, {
   required String title,
   required Widget content,
-  Icon? icon,
+  Widget? icon,
   bool isDismissable = true,
   List<Widget>? actions,
   Function()? onOk

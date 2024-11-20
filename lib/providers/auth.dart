@@ -11,8 +11,6 @@ class Auth extends ChangeNotifier {
       StorageAuthTokenSession(type: '', token: ''); */
 
   // Token d'accès
-  String _accessToken = "";
-  String get accessToken => _accessToken;
 
   final UnExpiredCache _unExpiredCache = UnExpiredCache();
 
@@ -52,11 +50,11 @@ class Auth extends ChangeNotifier {
           ? await MultipartFile.fromFile(data['id_picture'].path,
               filename: "${data["name"]}_id_pic.jpg")
           : null, */
-      "id_card_recto": data["account_type"].toLowerCase() != "fidele"
+      "id_card_recto": data["account_type"] == "serviteur_de_dieu"
           ? await MultipartFile.fromFile(data['id_card_recto'].path,
               filename: "${data["name"]}_card_recto.jpg")
           : null,
-      "id_card_verso": data["account_type"].toLowerCase() != "fidele"
+      "id_card_verso": data["account_type"] == "serviteur_de_dieu"
           ? await MultipartFile.fromFile(data['id_card_verso'].path,
               filename: "${data["name"]}_card_verso.jpg")
           : null
@@ -80,10 +78,10 @@ class Auth extends ChangeNotifier {
     }
   }
 
+  // Enregistrer le token de l'utilisateur
   void setToken({required String type, required String token}) {
-    //_authToken = StorageAuthTokenSession(type: type, token: token);
-    _accessToken = "$type $token";
-    _unExpiredCache.put(key: "access_token");
+    print("$type $token");
+    _unExpiredCache.put(key: "access_token", value: "$type $token");
     notifyListeners();
   }
 
@@ -93,12 +91,21 @@ class Auth extends ChangeNotifier {
 
   Future<void> logout() async {
     await request.logout().then((value) async {
-      _accessToken = "";
+      if (value.statusCode == 200) {
+        _unExpiredCache.remove("access_token");
+      } else {
+        throw const HttpException("La déconnexion à échoué n'a pu aboutir");
+      }
     });
 
     notifyListeners();
   }
 
+  Future forgotPassword({required String email}) async {
+    return await request.forgotPassword(user_info: email);
+  }
+
+  // Récupérer le token de l'utilisateur
   Future<String?> getToken() async {
     String? token;
     await _unExpiredCache.get(key: "access_token").then((value) {
@@ -109,17 +116,4 @@ class Auth extends ChangeNotifier {
 
     return token;
   }
-
-  /* Future<UserModel> getUserInfoFromCache() async {
-    await _unExpiredCache.get(key: 'user_info').then((value) async {
-      if (value != null) {
-        user = UserModel.fromJson(value);
-        await _unExpiredCache.put(key: 'user_info', value: user.toJson());
-      }
-    });
-
-    notifyListeners();
-
-    return user;
-  } */
 }

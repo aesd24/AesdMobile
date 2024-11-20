@@ -1,10 +1,8 @@
 import 'package:aesd_app/models/participant_model.dart';
 import 'package:aesd_app/models/quiz_model.dart';
-import 'package:aesd_app/providers/participant.dart';
 import 'package:aesd_app/widgets/quiz_score_item.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
 
 class QuizScoreScreen extends StatefulWidget {
   final QuizModel quiz;

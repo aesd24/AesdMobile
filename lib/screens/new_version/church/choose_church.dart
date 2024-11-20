@@ -3,9 +3,11 @@ import 'package:aesd_app/components/church_selection.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
-import 'package:aesd_app/screens/auth/register/finish.dart';
-import 'package:aesd_app/screens/new_version/church/create_church.dart';
+import 'package:aesd_app/providers/user.dart';
+import 'package:aesd_app/screens/new_version/auth/register/finish.dart';
+import 'package:aesd_app/screens/new_version/church/creation/create_church.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChooseChurch extends StatefulWidget {
   const ChooseChurch({super.key});
@@ -116,6 +118,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    var user = Provider.of<User>(context).user;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Choisir une église")),
@@ -126,15 +129,16 @@ class _ChooseChurchState extends State<ChooseChurch> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Recherche et nouvelle églises
-              customButton(
-                  context: context,
-                  text: "Ajouter mon église",
-                  trailing:
-                      const Icon(Icons.church_outlined, color: Colors.white),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreateChurchPage()));
-                  }),
+              if (user.accountType == "serviteur_de_dieu")
+                customButton(
+                    context: context,
+                    text: "Ajouter mon église",
+                    trailing:
+                        const Icon(Icons.church_outlined, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const CreateChurchPage()));
+                    }),
 
               // input de recherche
               customTextField(

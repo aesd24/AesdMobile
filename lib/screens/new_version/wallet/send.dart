@@ -104,9 +104,11 @@ class _SendPageState extends State<SendPage> {
                 customDropDownField(
                     label: "Quel est le type de destinataire",
                     value: receiverType,
-                    items: [
-                      {'code': "church", 'name': "Une église"},
-                      {'code': "servant", 'name': "Un Serviteur de Dieu"},
+                    items: const [
+                      DropdownMenuItem(
+                          value: "church", child: Text("Une église")),
+                      DropdownMenuItem(
+                          value: "servant", child: Text("Un serviteur de Dieu"))
                     ],
                     onChange: (value) {}),
 

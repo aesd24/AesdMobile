@@ -9,16 +9,12 @@ class Type {
   }
 
   // accountTypes
-  static get faithFul => Type(code: "fidele", name: "Fidèle");
-  static get servant =>
+  static Type get faithFul => Type(code: "fidele", name: "Fidèle");
+  static Type get servant =>
       Type(code: "serviteur_de_dieu", name: "Serviteur de Dieu");
-  static get singer => Type(code: "chantre", name: "Chantre");
+  static Type get singer => Type(code: "chantre", name: "Chantre");
 
-  static List get accountTypes => [
-    Type.faithFul,
-    Type.servant,
-    Type.singer
-  ];
+  static List<Type> get accountTypes => [faithFul, servant, singer];
 
   // church types
 }

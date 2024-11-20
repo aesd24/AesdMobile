@@ -1,0 +1,14 @@
+Remarques sur les tests de connexion de l'API
+===============================================================================================
+
++ user_data / GET
+    Les données de l'utilisateur renvoyé par l'API doivent contenir:
+        - Le type de compte de l'utilisateur (fidèle, serviteur de Dieu ou chantre)
+        - L'église à laquelle l'utilisateur est affilié (Toutes les informations de l'église)
+
+
++ churches / POST
+    - L'identifiant de l'église principale doit être demandé pour la création d'église annexe (id)
+    et sera null pour les principales
+    - lors de la création d'une église, même si le paramètre "is_main" est saisi et est un booléan,
+    un message d'érreur est retourné disant que le champ doit être "vrai" ou "faux"

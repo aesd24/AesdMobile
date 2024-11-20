@@ -3,7 +3,7 @@ import 'package:aesd_app/models/quiz_model.dart';
 import 'package:aesd_app/screens/quiz_play_screen.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:aesd_app/requests/quiz_request.dart';
+//import 'package:aesd_app/requests/quiz_request.dart';
 
 class QuizShow extends StatefulWidget {
   final QuizModel quiz;
@@ -19,9 +19,9 @@ class QuizShow extends StatefulWidget {
 
 class _QuizShowState extends State<QuizShow> {
   bool _loading = false;
-  bool _canPlay = true;
-  final QuizRequest _quizRequest = QuizRequest();
-  late List<QuestionModel> _questions = [];
+  final bool _canPlay = true;
+  //final QuizRequest _quizRequest = QuizRequest();
+  late final List<QuestionModel> _questions = [];
 
   @override
   void initState() {

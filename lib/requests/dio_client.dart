@@ -1,4 +1,4 @@
-import 'package:aesd_app/services/session/storage_auth_token_session.dart';
+import 'package:aesd_app/services/cache/un_expired_cache.dart';
 import 'package:dio/dio.dart';
 
 // sur android le localhost n'est pas (127.0.0.1) mais (10.0.2.2)
@@ -19,11 +19,11 @@ class DioClient {
       }));
 
   Future<Dio> getApiClient({String? contentType}) async {
-    final authToken = await StorageAuthTokenSession.getFormSecureStorage();
+    final authToken = await UnExpiredCache().get(key: 'access_token');
+    print(authToken);
 
-    if (authToken.token != '' && authToken.type != '') {
-      _dio.options.headers['Authorization'] =
-          '${authToken.type} ${authToken.token}';
+    if (authToken != '') {
+      _dio.options.headers['Authorization'] = authToken;
     }
 
     return _dio;

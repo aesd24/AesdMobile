@@ -7,9 +7,9 @@ import 'package:aesd_app/components/snack_bar.dart';
 //import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/servant.dart';
-import 'package:aesd_app/providers/user.dart';
+//import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/church/choose_church.dart';
-import 'package:aesd_app/screens/new_version/church/create_church.dart';
+//import 'package:aesd_app/screens/new_version/church/create_church.dart';
 //import 'package:aesd_app/screens/events/create_event.dart';
 import 'package:aesd_app/screens/new_version/posts/video_post_preview.dart';
 import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
@@ -107,7 +107,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
         'icon': const Icon(Icons.edit_note),
         'function': (){
           try {
-            Navigator.of(context).push(
+            /* Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
                   if (owner['id'] == Provider.of<User>(context, listen: false).user.id!){
@@ -117,7 +117,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
                   }
                 }
               )
-            );
+            ); */
           } catch(e){
             e.printError();
           }

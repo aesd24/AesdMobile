@@ -15,8 +15,13 @@ class AuthRequest extends DioClient {
     return await client.post('register', data: data);
   }
 
+  Future forgotPassword({required String user_info}) async {
+    final client = await getApiClient();
+    return await client.post('password/forgot', data: {'user_info': user_info});
+  }
+
   Future logout() async {
     final client = await getApiClient();
-    return client.delete('/auth/token/destroy');
+    return client.post('logout');
   }
 }

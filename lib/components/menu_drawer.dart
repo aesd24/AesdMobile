@@ -1,15 +1,17 @@
 //import 'package:aesd_app/models/user_model.dart';
+import 'dart:io';
+
 import 'package:aesd_app/components/dialog.dart';
+import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/screens/auth/login.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/home.dart';
 import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
-import 'package:aesd_app/utils/constants.dart';
+import 'package:aesd_app/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-//import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class MenuDrawer extends StatefulWidget {
@@ -33,14 +35,28 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 
   logout() async {
-    await Provider.of<Auth>(context, listen: false).logout();
-    Get.offAll(() => const LoginPage());
+    try {
+      Provider.of<Auth>(context, listen: false).logout().then((value) {
+        Get.offAll(() => const SplashScreen());
+      });
+    } on HttpException catch (e) {
+      showSnackBar(
+          context: context, message: e.message, type: SnackBarType.danger);
+    } catch (e) {
+      e.printError();
+      showSnackBar(
+          context: context,
+          message: "Une erreur s'est produite",
+          type: SnackBarType.danger);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<User>(context, listen: false).user;
+
     return RefreshIndicator(
-        color: kPrimaryColor,
+        color: Theme.of(context).colorScheme.primary,
         backgroundColor: Colors.white,
         onRefresh: () => _refreshUserInfo(),
         child: Drawer(
@@ -68,7 +84,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: Text(
-                          "Prénoms et Nom",
+                          user.name,
                           style: Theme.of(context).textTheme.titleMedium,
                           textAlign: TextAlign.center,
                         ),
@@ -76,7 +92,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: Text(
-                          "adress@email.com",
+                          user.email,
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall!
@@ -87,14 +103,26 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: Text(
-                          "(+225) 0102030405",
+                          "(+225) ${user.phone}",
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall!
                               .copyWith(color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),
-                      )
+                      ),
+                      if (user.accountType != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            user.accountType!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(color: Colors.green),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
                     ],
                   ),
                 ),

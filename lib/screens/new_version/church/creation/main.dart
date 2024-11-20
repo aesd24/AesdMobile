@@ -8,23 +8,22 @@ import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/constants/dictionnary.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
-import 'package:aesd_app/screens/user/dashbord/dashbord.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
-class CreateChurchPage extends StatefulWidget {
-  CreateChurchPage({super.key, this.editMode});
+class MainChurchCreationPage extends StatefulWidget {
+  MainChurchCreationPage({super.key, this.editMode = false});
 
-  bool? editMode;
+  bool editMode;
 
   @override
-  State<CreateChurchPage> createState() => _CreateChurchPageState();
+  State<MainChurchCreationPage> createState() => _MainChurchCreationPageState();
 }
 
-class _CreateChurchPageState extends State<CreateChurchPage> {
+class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
   bool isLoading = false;
 
   // clé de formulaire
@@ -77,30 +76,21 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
           'phone': _contactController.text,
           'location': _locationController.text,
           'description': _descriptionController.text,
+          'isMain': true,
           'churchType': churchType,
           'image': _churchImage
         }).then((response) {
           print(response);
-          if (response.statusCode == 201) {
-            showSnackBar(
-                context: context,
-                message: "Enregistrement de l'église réussi",
-                type: SnackBarType.success);
+          showSnackBar(
+              context: context,
+              message: "Enregistrement de l'église réussi",
+              type: SnackBarType.success);
 
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Dashbord()));
-          } else if (response.statusCode == 422) {
-            showSnackBar(
-                context: context,
-                message: "Données invalides ou déjà existante !",
-                type: SnackBarType.danger);
-          } else {
-            showSnackBar(
-                context: context,
-                message: "L'enregistrement à échoué !",
-                type: SnackBarType.danger);
-          }
+          Navigator.of(context).popUntil((route) => route.isFirst);
         });
+      } on HttpException catch (e) {
+        showSnackBar(
+            context: context, message: e.message, type: SnackBarType.danger);
       } on DioException catch (e) {
         e.printError();
         showSnackBar(
@@ -167,16 +157,18 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool update = widget.editMode ?? false;
+    bool update = widget.editMode;
     return LoadingOverlay(
       isLoading: isLoading,
       color: Colors.black,
       opacity: .3,
       child: Scaffold(
         appBar: AppBar(
-            title: Text(update ? 'Modifier mon église' : 'Créer une église')),
+            title: Text(update
+                ? 'Modifier mon église'
+                : 'Créer une église principale')),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -244,7 +236,9 @@ class _CreateChurchPageState extends State<CreateChurchPage> {
                       placeholder: "Quel est le type de votre église ?",
                       value: churchType,
                       items: List.generate(churchTypes.length, (index) {
-                        return churchTypes[index].toMap();
+                        var current = churchTypes[index];
+                        return DropdownMenuItem(
+                            value: current.code, child: Text(current.name));
                       }),
                       onChange: (value) {
                         churchType = value;

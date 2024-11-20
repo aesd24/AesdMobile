@@ -5,7 +5,7 @@ import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/auth/login.dart';
+import 'package:aesd_app/screens/new_version/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
