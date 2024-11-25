@@ -10,7 +10,6 @@ import 'package:aesd_app/screens/new_version/notifications/notifications.dart';
 import 'package:aesd_app/screens/new_version/posts/community.dart';
 import 'package:aesd_app/screens/new_version/front.dart';
 import 'package:aesd_app/screens/new_version/social/social_demandes.dart';
-import 'package:aesd_app/screens/splash_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

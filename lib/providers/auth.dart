@@ -35,8 +35,8 @@ class Auth extends ChangeNotifier {
     return response;
   }
 
+  // Création du formulaire pour l'envoie des fichiers
   Future register({required Map data}) async {
-    // Création du formulaire pour l'envoie des fichiers
     FormData formData = FormData.fromMap({
       "name": data["name"],
       "email": data["email"],
@@ -85,10 +85,6 @@ class Auth extends ChangeNotifier {
     notifyListeners();
   }
 
-  /* StorageAuthTokenSession getAuthToken() {
-    return _authToken;
-  } */
-
   Future<void> logout() async {
     await request.logout().then((value) async {
       if (value.statusCode == 200) {
@@ -99,6 +95,10 @@ class Auth extends ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  Future verifyOtp({required String otpCode}) async {
+    return await request.verifyOtp(code: otpCode);
   }
 
   Future forgotPassword({required String email}) async {

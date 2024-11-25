@@ -1,5 +1,5 @@
-import 'package:aesd_app/screens/new_version/notifications/demandes.dart';
-import 'package:aesd_app/screens/new_version/notifications/informations.dart';
+import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/models/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -11,10 +11,23 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  int currentPage = 0;
+  // liste des notifications
+  final _notifications = List.generate(10, (index) {
+    return NotificationModel.fromJson({
+      'id': index,
+      'title': 'Notification $index',
+      'content': 'This is a notification $index',
+      'date': DateTime.now(),
+      'readed': 0,
+      'notificationType': index % 2 == 0 ? 'information' : 'demande'
+    });
+  });
 
-  // controller de page
-  final _pageController = PageController(initialPage: 0);
+  Future _refresh() async {
+    await Future.delayed(const Duration(seconds: 1), () {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,93 +45,28 @@ class _NotificationsPageState extends State<NotificationsPage> {
             )
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _pageController.animateToPage(0,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.bounceInOut);
-                        setState(() {});
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.bounceInOut,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: currentPage == 1 ? Colors.green : null,
-                            border: Border.all(color: Colors.green, width: 2),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "Demandes",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  color: currentPage == 1
-                                      ? Colors.white
-                                      : Colors.green),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _pageController.animateToPage(1,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.bounceInOut);
-                        setState(() {});
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.bounceInOut,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: currentPage == 0 ? Colors.green : null,
-                            border: Border.all(color: Colors.green, width: 2),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "Informations",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                  color: currentPage == 0
-                                      ? Colors.white
-                                      : Colors.green),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+        body: RefreshIndicator(
+          onRefresh: () async => await _refresh(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // barre de recherche
+                  customTextField(
+                    label: "Recherche",
+                    prefixIcon: const Icon(Icons.search),
+                  ),
+                  const SizedBox(height: 20),
+                  Column(
+                    children: List.generate(_notifications.length, (index) {
+                      var current = _notifications[index];
+                      return current.getTile(context);
+                    }),
+                  ),
+                ],
               ),
-
-              // partie de l'affichage des notifications
-              Container(
-                height: MediaQuery.of(context).size.height * .75,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    borderRadius: BorderRadius.circular(10)),
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (value) {
-                    setState(() {
-                      currentPage = value;
-                    });
-                  },
-                  children: const [Demandes(), Informations()],
-                ),
-              )
-            ],
+            ),
           ),
         ));
   }

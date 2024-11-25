@@ -1,9 +1,9 @@
 import 'dio_client.dart';
 
 class AuthRequest extends DioClient {
+  
   Future login({required Map data}) async {
     final client = await getApiClient();
-
     return client.post('login', data: {
       'user_info': data['login'],
       'password': data['password'],
@@ -15,13 +15,18 @@ class AuthRequest extends DioClient {
     return await client.post('register', data: data);
   }
 
+  Future logout() async {
+    final client = await getApiClient();
+    return client.post('logout');
+  }
+
   Future forgotPassword({required String user_info}) async {
     final client = await getApiClient();
     return await client.post('password/forgot', data: {'user_info': user_info});
   }
 
-  Future logout() async {
+  Future verifyOtp({required String code}) async {
     final client = await getApiClient();
-    return client.post('logout');
+    return client.post('password/verify', data: {'code': code});
   }
 }

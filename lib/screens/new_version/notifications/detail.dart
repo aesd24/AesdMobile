@@ -12,8 +12,9 @@ class NotificationDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // changer le statut de la notification
+    notification.readed = false;
     var user = Provider.of<User>(context, listen: false).user;
-
     return Scaffold(
       backgroundColor: Colors.green,
       appBar: AppBar(
@@ -42,7 +43,7 @@ class NotificationDetail extends StatelessWidget {
                     child: FaIcon(FontAwesomeIcons.solidBell),
                   )),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             Center(
                 child: Text(
               notification.title,
@@ -55,15 +56,52 @@ class NotificationDetail extends StatelessWidget {
             Text("Bonjour, ${user.name}",
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Colors.white, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text(
-              notification.content,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Colors.white60),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * .1,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      notification.content,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.white60),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
+            if (notification.type == "demande")
+              Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Demande éffectué par:",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(color: Colors.green),
+                    ),
+                    const SizedBox(height: 10),
+                    const ListTile(
+                      leading: CircleAvatar(),
+                      title: Text("Nom du demandeur"),
+                      subtitle: Text("jj/mm/AAAA"),
+                    )
+                  ],
+                ),
+              ),
             // boutons en cas de demandes
             if (notification.type == "demande")
               Row(

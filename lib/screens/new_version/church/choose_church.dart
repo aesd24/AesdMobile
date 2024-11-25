@@ -1,11 +1,12 @@
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/church_selection.dart';
 import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/auth/register/finish.dart';
-import 'package:aesd_app/screens/new_version/church/creation/create_church.dart';
+import 'package:aesd_app/screens/new_version/church/creation/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -135,10 +136,8 @@ class _ChooseChurchState extends State<ChooseChurch> {
                     text: "Ajouter mon église",
                     trailing:
                         const Icon(Icons.church_outlined, color: Colors.white),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const CreateChurchPage()));
-                    }),
+                    onPressed: () => pushForm(context,
+                        destination: MainChurchCreationPage())),
 
               // input de recherche
               customTextField(
@@ -163,7 +162,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
                       );
                     } else {
                       return churchList!.isNotEmpty
-                          ? ListView(
+                          ? Column(
                               children:
                                   List.generate(getList().length, (value) {
                               if (getList().isNotEmpty) {
@@ -198,9 +197,6 @@ class _ChooseChurchState extends State<ChooseChurch> {
                           : Center(
                               child: Container(
                                 padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                ),
                                 alignment: Alignment.center,
                                 child: const Column(
                                   mainAxisSize: MainAxisSize.min,

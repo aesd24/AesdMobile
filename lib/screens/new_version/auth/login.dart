@@ -7,7 +7,7 @@ import 'package:aesd_app/components/toggle_form.dart';
 //import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/screens/new_version/auth/forgot_password.dart';
+import 'package:aesd_app/screens/new_version/auth/recover_account/forgot_password.dart';
 import 'package:aesd_app/screens/new_version/auth/register/register.dart';
 //import 'package:aesd_app/screens/home_screen.dart';
 import 'package:aesd_app/screens/new_version/home.dart';

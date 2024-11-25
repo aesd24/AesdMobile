@@ -1,7 +1,9 @@
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
+import 'package:aesd_app/screens/new_version/auth/recover_account/validation.dart';
 import 'package:aesd_app/widgets/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           .forgotPassword(email: _infoController.text)
           .then((value) {
         print(value);
-        
+
         // aller vers la page de vérification
       });
     } on DioException {
@@ -87,9 +89,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     context: context,
                     text: "Faire la demande",
                     onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
+                      /* if (_formKey.currentState!.validate()) {
                         await submit();
-                      }
+                      } */
+                      pushForm(context, destination: const ValidateOtpPage());
                     })
               ],
             ),
