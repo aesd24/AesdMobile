@@ -1,6 +1,6 @@
 import 'package:aesd_app/requests/church_request.dart';
 
-class ChurchService {
+/* class ChurchService {
   final ChurchRequest _invoicesRequest = ChurchRequest();
 
   all({dynamic queryParameters}) async {
@@ -13,4 +13,4 @@ class ChurchService {
 //
 }
   }
-}
+} */

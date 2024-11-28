@@ -1,13 +1,17 @@
+import 'dart:io';
 import 'package:aesd_app/components/button.dart';
-import 'package:aesd_app/components/church_selection.dart';
+import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/text_field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/new_version/auth/register/finish.dart';
 import 'package:aesd_app/screens/new_version/church/creation/main.dart';
+import 'package:aesd_app/screens/new_version/home.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class ChooseChurch extends StatefulWidget {
@@ -18,8 +22,11 @@ class ChooseChurch extends StatefulWidget {
 }
 
 class _ChooseChurchState extends State<ChooseChurch> {
+  bool isLoading = false;
+  bool throwedErrorLastTime = false;
+
   // liste des églises
-  List? churchList;
+  List churchList = [];
 
   //controller
   final searchController = TextEditingController();
@@ -32,8 +39,8 @@ class _ChooseChurchState extends State<ChooseChurch> {
     List returned = [];
 
     // boucle sur la liste
-    if (text.isNotEmpty && churchList != null) {
-      for (var element in churchList!) {
+    if (text.isNotEmpty) {
+      for (var element in churchList) {
         if (element["name"]
             .toString()
             .toLowerCase()
@@ -42,7 +49,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
         }
       }
     } else {
-      return churchList ?? [];
+      return churchList;
     }
     return returned;
   }
@@ -77,7 +84,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const FinishPage()),
+                    MaterialPageRoute(builder: (context) => const HomePage()),
                     (route) => route.isFirst),
                 style: ButtonStyle(
                     foregroundColor: WidgetStateProperty.all(Colors.green),
@@ -102,11 +109,40 @@ class _ChooseChurchState extends State<ChooseChurch> {
   Future loadChurches() async {
     // Load churches from API
     try {
-      var churches = await Church().all();
-      churchList = churches.item1;
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<Church>(context, listen: false).fetchChurches();
+      churchList = Provider.of<Church>(context, listen: false).churches;
       setState(() {});
+    } on DioException {
+      showSnackBar(
+          context: context,
+          message: "Vérifiez votre connexion internet",
+          type: SnackBarType.danger);
+      setState(() {
+        throwedErrorLastTime = true;
+      });
+    } on HttpException catch (e) {
+      e.printError();
+      showSnackBar(
+          context: context, message: e.message, type: SnackBarType.danger);
+      setState(() {
+        throwedErrorLastTime = true;
+      });
     } catch (e) {
-      //
+      e.printError();
+      showSnackBar(
+          context: context,
+          message: "Une erreur inattendue est survenue !",
+          type: SnackBarType.danger);
+      setState(() {
+        throwedErrorLastTime = true;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -152,65 +188,66 @@ class _ChooseChurchState extends State<ChooseChurch> {
               // liste des églises
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
-                child: SizedBox(
-                  height: size.height * .6,
-                  width: double.infinity,
-                  child: Builder(builder: (context) {
-                    if (churchList == null) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return churchList!.isNotEmpty
-                          ? Column(
-                              children:
-                                  List.generate(getList().length, (value) {
-                              if (getList().isNotEmpty) {
-                                ChurchModel church = getList()[value];
-                                return churchSelectionTile(
-                                    context: context,
-                                    id: church.id!,
-                                    name: church.name,
-                                    mainPastor: church.mainServant != null
-                                        ? church.mainServant!.name
-                                        : "inconnu",
-                                    zone: church.address,
-                                    onClick: _chooseChurch);
-                              } else {
-                                return Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: const Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.search_off, size: 60),
-                                      Text(
-                                          "Aucune résultat correspondant à la recherche !")
-                                    ],
-                                  ),
-                                );
-                              }
-                            }))
-                          : Center(
-                              child: Container(
+                child: Builder(builder: (context) {
+                  if (isLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return churchList.isNotEmpty
+                        ? Column(
+                            children: List.generate(getList().length, (value) {
+                            if (getList().isNotEmpty) {
+                              ChurchModel church = getList()[value];
+                              return GestureDetector(
+                                onTap: _chooseChurch,
+                                child: church.card(context),
+                              );
+                            } else {
+                              return Container(
                                 padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                ),
                                 alignment: Alignment.center,
                                 child: const Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.search_off, size: 60),
                                     Text(
-                                        "Aucune église disponible pour le moment !")
+                                        "Aucune résultat correspondant à la recherche !")
                                   ],
                                 ),
+                              );
+                            }
+                          }))
+                        : Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.search_off, size: 60),
+                                  const Text(
+                                      "Aucune église disponible pour le moment !"),
+                                  const SizedBox(height: 30),
+                                  if (throwedErrorLastTime)
+                                    customButton(
+                                        context: context,
+                                        onPressed: () async =>
+                                            await loadChurches(),
+                                        text: "Rééssayer",
+                                        trailing: const FaIcon(
+                                          FontAwesomeIcons.arrowRotateRight,
+                                          color: Colors.white,
+                                        ))
+                                ],
                               ),
-                            );
-                    }
-                  }),
-                ),
+                            ),
+                          );
+                  }
+                }),
               )
             ],
           ),

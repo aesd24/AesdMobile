@@ -1,10 +1,9 @@
 import 'package:aesd_app/requests/dio_client.dart';
 
 class ChurchRequest extends DioClient {
-  all({dynamic queryParameters}) async {
+  all({required int page}) async {
     final client = await getApiClient();
-
-    return client.get('churchs', queryParameters: queryParameters);
+    return client.get('churches', queryParameters: {"page": page});
   }
 
   one() async {

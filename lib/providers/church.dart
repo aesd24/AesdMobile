@@ -1,42 +1,33 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:aesd_app/models/church_model.dart';
-import 'package:aesd_app/models/paginator.dart';
 import 'package:aesd_app/requests/church_request.dart';
-import 'package:aesd_app/services/web/church_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 class Church extends ChangeNotifier {
-  final ChurchService _churchService = ChurchService();
-  List<ChurchModel> _churchs = [];
-  Paginator _paginator = Paginator();
+  int _currentPage = 0;
+  late ChurchPaginator _paginator;
+  final ChurchRequest _request = ChurchRequest();
+  final List<ChurchModel> _churches = [];
 
-  Future<Tuple2<List<ChurchModel>, Paginator>> all(
-      {dynamic queryParameters}) async {
-    _churchs = [];
-    try {
-      final data = await _churchService.all(queryParameters: queryParameters);
+  List<ChurchModel> get churches => _churches;
 
-      data['data'].forEach((d) {
-        _churchs.add(ChurchModel.fromJson(d));
-      });
-
-      _paginator = Paginator.fromJson(data);
-    } catch (e) {
-      //print(e);
+  Future fetchChurches() async {
+    final response = await _request.all(page: _currentPage);
+    if (response.statusCode == 200) {
+      final data = response.data;
+      _paginator = ChurchPaginator.fromJson(data);
+      if (_churches.isNotEmpty && _currentPage == 0) {
+        _churches.clear();
+      }
+      _churches.addAll(_paginator.churches);
     }
-
-    notifyListeners();
-
-    return Tuple2(_churchs, _paginator);
   }
 
   Future one() async {
     try {
-      var response = await ChurchRequest().one();
+      var response = await _request.one();
       return response;
     } catch (e) {
       print("Une erreur est survenue lors de la récupération de l'église");

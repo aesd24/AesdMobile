@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:aesd_app/components/bottom_sheets.dart';
 import 'package:aesd_app/components/button.dart';
-import 'package:aesd_app/components/church_selection.dart';
 import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 //import 'package:aesd_app/providers/auth.dart';
@@ -27,11 +26,8 @@ class ChurchDashbord extends StatefulWidget {
 }
 
 class _ChurchDashbordState extends State<ChurchDashbord> {
-
-  changeForm(Widget form){
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => form)
-    );
+  changeForm(Widget form) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => form));
   }
 
   int? churchId;
@@ -40,43 +36,38 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
   getChurch() async {
     try {
       churchId = Provider.of<Servant>(context, listen: false).servant.churchId;
-      if (churchId != null){
+      if (churchId != null) {
         var response = await Provider.of<Church>(context, listen: false).one();
-        if (response.statusCode == 200){
+        if (response.statusCode == 200) {
           setState(() {
             church = response.data["church"];
             owner = response.data['owner'];
           });
         } else {
-          messageBox(
-            context,
-            title: "Oups !",
-            isDismissable: false,
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Nous n'avons pas pu obtenir les informations de l'église."),
+          messageBox(context,
+              title: "Oups !",
+              isDismissable: false,
+              content: const Column(mainAxisSize: MainAxisSize.min, children: [
+                Text(
+                    "Nous n'avons pas pu obtenir les informations de l'église."),
                 Text("Il semble que votre église n'existe pas !")
-              ]
-            ),
-            actions: [
-              TextButton(
-                onPressed: (){
-                  try{
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const ChooseChurch())
-                    );
-                  } catch (e){
-                    e.printError();
-                  }
-                },
-                child: const Text("Choisir une autre"),
-              ),
-            ]
-          );
+              ]),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    try {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ChooseChurch()));
+                    } catch (e) {
+                      e.printError();
+                    }
+                  },
+                  child: const Text("Choisir une autre"),
+                ),
+              ]);
         }
       }
-    } catch (e){
+    } catch (e) {
       e.printError();
     }
   }
@@ -92,22 +83,23 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
 
   @override
   Widget build(BuildContext context) {
-    showIndisponible(){
+    showIndisponible() {
       showSnackBar(
-        context: context,
-        message: "Cette section est momentanément indisponible !",
-        type: SnackBarType.info
-      );
+          context: context,
+          message: "Cette section est momentanément indisponible !",
+          type: SnackBarType.info);
     }
 
     // liste des boutons a afficher sur la page
-    List<Map<String, dynamic>> buttonsInformations = church == null ? [] : [
-      {
-        'text': "Modifier mon église",
-        'icon': const Icon(Icons.edit_note),
-        'function': (){
-          try {
-            /* Navigator.of(context).push(
+    List<Map<String, dynamic>> buttonsInformations = church == null
+        ? []
+        : [
+            {
+              'text': "Modifier mon église",
+              'icon': const Icon(Icons.edit_note),
+              'function': () {
+                try {
+                  /* Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
                   if (owner['id'] == Provider.of<User>(context, listen: false).user.id!){
@@ -118,50 +110,54 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
                 }
               )
             ); */
-          } catch(e){
-            e.printError();
-          }
-        }
-      },
-      {
-        'text': "Ajouter un évènement",
-        'icon': const Icon(Icons.event),
-        'function': () => /* changeForm(const CreateEventPage()) */ showIndisponible()
-      },
-      {
-        'text': "Partager une célébration en différé",
-        'icon': const Icon(Icons.video_chat_rounded),
-        'function': (){
-          setVideo(dynamic file) async {
-            File? video = await file;
-            if (video != null){
-              changeForm(VideoPostPreview(video: video));
+                } catch (e) {
+                  e.printError();
+                }
+              }
+            },
+            {
+              'text': "Ajouter un évènement",
+              'icon': const Icon(Icons.event),
+              'function': () => /* changeForm(const CreateEventPage()) */
+                  showIndisponible()
+            },
+            {
+              'text': "Partager une célébration en différé",
+              'icon': const Icon(Icons.video_chat_rounded),
+              'function': () {
+                setVideo(dynamic file) async {
+                  File? video = await file;
+                  if (video != null) {
+                    changeForm(VideoPostPreview(video: video));
+                  }
+                }
+
+                pickModeSelectionBottomSheet(
+                    context: context,
+                    setter: setVideo,
+                    photo: false,
+                    optionnalText:
+                        "La taille de la vidéo ne doit pas excéder 300Mo");
+              }
+            },
+            {
+              'text': "Créer un quiz biblique",
+              'icon': const Icon(Icons.quiz_rounded),
+              'function': () => /* changeForm(const CreateQuizPage()) */
+                  showIndisponible()
+            },
+            {
+              'text': "Communauté",
+              'icon': const Icon(Icons.group),
+              'function': () => /* changeForm(FollowersPage(community: true)) */
+                  showIndisponible()
+            },
+            {
+              'text': "Offrandes reçus",
+              'icon': const Icon(Icons.payments_rounded),
+              'function': () => changeForm(const WalletForm())
             }
-          }
-          pickModeSelectionBottomSheet(
-            context: context,
-            setter: setVideo,
-            photo: false,
-            optionnalText: "La taille de la vidéo ne doit pas excéder 300Mo"
-          );
-        }
-      },
-      {
-        'text': "Créer un quiz biblique",
-        'icon': const Icon(Icons.quiz_rounded),
-        'function': () => /* changeForm(const CreateQuizPage()) */ showIndisponible()
-      },
-      {
-        'text': "Communauté",
-        'icon': const Icon(Icons.group),
-        'function': () => /* changeForm(FollowersPage(community: true)) */ showIndisponible()
-      },
-      {
-        'text': "Offrandes reçus",
-        'icon': const Icon(Icons.payments_rounded),
-        'function': () => changeForm(const WalletForm())
-      }
-    ];
+          ];
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -169,95 +165,91 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Mon église",
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontWeight: FontWeight.bold
+                padding: const EdgeInsets.symmetric(vertical: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Mon église",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  churchId != null ? Builder(
-                    builder: (context) {
-                      if (church != null) {
-                        return churchSelectionTile(
-                          context: context,
-                          id: churchId!,
-                          name: church['name'] ?? "",
-                          mainPastor: owner['name'],
-                          zone: church['address'],
-                          image_url: "${church['logo']}"
-                        );
-                      } else {
-                        return Container(
-                          height: MediaQuery.of(context).size.height * .3,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            borderRadius: BorderRadius.circular(5)
+                    churchId != null
+                        ? Builder(builder: (context) {
+                            if (church != null) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                height: 100,
+                                width: double.infinity,
+                                color: Colors.amber,
+                              );
+                            } else {
+                              return Container(
+                                height: MediaQuery.of(context).size.height * .3,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade400,
+                                    borderRadius: BorderRadius.circular(5)),
+                                alignment: Alignment.center,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("Patientez..."),
+                                    CircularProgressIndicator()
+                                  ],
+                                ),
+                              );
+                            }
+                          })
+                        : Container(
+                            height: MediaQuery.of(context).size.height * .3,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade400,
+                                borderRadius: BorderRadius.circular(5)),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.question_mark_rounded,
+                                  size: 40,
+                                  color: Colors.grey.shade600,
+                                ),
+                                Text(
+                                  "Vous n'avez pas encore d'église.",
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                )
+                              ],
+                            ),
                           ),
-                          alignment: Alignment.center,
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("Patientez..."),
-                              CircularProgressIndicator()
-                            ],
-                          ),
-                        );
-                      }
-                    }
-                  ) : Container(
-                    height: MediaQuery.of(context).size.height * .3,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.question_mark_rounded,
-                          size: 40,
-                          color: Colors.grey.shade600,
-                        ),
-                        Text(
-                          "Vous n'avez pas encore d'église.",
-                          style: Theme.of(context).textTheme.labelLarge,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            ),
+                  ],
+                )),
             Column(
-              children: churchId != null ? List.generate(buttonsInformations.length, (index){
-                Map<String, dynamic> currentButton = buttonsInformations[index];
-            
-                return customDashbordButton(
-                  context: context,
-                  text: currentButton['text'],
-                  icon: currentButton['icon'],
-                  function: currentButton['function']
-                );
-              }) : [
-                customButton(
-                  context: context,
-                  text: "Choisir une église",
-                  onPressed: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const ChooseChurch())
-                    );
-                  }
-                )
-              ]
-            ),
+                children: churchId != null
+                    ? List.generate(buttonsInformations.length, (index) {
+                        Map<String, dynamic> currentButton =
+                            buttonsInformations[index];
+
+                        return customDashbordButton(
+                            context: context,
+                            text: currentButton['text'],
+                            icon: currentButton['icon'],
+                            function: currentButton['function']);
+                      })
+                    : [
+                        customButton(
+                            context: context,
+                            text: "Choisir une église",
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const ChooseChurch()));
+                            })
+                      ]),
           ],
         ),
       ),

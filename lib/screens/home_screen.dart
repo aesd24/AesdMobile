@@ -3,7 +3,7 @@ import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/splash_screen.dart';
 import 'package:aesd_app/utils/constants.dart';
 import 'package:aesd_app/widgets/app_overlay_loading.dart';
-import 'package:aesd_app/widgets/grid_dashboard.dart';
+//import 'package:aesd_app/widgets/grid_dashboard.dart';
 //import 'package:aesd_app/components/menu_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 5,
             ),
-            GridDashboard()
+            //GridDashboard()
           ],
         ),
       ),

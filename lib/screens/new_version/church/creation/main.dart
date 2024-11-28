@@ -76,7 +76,7 @@ class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
           'phone': _contactController.text,
           'location': _locationController.text,
           'description': _descriptionController.text,
-          'isMain': true,
+          'isMain': 1,
           'churchType': churchType,
           'image': _churchImage
         }).then((response) {
