@@ -31,14 +31,6 @@ class _SocialDemandesState extends State<SocialDemandes> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text("Demandes d'aides",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold)),
-            ),
             customTextField(
                 label: "Rechercher", prefixIcon: const Icon(Icons.search)),
             const SizedBox(height: 20),

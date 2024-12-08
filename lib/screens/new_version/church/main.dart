@@ -26,8 +26,8 @@ class _ChurchMainPageState extends State<ChurchMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool hasChurch =
-        Provider.of<User>(context, listen: false).user.church != null;
+    bool hasChurch = true;
+    //Provider.of<User>(context, listen: false).user.church != null;
 
     Widget returned;
     if (hasChurch) {

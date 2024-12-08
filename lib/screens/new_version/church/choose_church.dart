@@ -154,7 +154,6 @@ class _ChooseChurchState extends State<ChooseChurch> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     var user = Provider.of<User>(context).user;
 
     return Scaffold(

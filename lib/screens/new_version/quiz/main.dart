@@ -70,8 +70,8 @@ class _QuizMainPageState extends State<QuizMainPage> {
               child: customButton(
                   context: context,
                   text: "Commencer",
-                  onPressed: () =>
-                      pushForm(context, destination: AnswerPage(quiz: widget.quiz))),
+                  onPressed: () => pushForm(context,
+                      destination: AnswerPage(quiz: widget.quiz))),
             )
           ],
         ),

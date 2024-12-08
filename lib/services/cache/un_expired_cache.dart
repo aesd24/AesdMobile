@@ -4,7 +4,6 @@ import 'dart:convert';
 class UnExpiredCache {
   Future<dynamic> get({required String key}) async {
     final prefs = await SharedPreferences.getInstance();
-
     return json.decode(prefs.getString(key).toString());
   }
 

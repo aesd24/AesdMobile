@@ -6,6 +6,7 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/providers/user.dart';
+import 'package:aesd_app/screens/new_version/dashboard/dashboard.dart';
 import 'package:aesd_app/screens/new_version/home.dart';
 import 'package:aesd_app/screens/new_version/wallet/wallet.dart';
 import 'package:aesd_app/screens/splash_screen.dart';
@@ -131,12 +132,14 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     id: 0,
                     title: "Accueil",
                     icon: const FaIcon(FontAwesomeIcons.house),
-                    onTap: () =>
-                        pushForm(context, destination: const HomePage())),
+                    onTap: () => pushReplaceForm(context,
+                        destination: const HomePage())),
                 _customTile(
                     id: 1,
-                    title: "Dashboard",
-                    icon: const FaIcon(FontAwesomeIcons.gaugeHigh)),
+                    title: "Admin",
+                    icon: const FaIcon(FontAwesomeIcons.gaugeHigh),
+                    onTap: () => pushReplaceForm(context,
+                        destination: const Dashboard())),
                 _customTile(
                   id: 2,
                   title: "Transactions",

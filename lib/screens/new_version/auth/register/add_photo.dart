@@ -90,8 +90,7 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: size.height * 0.76,
+                Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,14 +119,14 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                         borderRadius:
-                                            BorderRadius.circular(100),
+                                            BorderRadius.circular(1000),
                                         color: Colors.green.shade200,
                                         boxShadow: const [
                                           BoxShadow(
                                               color: Colors.grey, blurRadius: 3)
                                         ]),
                                     child: CircleAvatar(
-                                      radius: 70,
+                                      radius: 100,
                                       backgroundColor: Colors.white,
                                       backgroundImage: idPicture == null
                                           ? null

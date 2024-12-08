@@ -86,13 +86,12 @@ class Auth extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await request.logout().then((value) async {
-      if (value.statusCode == 200) {
-        _unExpiredCache.remove("access_token");
-      } else {
-        throw const HttpException("La déconnexion à échoué n'a pu aboutir");
-      }
-    });
+    var response = await request.logout();
+    if (response.statusCode == 200) {
+      _unExpiredCache.remove("access_token");
+    } else {
+      throw const HttpException("La déconnexion à échoué n'a pu aboutir");
+    }
 
     notifyListeners();
   }

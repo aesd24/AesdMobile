@@ -104,10 +104,9 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       e.printError();
       showSnackBar(
-        context: context,
-        message: "Une erreur s'est produite",
-        type: SnackBarType.danger
-      );
+          context: context,
+          message: "Une erreur s'est produite",
+          type: SnackBarType.danger);
     } finally {
       setState(() {
         isLoading = false;

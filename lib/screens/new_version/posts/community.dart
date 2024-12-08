@@ -1,8 +1,11 @@
+import 'package:aesd_app/constants/dictionnary.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/post_model.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/posts/create_post.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -31,13 +34,14 @@ class _CommunityPageState extends State<CommunityPage> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<User>(context, listen: false).user;
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // bouton de création d'un nouveau post
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // bouton de création d'un nouveau post
+          if (user.accountType == Type.servant.code)
             GestureDetector(
               onTap: () =>
                   pushForm(context, destination: const CreatePostForm()),
@@ -72,19 +76,17 @@ class _CommunityPageState extends State<CommunityPage> {
                   )),
             ),
 
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .7,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: List.generate(3, (value) {
-                    return _posts[value]
-                        .getWidget(context, stateNotifier: stateNotifier);
-                  }),
-                ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(3, (value) {
+                  return _posts[value]
+                      .getWidget(context, stateNotifier: stateNotifier);
+                }),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

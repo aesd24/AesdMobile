@@ -8,6 +8,7 @@ import 'package:aesd_app/screens/new_version/church/main.dart';
 import 'package:aesd_app/screens/new_version/events/events.dart';
 import 'package:aesd_app/screens/new_version/forum/list.dart';
 import 'package:aesd_app/screens/new_version/quiz/list.dart';
+import 'package:aesd_app/screens/new_version/testymony/testimonies.dart';
 import 'package:flutter/material.dart';
 
 class FrontPage extends StatefulWidget {
@@ -90,6 +91,11 @@ class _FrontPageState extends State<FrontPage> {
                                     text: "Forum",
                                     onTap: () => pushForm(context,
                                         destination: const ForumMain())),
+                                customNavItem(
+                                    iconUrl: "assets/icons/share.png",
+                                    text: "Témoignage",
+                                    onTap: () => pushForm(context,
+                                        destination: const TestimoniesList()))
                               ]),
                         ),
                       ),
