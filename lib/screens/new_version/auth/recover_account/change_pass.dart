@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/widgets/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +118,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             setState(() {
                               _isConfirmationVisible = !_isConfirmationVisible;
                             });
-                            print("cliqué");
+                            //print("cliqué");
                           },
                           icon: FaIcon(
                             !_isConfirmationVisible

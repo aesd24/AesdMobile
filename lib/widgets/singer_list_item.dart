@@ -43,7 +43,7 @@ class SingerListItem extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.4,
                   height: MediaQuery.of(context).size.height * 0.1,
                   child: Image(
-                    image: NetworkImage(singer.user.photo),
+                    image: NetworkImage(singer.user.photo!),
                     fit: BoxFit.cover,
                   ),
                 ),

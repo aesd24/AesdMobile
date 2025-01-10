@@ -1,4 +1,4 @@
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/screens/new_version/forum/subject.dart';
 import 'package:flutter/material.dart';

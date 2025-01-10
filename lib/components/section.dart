@@ -28,6 +28,7 @@ Widget customSection(BuildContext context, {
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(Colors.green.shade400),
                 foregroundColor: WidgetStateProperty.all(Colors.white),
+                iconColor: WidgetStateProperty.all(Colors.white)
               ),
               label: const Text("Voir plus"),
             )

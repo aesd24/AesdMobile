@@ -19,7 +19,6 @@ class _AuthOverlayLoadingState extends State<AuthOverlayLoading> {
     return LoadingOverlay(
       isLoading: widget.loading,
       color: Colors.black.withOpacity(0.4),
-      opacity: 0.4,
       child: widget.child,
     );
   }

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/picture_containers.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
 import 'package:flutter/material.dart';
 

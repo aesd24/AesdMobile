@@ -4,16 +4,18 @@ import 'package:aesd_app/components/section.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/screens/new_version/actuality/actualities.dart';
 import 'package:aesd_app/screens/new_version/actuality/actuality.dart';
-import 'package:aesd_app/screens/new_version/church/main.dart';
+import 'package:aesd_app/screens/new_version/church/choose_church.dart';
+import 'package:aesd_app/screens/new_version/church/detail.dart';
 import 'package:aesd_app/screens/new_version/events/events.dart';
 import 'package:aesd_app/screens/new_version/forum/list.dart';
 import 'package:aesd_app/screens/new_version/quiz/list.dart';
-import 'package:aesd_app/screens/new_version/testymony/testimonies.dart';
+import 'package:aesd_app/screens/new_version/testimony/testimonies.dart';
 import 'package:flutter/material.dart';
 
 class FrontPage extends StatefulWidget {
-  FrontPage({super.key, required this.setOpacity});
+  FrontPage({super.key, required this.userChurch, required this.setOpacity});
 
+  var userChurch;
   Function(double) setOpacity;
 
   @override
@@ -85,7 +87,11 @@ class _FrontPageState extends State<FrontPage> {
                                     iconUrl: "assets/icons/church.png",
                                     text: "Mon église",
                                     onTap: () => pushForm(context,
-                                        destination: const ChurchMainPage())),
+                                        destination: widget.userChurch != null
+                                            ? ChurchDetailPage(
+                                                church: widget.userChurch,
+                                              )
+                                            : const ChooseChurch())),
                                 customNavItem(
                                     iconUrl: "assets/icons/forum.png",
                                     text: "Forum",

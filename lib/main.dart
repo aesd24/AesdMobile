@@ -1,3 +1,4 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
 import 'package:aesd_app/providers/user.dart';
@@ -32,7 +33,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => Servant()),
       ChangeNotifierProvider(create: (context) => Singer()),
       ChangeNotifierProvider(create: (context) => Forum()),
-      ChangeNotifierProvider(create: (context) => Post()),
+      ChangeNotifierProvider(create: (context) => PostProvider()),
       ChangeNotifierProvider(create: (context) => Ceremonies()),
       ChangeNotifierProvider(create: (context) => Job()),
       ChangeNotifierProvider(create: (context) => Course()),
@@ -65,6 +66,16 @@ class _MyAppState extends State<MyApp> {
         iconTheme: IconThemeData(color: Colors.grey.shade500),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
+      locale: const Locale('fr', 'FR'),
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('fr', 'FR'), // Ajoute le support pour la langue française
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const SplashScreen(),
       routes: routes,
     );

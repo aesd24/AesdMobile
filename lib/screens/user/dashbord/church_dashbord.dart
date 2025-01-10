@@ -155,7 +155,7 @@ class _ChurchDashbordState extends State<ChurchDashbord> {
             {
               'text': "Offrandes reçus",
               'icon': const Icon(Icons.payments_rounded),
-              'function': () => changeForm(const WalletForm())
+              'function': () => changeForm(const UserWallet())
             }
           ];
 

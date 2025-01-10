@@ -5,7 +5,7 @@ void pickModeSelectionBottomSheet({
   required BuildContext context,
   bool photo = true,
   String? optionnalText,
-  Color? OptionnalTextColor,
+  Color? optionnalTextColor,
   required void Function(dynamic) setter
 }){
   showModalBottomSheet(
@@ -27,7 +27,7 @@ void pickModeSelectionBottomSheet({
                   if(optionnalText != null) Text(
                     "($optionnalText)",
                     style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: OptionnalTextColor ?? Colors.red.shade300
+                      color: optionnalTextColor ?? Colors.red.shade300
                     ),
                   ),
                   Text(

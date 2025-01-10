@@ -58,7 +58,7 @@ class _StreamAgoraShowState extends State<StreamAgoraShow> {
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          //print("local user ${connection.localUid} joined");
+          ////print("local user ${connection.localUid} joined");
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           if (remoteUid == widget.video.agoraChannelId) {

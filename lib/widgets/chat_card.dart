@@ -27,11 +27,11 @@ class ChatCard extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 24,
-                    backgroundImage: NetworkImage(auth.user.id == chat.guest.id
+                    /* backgroundImage: NetworkImage(auth.user.id == chat.guest.id
                         ? chat.owner.photo
-                        : chat.guest.photo),
+                        : chat.guest.photo), */
                   ),
                   if (chat.isActive)
                     Positioned(
@@ -58,13 +58,13 @@ class ChatCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      /* Text(
                         auth.user.id == chat.guest.id
                             ? chat.owner.name
                             : chat.guest.name,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                      ), */
                       const SizedBox(height: 8),
                       Opacity(
                         opacity: 0.64,

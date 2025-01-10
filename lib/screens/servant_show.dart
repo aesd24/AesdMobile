@@ -33,7 +33,7 @@ class _ServantShowState extends State<ServantShow> {
                   child: Material(
                     color: Colors.transparent,
                     child: Ink.image(
-                      image: NetworkImage(widget.servant.user.photo),
+                      image: NetworkImage(widget.servant.user.photo!),
                       fit: BoxFit.cover,
                       width: 128,
                       height: 128,

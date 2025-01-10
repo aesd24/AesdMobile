@@ -63,7 +63,7 @@ class Auth extends ChangeNotifier {
     // envoie de la requête et le résultat est stocké dans la variable "response"
     final response = await request.register(data: formData);
 
-    print(response.data);
+    //print(response.data);
 
     if (response.statusCode == 201) {
       return response;
@@ -80,7 +80,7 @@ class Auth extends ChangeNotifier {
 
   // Enregistrer le token de l'utilisateur
   void setToken({required String type, required String token}) {
-    print("$type $token");
+    ////print("$type $token");
     _unExpiredCache.put(key: "access_token", value: "$type $token");
     notifyListeners();
   }

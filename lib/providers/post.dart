@@ -4,10 +4,14 @@ import 'package:aesd_app/services/web/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
-class Post extends ChangeNotifier {
+class PostProvider extends ChangeNotifier {
   final PostService _postService = PostService();
   List<PostModel> _posts = [];
   late Paginator _paginator;
+
+  Future create() async {
+    //
+  }
 
   Future<Tuple2<List<PostModel>, Paginator>> all(
       {dynamic queryParameters}) async {

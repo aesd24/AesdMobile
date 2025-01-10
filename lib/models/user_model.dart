@@ -5,7 +5,7 @@ class UserModel {
   late String name;
   late String email;
   late String phone;
-  late String photo;
+  late String? photo;
   late String adress;
   late String accountType;
   late ChurchModel? church;
@@ -18,7 +18,7 @@ class UserModel {
     email = json['email'] ?? "";
     adress = json['adress'] ?? "";
     phone = json['phone'] ?? "";
-    photo = json['profile_photo_url'] ?? "";
+    photo = json['profile_photo_url'];
     accountType = json['account_type'];
     church = json['church'] == null ? null : ChurchModel.fromJson(json['church']);
   }

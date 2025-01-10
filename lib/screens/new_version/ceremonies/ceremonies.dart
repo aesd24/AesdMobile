@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/models/ceremony.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
-import 'package:aesd_app/screens/ceremonies/ceremony_viewer.dart';
+import 'package:aesd_app/screens/new_version/ceremonies/ceremony_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';

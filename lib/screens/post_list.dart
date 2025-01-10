@@ -27,7 +27,7 @@ class _PostListState extends State<PostList> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final newPage = await Provider.of<Post>(context, listen: false)
+      final newPage = await Provider.of<PostProvider>(context, listen: false)
           .all(queryParameters: {'page': pageKey});
 
       final newNotices = newPage.item1;

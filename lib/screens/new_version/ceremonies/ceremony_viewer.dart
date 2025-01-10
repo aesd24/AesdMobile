@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:chewie/chewie.dart';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
 import 'package:aesd_app/screens/webview.dart';
 import 'package:flutter/material.dart';

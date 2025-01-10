@@ -7,21 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class WalletForm extends StatefulWidget {
-  const WalletForm({super.key});
+class UserWallet extends StatefulWidget {
+  const UserWallet({super.key});
 
   @override
-  State<WalletForm> createState() => _WalletFormState();
+  State<UserWallet> createState() => _UserWalletState();
 }
 
-class _WalletFormState extends State<WalletForm> {
+class _UserWalletState extends State<UserWallet> {
   bool _password = true;
   @override
   Widget build(BuildContext context) {
     var themeColors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Solde AESD"),
+        title: const Text("Solde"),
         elevation: 0,
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,

@@ -1,11 +1,16 @@
 import 'package:aesd_app/components/menu_drawer.dart';
-import 'package:aesd_app/providers/user.dart';
+import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/screens/new_version/dashboard/ceremony.dart';
+import 'package:aesd_app/screens/new_version/dashboard/church_wallet.dart';
+import 'package:aesd_app/screens/new_version/dashboard/programs.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  Dashboard({super.key, required this.user});
+
+  UserModel user;
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -14,8 +19,6 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<User>(context).user;
-
     return Scaffold(
       appBar: AppBar(
         actions: const [
@@ -27,20 +30,13 @@ class _DashboardState extends State<Dashboard> {
       ),
       drawer: MenuDrawer(pageIndex: 1),
       body: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 2)),
+              customContainer(
+                context,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -52,44 +48,94 @@ class _DashboardState extends State<Dashboard> {
                         customStat(context, value: 0, label: "Abonnement(s)")
                       ],
                     ),
-
-                    const SizedBox(height: 40),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Informations personnelles",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: const FaIcon(
-                                FontAwesomeIcons.pen,
-                                size: 20,
-                                color: Colors.amber,
-                              ))
-                        ],
-                      ),
-                    ),
-
-                    // Informations de l'utilisateur
-                    customInfoTile(context,
-                        value: user.name, label: "Nom & prenoms"),
-                    customInfoTile(context,
-                        label: "Téléphone", value: "(+225) ${user.phone}"),
-                    customInfoTile(context,
-                        label: "courriel", value: user.email),
-                    /* customInfoTile(context,
-                        label: "Type de compte", value: user.accountType), */
                   ],
                 ),
-              )
+              ),
+              //if (widget.user.church != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text(
+                  "Mon église",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+
+              //if (widget.user.church != null)
+              customContainer(context,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 25,
+                            backgroundImage: NetworkImage(""
+                                //widget.user.church!.logo!
+                                ),
+                          ),
+                          SizedBox(width: 10),
+                          Flexible(
+                              child: Text(
+                                  "Nom de l'église", //widget.user.church!.name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.clip)),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Wrap(
+                          runAlignment: WrapAlignment.start,
+                          spacing: 20,
+                          runSpacing: 20,
+                          children: [
+                            customSquaredButton(
+                              destination: const ChurchWallet(),
+                              color: Colors.green,
+                              icon: FontAwesomeIcons.wallet,
+                              label: "Porte-feuille"
+                            ),
+                            customSquaredButton(
+                              destination: ProgramListPage(),
+                              color: Colors.purple,
+                              icon: FontAwesomeIcons.calendar,
+                              label: "Programme"
+                            ),
+                            customSquaredButton(
+                              destination: CeremoniesManagement(),
+                              color: Colors.orange,
+                              icon: FontAwesomeIcons.film,
+                              label: "Cérémonies"
+                            ),
+                            customSquaredButton(
+                              color: Colors.blue,
+                              icon: FontAwesomeIcons.peopleGroup,
+                              label: "Communauté"
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Annexes",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Card(
+                            elevation: 2,
+                            shadowColor: Colors.green,
+                            color: Colors.green.shade50,
+                            child: const ListTile(
+                              title: Text("Localisation de l'annexe"),
+                              subtitle: Text("Géré par: Serviteur de l'annexe"),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ))
             ],
           ),
         ),
@@ -97,21 +143,51 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget customInfoTile(BuildContext context,
-      {required String label, required String value}) {
-    return ListTile(
-      title: Text(
-        value,
-        style: Theme.of(context)
-            .textTheme
-            .labelLarge!
-            .copyWith(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium,
+  Widget customSquaredButton({
+    required String label,
+    required IconData icon,
+    Color color = Colors.blue,
+    Widget? destination
+  }) {
+    return GestureDetector(
+      onTap: destination != null
+          ? () => pushForm(context, destination: destination)
+          : null,
+      child: Column(
+        children: [
+          Container(
+            height: 65,
+            width: 65,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                border: Border.all(width: 1.5, color: color),
+                color: color.withOpacity(.4),
+                borderRadius: BorderRadius.circular(7)),
+            child: Center(
+              child: FaIcon(
+                icon,
+                size: 25,
+                color: color,
+              ),
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(label)
+        ],
       ),
     );
+  }
+
+  Container customContainer(BuildContext context, {required Widget child}) {
+    return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        margin: const EdgeInsets.symmetric(vertical: 7),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(7),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.primary, width: 2)),
+        child: child);
   }
 
   Column customStat(BuildContext context,

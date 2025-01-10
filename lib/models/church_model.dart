@@ -1,43 +1,43 @@
-import 'package:aesd_app/models/dictionary.dart';
-import 'package:aesd_app/models/programm_model.dart';
+import 'package:aesd_app/models/day_program.dart';
+//import 'package:aesd_app/models/programm_model.dart';
 import 'package:aesd_app/models/servant_model.dart';
 import 'package:flutter/material.dart';
 
 class ChurchModel {
-  late int? id;
+  late int id;
   late String name;
   late String phone;
   late String email;
   late String address;
   late String description;
-  late String logo;
-  late String cover;
+  late String? logo;
+  late String? cover;
   late String image;
-  late Dictionary type;
+  late String? type;
   late List<ServantModel> servants = [];
   late ServantModel? mainServant;
-  late ProgrammModel? programm;
+  late DayProgramModel? programm;
 
   ChurchModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = id == null ? "" : json['name'];
-    image =
+    name = json['name'];
+    image = json['image'] ??
         'https://bretagneromantique.fr/wp-content/uploads/2021/04/IMG_4463-scaled.jpg';
-    email = json['email'] ?? "";
-    logo = json['logo_url'] ?? "";
-    cover = json['cover_url'] ?? "";
-    address = json['address'] ?? "";
-    description = json['description'] ?? "";
-    phone = id == null ? "" : "${json['dial_code']} + ${json['phone']}";
-    type = Dictionary.fromJson(json['type'] ?? {});
-    mainServant = json['main_servant'] != null
-        ? ServantModel.fromJson(json['main_servant'])
-        : null;
+    email = json['email'];
+    logo = json['logo_url'];
+    cover = json['cover_url'];
+    address = json['adresse'];
+    description = json['description'];
+    phone = "${json['dial_code']} + ${json['phone']}";
+    type = json['church_type'];
+    mainServant = json['main_servant'] == null
+        ? null
+        : ServantModel.fromJson(json['main_servant']);
     json['servants']?.forEach((d) {
       servants.add(ServantModel.fromJson(d));
     });
     programm = json['program'] != null
-        ? ProgrammModel.fromJson(json['program'])
+        ? DayProgramModel.fromJson(json['program'])
         : null;
   }
 
@@ -49,20 +49,16 @@ class ChurchModel {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
-          image: logo != "" ? NetworkImage(logo) : const AssetImage("assets/images/bg-5.jpg"),
+          image: NetworkImage(image),
           fit: BoxFit.cover,
         ),
       ),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.black.withOpacity(.8),
-              Colors.black.withOpacity(.1)
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter
-          ),
+          gradient: LinearGradient(colors: [
+            Colors.black.withOpacity(.8),
+            Colors.black.withOpacity(.1)
+          ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Align(
@@ -78,12 +74,9 @@ class ChurchModel {
                   child: Text(
                     name,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold
-                    ),
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
-
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,21 +84,25 @@ class ChurchModel {
                     Text(
                       mainServant != null ? mainServant!.name : "Inconnu",
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Colors.white60,
-                      ),
+                            color: Colors.white60,
+                          ),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Icon(Icons.location_pin, color: Colors.white60, size: 18),
+                        const Icon(Icons.location_pin,
+                            color: Colors.white60, size: 18),
                         const SizedBox(width: 5),
                         Flexible(
                           child: Text(
                             address,
-                            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              color: Colors.white60,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
+                                  color: Colors.white60,
+                                ),
                             overflow: TextOverflow.clip,
                           ),
                         ),

@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/church/creation/main.dart';
+import 'package:aesd_app/screens/new_version/church/detail.dart';
 import 'package:aesd_app/screens/new_version/home.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
   bool throwedErrorLastTime = false;
 
   // liste des églises
-  List churchList = [];
+  List<ChurchModel> churchList = [];
 
   //controller
   final searchController = TextEditingController();
@@ -41,10 +42,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
     // boucle sur la liste
     if (text.isNotEmpty) {
       for (var element in churchList) {
-        if (element["name"]
-            .toString()
-            .toLowerCase()
-            .contains(text.toLowerCase())) {
+        if (element.name.toLowerCase().contains(text.toLowerCase())) {
           returned.add(element);
         }
       }
@@ -199,7 +197,9 @@ class _ChooseChurchState extends State<ChooseChurch> {
                             if (getList().isNotEmpty) {
                               ChurchModel church = getList()[value];
                               return GestureDetector(
-                                onTap: _chooseChurch,
+                                onTap: () => pushForm(context,
+                                    destination:
+                                        ChurchDetailPage(church: church)),
                                 child: church.card(context),
                               );
                             } else {

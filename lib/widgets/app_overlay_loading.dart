@@ -19,7 +19,6 @@ class _AppOverlayLoadingState extends State<AppOverlayLoading> {
     return LoadingOverlay(
       isLoading: widget.loading,
       color: kBlack.withOpacity(0.5),
-      opacity: 0.4,
       progressIndicator:
           const CircularProgressIndicator(color: kBlack, strokeWidth: 3.0),
       child: widget.child,

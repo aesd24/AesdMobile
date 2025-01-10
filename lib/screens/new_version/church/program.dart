@@ -55,8 +55,9 @@ class _ChurchProgramState extends State<ChurchProgram> {
             children: [
               customTitle(context, text: "Programme hebdomadaire"),
               trailButton(
-                onPressed: () =>
-                    pushForm(context, destination: const CreateProgramForm()),
+                onPressed: () => pushForm(
+                  context, destination: const CreateProgramForm()
+                ),
                 text: "Ajouter",
                 icon: const FaIcon(
                   FontAwesomeIcons.plus,

@@ -1,0 +1,52 @@
+----- Utilisateurs -----
+    * Création :
+        - nom & prénoms
+        - adresse email
+        - numéro de téléphone
+        - adresse
+        - mot de passe
+        - confirmation de mot de passe
+        - type de compte
+        (SD uniquements)
+        - appel
+        - photo d'identité
+        - piece d'identité (recto-verso)
+
+    * Obtention :
+        (* toutes les données de création *)
+        sauf :
+        -   mot de passe et confirmation de mot de passe
+        -   photo d'identité et piece d'identité (recto-verso)
+
+
+----- Eglise -----
+    * Création :
+        - logo
+        - attestation
+        - nom
+        - adresse email
+        - Contact
+        - adresse
+        - type d'église (Catholique, evangélique...)
+        - description
+
+    * Obtention :
+        (* toutes les données de création *)
+        en plus :
+        - serviteur principale
+        - Liste des serviteurs
+        - est abonné (L'Utilisateur est abonné à l'église)
+
+        sauf :
+        - attestation
+
+----- Cérémonies -----
+    * Création :
+        - titre
+        - description
+        - date (et heure)
+        - video (film)
+        - eglise (church owner)
+
+    * Obtention :
+    (* toutes les données de création *)

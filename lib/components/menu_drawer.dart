@@ -112,18 +112,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      if (user.accountType != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Text(
-                            user.accountType!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(color: Colors.green),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
                     ],
                   ),
                 ),
@@ -139,13 +127,13 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     title: "Admin",
                     icon: const FaIcon(FontAwesomeIcons.gaugeHigh),
                     onTap: () => pushReplaceForm(context,
-                        destination: const Dashboard())),
+                        destination: Dashboard(user: user))),
                 _customTile(
                   id: 2,
                   title: "Transactions",
                   icon: const FaIcon(FontAwesomeIcons.moneyBillTransfer),
                   onTap: () =>
-                      pushReplaceForm(context, destination: const WalletForm()),
+                      pushReplaceForm(context, destination: const UserWallet()),
                 ),
                 _customTile(
                     id: 3,

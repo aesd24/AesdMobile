@@ -31,7 +31,7 @@ class _ChurchShowState extends State<ChurchShow> {
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(widget.church.cover),
+                  image: NetworkImage(widget.church.cover!),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -162,8 +162,8 @@ class _ChurchShowState extends State<ChurchShow> {
                                 ? Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: ListView(
-                                      children: [
-                                        getDayWidget("Lundi",
+                                      children: const [
+                                        /* getDayWidget("Lundi",
                                             widget.church.programm!.monday),
                                         getDayWidget("Mardi",
                                             widget.church.programm!.tuesday),
@@ -176,7 +176,7 @@ class _ChurchShowState extends State<ChurchShow> {
                                         getDayWidget("Samedi",
                                             widget.church.programm!.saturday),
                                         getDayWidget("Dimanche",
-                                            widget.church.programm!.sunday),
+                                            widget.church.programm!.sunday), */
                                       ],
                                     ),
                                   )

@@ -1,3 +1,4 @@
+import "package:date_field/date_field.dart";
 import "package:flutter/material.dart";
 
 Widget customTextField({
@@ -70,5 +71,23 @@ Widget customMultilineField({
       maxLength: maxLength,
       controller: controller,
     ),
+  );
+}
+
+Widget customDateField({
+  required String label,
+  DateTime? value,
+  ValueChanged<DateTime?>? onChanged,
+  DateTimeFieldPickerMode? mode
+}) {
+  return DateTimeField(
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      label: Text(label),
+      suffixIconColor: Colors.grey
+    ),
+    value: value,
+    onChanged: onChanged,
+    mode: mode ?? DateTimeFieldPickerMode.dateAndTime,
   );
 }

@@ -77,7 +77,7 @@ class _PersonnalDashbordState extends State<PersonnalDashbord> {
       {
         'text': "Dîmes et dons reçus",
         'icon': const Icon(Icons.payments_rounded),
-        'function': () => changeForm(const WalletForm())
+        'function': () => changeForm(const UserWallet())
       }
     ];
 

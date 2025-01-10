@@ -1,6 +1,6 @@
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/new_version/auth/recover_account/validation.dart';

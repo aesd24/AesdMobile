@@ -9,7 +9,7 @@ Widget customEventBox(BuildContext context,
     child: Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       width: 300,
-      height: height,
+      height: 170,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: const DecorationImage(

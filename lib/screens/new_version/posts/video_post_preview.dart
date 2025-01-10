@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:aesd_app/components/bottom_sheets.dart';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/components/text_field.dart';
+import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,10 +25,18 @@ class VideoPostPreview extends StatefulWidget {
 
 class _VideoPostPreviewState extends State<VideoPostPreview> {
   List<String> months = [
-    "Janvier", "Février", "Mars",
-    "Avril", "Mai", "Juin",
-    "Juillet", "Août", "Septembre",
-    "Octobre", "Novembre", "Décembre"
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre"
   ];
   bool processing = false;
   final _formKey = GlobalKey<FormState>();
@@ -43,47 +51,66 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
 
   // date de la cérémonie
   DateTime? _date;
-  
+
   // vidéo
   late File video;
 
   // soumettre les données
   submit() async {
-    if(_formKey.currentState!.validate()){
-      if (_date == null){
-        showSnackBar(context: context, message: "Veuillez choisir une date", type: SnackBarType.warning);
+    if (_formKey.currentState!.validate()) {
+      if (_date == null) {
+        showSnackBar(
+            context: context,
+            message: "Veuillez choisir une date",
+            type: SnackBarType.warning);
         return;
       }
       try {
         setState(() {
           processing = true;
         });
-        var response = await Provider.of<Ceremonies>(context, listen: false).create({
+        var response =
+            await Provider.of<Ceremonies>(context, listen: false).create({
           'title': _titleController.text,
           'description': _descriptionController.text,
           'date': _date,
           'video': video.path
         });
 
-        if (response.statusCode == 201){
-          showSnackBar(context: context, message: "Vidéo posté avec succès !", type: SnackBarType.success);
+        if (response.statusCode == 201) {
+          showSnackBar(
+              context: context,
+              message: "Vidéo posté avec succès !",
+              type: SnackBarType.success);
           Navigator.of(context).pop();
         } else {
-          showSnackBar(context: context, message: "Echec de la publication de la vidéo", type:SnackBarType.danger);
+          showSnackBar(
+              context: context,
+              message: "Echec de la publication de la vidéo",
+              type: SnackBarType.danger);
         }
-      } on DioException catch(e) {
+      } on DioException catch (e) {
         e.printError();
-        showSnackBar(context: context, message: "Vérifiez votre connexion internet et rééssayez", type: SnackBarType.warning);
+        showSnackBar(
+            context: context,
+            message: "Vérifiez votre connexion internet et rééssayez",
+            type: SnackBarType.warning);
       } catch (e) {
         e.printError();
-        showSnackBar(context: context, message: "Une erreur est survenu !", type: SnackBarType.danger);
+        showSnackBar(
+            context: context,
+            message: "Une erreur est survenu !",
+            type: SnackBarType.danger);
       } finally {
         setState(() {
           processing = false;
         });
       }
     } else {
-      showSnackBar(context: context, message: "Renseignez correctement le formulaire", type: SnackBarType.warning);
+      showSnackBar(
+          context: context,
+          message: "Renseignez correctement le formulaire",
+          type: SnackBarType.warning);
     }
   }
 
@@ -95,33 +122,36 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
 
     // initialiser le container personnalisé
     _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      deviceOrientationsOnEnterFullScreen: [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
-      deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
-      additionalOptions: (context) {
-        return <OptionItem>[
-          OptionItem(
-            onTap: () => print("Option 1"),
-            iconData: Icons.share,
-            title: "Partager"
-          ),
-          OptionItem(
-            onTap: () => print("Option 2"),
-            iconData: Icons.info,
-            title: "details"
-          )
-        ];
-      }
-    );
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        deviceOrientationsOnEnterFullScreen: [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ],
+        deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
+        additionalOptions: (context) {
+          return <OptionItem>[
+            OptionItem(
+                onTap: () => {}, //print("Option 1"),
+                iconData: Icons.share,
+                title: "Partager"),
+            OptionItem(
+                onTap: () => {}, //print("Option 2"),
+                iconData: Icons.info,
+                title: "details")
+          ];
+        });
 
     setState(() {});
   }
 
   init() async {
     var result = await verifyVideoSize(widget.video);
-    if(!result['result']){
-      showSnackBar(context: context, message: "La vidéo est trop grande. taille: ${result['length']}Mo", type: SnackBarType.warning);
+    if (!result['result']) {
+      showSnackBar(
+          context: context,
+          message: "La vidéo est trop grande. taille: ${result['length']}Mo",
+          type: SnackBarType.warning);
       Navigator.of(context).pop();
       return;
     }
@@ -136,7 +166,7 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
   }
 
   @override
-  initState(){
+  initState() {
     super.initState();
     init();
   }
@@ -155,25 +185,21 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  customTextField(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                customTextField(
                     label: "Titre",
                     controller: _titleController,
-                    validator: (value){
+                    validator: (value) {
                       if (value == null || value!.isEmpty) {
                         return "Le titre est obligatoire";
                       }
                       return null;
-                    }
-                  ),
-
-                  customButton(
+                    }),
+                customButton(
                     context: context,
-                    text: _date == null ?
-                    "Ajouter la date de l'évènement":
-                    "Célébration du : ${_date!.day} ${months[_date!.month - 1]} ${_date!.year}",
+                    text: _date == null
+                        ? "Ajouter la date de l'évènement"
+                        : "Célébration du : ${_date!.day} ${months[_date!.month - 1]} ${_date!.year}",
                     trailing: const Icon(Icons.date_range),
                     border: const BorderSide(width: 2, color: Colors.grey),
                     elevation: 0,
@@ -183,27 +209,23 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
                     onPressed: () async {
                       // sélectionner une date
                       _date = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime(DateTime.now().year, DateTime.now().month - 1),
-                        lastDate: DateTime.now(),
-                        currentDate: DateTime.now()
-                      );
+                          context: context,
+                          firstDate: DateTime(
+                              DateTime.now().year, DateTime.now().month - 1),
+                          lastDate: DateTime.now(),
+                          currentDate: DateTime.now());
                       setState(() {});
-                    }
-                  ),
-              
-                  customMultilineField(
+                    }),
+                customMultilineField(
                     label: 'Ajoutez une description à la video (optionnel)',
                     controller: _descriptionController,
                     maxLength: 200,
-                    maxLines: 4
-                  ),
-              
-                  AspectRatio(
-                    aspectRatio: 16/9,
+                    maxLines: 4),
+                AspectRatio(
+                    aspectRatio: 16 / 9,
                     child: Builder(
-                      builder: (context){
-                        if (_chewieController != null){
+                      builder: (context) {
+                        if (_chewieController != null) {
                           return Chewie(
                             controller: _chewieController!,
                           );
@@ -213,51 +235,51 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
                           );
                         }
                       },
-                    )
-                  ),
-              
-                  const SizedBox(height: 10),
-              
-                  Row(
+                    )),
+                const SizedBox(height: 10),
+                Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton.icon(
-                        onPressed: (){
-                          setVideo(dynamic file) async{
+                        onPressed: () {
+                          setVideo(dynamic file) async {
                             File? video = await file;
-                            if (video != null){
+                            if (video != null) {
                               initializeVideoPlayer(video);
                             }
                           }
+
                           pickModeSelectionBottomSheet(
-                            context: context,
-                            setter: setVideo,
-                            photo: false,
-                            optionnalText: "La taille de la vidéo ne doit pas excéder 300Mo"
-                          );
+                              context: context,
+                              setter: setVideo,
+                              photo: false,
+                              optionnalText:
+                                  "La taille de la vidéo ne doit pas excéder 300Mo");
                         },
                         icon: const Icon(Icons.replay),
                         label: const Text("Rééssayer"),
                         iconAlignment: IconAlignment.start,
                         style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(Colors.blue),
-                          foregroundColor: WidgetStateProperty.all(Colors.white),
-                          overlayColor: WidgetStateProperty.all(Colors.white12)
-                        ),
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.blue),
+                            foregroundColor:
+                                WidgetStateProperty.all(Colors.white),
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.white12)),
                       ),
-              
                       IconButton(
                         onPressed: () => submit(),
-                        icon: const Icon(Icons.send, size: 35,),
-                        style: ButtonStyle(
-                          iconColor: WidgetStateProperty.all(Colors.green),
-                          overlayColor: WidgetStateProperty.all(Colors.grey.shade300)
+                        icon: const Icon(
+                          Icons.send,
+                          size: 35,
                         ),
+                        style: ButtonStyle(
+                            iconColor: WidgetStateProperty.all(Colors.green),
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.grey.shade300)),
                       )
-                    ]
-                  )
-                ]
-              ),
+                    ])
+              ]),
             ),
           ),
         ),

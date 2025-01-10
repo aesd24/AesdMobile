@@ -32,7 +32,7 @@ class _SingerShowState extends State<SingerShow> {
                   child: Material(
                     color: Colors.transparent,
                     child: Ink.image(
-                      image: NetworkImage(widget.singer.user.photo),
+                      image: NetworkImage(widget.singer.user.photo!),
                       fit: BoxFit.cover,
                       width: 128,
                       height: 128,

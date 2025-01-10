@@ -64,7 +64,7 @@ class ChurchListItem extends StatelessWidget {
                           width: 8,
                         ),
                         Text(
-                          church.type.description,
+                          church.type!,
                           style: const TextStyle(
                             color: kSecondaryColor,
                             fontSize: 12,

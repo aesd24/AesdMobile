@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Church extends ChangeNotifier {
-  int _currentPage = 0;
+  final int _currentPage = 0;
   late ChurchPaginator _paginator;
   final ChurchRequest _request = ChurchRequest();
   final List<ChurchModel> _churches = [];
@@ -17,6 +17,7 @@ class Church extends ChangeNotifier {
     final response = await _request.all(page: _currentPage);
     if (response.statusCode == 200) {
       final data = response.data;
+      //print(data);
       _paginator = ChurchPaginator.fromJson(data);
       if (_churches.isNotEmpty && _currentPage == 0) {
         _churches.clear();
@@ -30,19 +31,21 @@ class Church extends ChangeNotifier {
       var response = await _request.one();
       return response;
     } catch (e) {
-      print("Une erreur est survenue lors de la récupération de l'église");
+      //print("Une erreur est survenue lors de la récupération de l'église");
     }
   }
 
   Future create({required Map<String, dynamic> data}) async {
     FormData formData = FormData.fromMap({
       'name': data['name'],
-      'address': data['location'],
+      'adresse': data['location'],
       'phone': data['phone'],
       'email': data['email'],
       'description': data['description'],
       'type_church': data['churchType'],
       'logo': await MultipartFile.fromFile(data['image'].path),
+      'attestation_file_path':
+          await MultipartFile.fromFile(data['attestation_file'].path),
       'is_main': data['isMain'],
       'main_church_id': data['mainChurchId']
     });

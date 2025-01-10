@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:aesd_app/components/bottom_sheets.dart';
-import 'package:aesd_app/components/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -31,7 +30,29 @@ class _CreatePostFormState extends State<CreatePostForm> {
       isLoading: false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Faire un post"),
+          actions: [
+            IconButton(
+              onPressed: () => pickModeSelectionBottomSheet(
+                context: context,
+                setter: (value) => setImage(value)
+              ),
+              icon: const FaIcon(FontAwesomeIcons.camera),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 7),
+              child: TextButton.icon(
+                onPressed: (){},
+                label: Text("Poster"),
+                iconAlignment: IconAlignment.end,
+                icon: FaIcon(FontAwesomeIcons.paperPlane),
+                style: ButtonStyle(
+                  iconColor: WidgetStateProperty.all(Colors.white),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  backgroundColor: WidgetStateProperty.all(Colors.green)
+                ),
+              ),
+            )
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(10),
@@ -87,42 +108,22 @@ class _CreatePostFormState extends State<CreatePostForm> {
                     ),
                   ),
 
-                customMultilineField(
-                    label: "Ecrivez le contenu du post",
-                    maxLength: 1000,
-                    maxLines: image != null ? 6 : 10,
-                    controller: contentController),
-
-                // zone pour les boutons
-                Row(
-                  mainAxisAlignment: image == null
-                      ? MainAxisAlignment.spaceBetween
-                      : MainAxisAlignment.end,
-                  children: [
-                    if (image == null)
-                      IconButton(
-                          onPressed: () => pickModeSelectionBottomSheet(
-                              context: context, setter: setImage),
-                          icon: FaIcon(
-                            FontAwesomeIcons.solidImage,
-                            size: 35,
-                            color: Colors.blue.shade300,
-                          )),
-                    IconButton(
-                      onPressed: () => print("Soumettre"),
-                      icon: const FaIcon(
-                        FontAwesomeIcons.paperPlane,
-                        size: 35,
-                      ),
-                      style: ButtonStyle(
-                          elevation: WidgetStateProperty.all(0),
-                          overlayColor:
-                              WidgetStateProperty.all(Colors.grey.shade300),
-                          foregroundColor:
-                              WidgetStateProperty.all(Colors.green)),
-                    )
-                  ],
-                )
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Que voulez vous partager aujourd'hui ?",
+                      hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Colors.grey
+                      )
+                    ),
+                    controller: contentController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: image == null ? 10 : 6,
+                  ),
+                ),
               ],
             ),
           ),

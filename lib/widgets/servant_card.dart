@@ -26,7 +26,7 @@ class ServantCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(servant.user.photo),
+                      image: NetworkImage(servant.user.photo!),
                     ),
                   ),
                 ),
