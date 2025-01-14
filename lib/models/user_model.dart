@@ -10,8 +10,10 @@ class UserModel {
   late String accountType;
   late ChurchModel? church;
 
-  UserModel();
-
+  static String get servant => "serviteur_de_dieu";
+  static String get faithful => "fidele";
+  static String get singer => "chantre";
+  
   UserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];

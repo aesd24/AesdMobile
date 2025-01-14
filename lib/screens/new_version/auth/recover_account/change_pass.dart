@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/field.dart';
-import 'package:aesd_app/widgets/auth_overlay_loading.dart';
+import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

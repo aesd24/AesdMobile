@@ -1,9 +1,13 @@
 import 'package:aesd_app/requests/dio_client.dart';
 
 class PostRequest extends DioClient {
-  all({dynamic queryParameters}) async {
+  Future all() async {
     final client = await getApiClient();
+    return client.get('/posts');
+  }
 
-    return client.get('/posts', queryParameters: queryParameters);
+  Future create({required Object data}) async {
+    final client = await getApiClient();
+    return client.post('/posts', data: data);
   }
 }

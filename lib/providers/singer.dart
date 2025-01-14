@@ -1,11 +1,11 @@
 import 'package:aesd_app/models/paginator.dart';
 import 'package:aesd_app/models/singer_model.dart';
-import 'package:aesd_app/services/web/singer_service.dart';
+import 'package:aesd_app/requests/singer_request.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 class Singer extends ChangeNotifier {
-  final SingerService _servantService = SingerService();
+  final SingerRequest _servantService = SingerRequest();
   List<SingerModel> _singers = [];
   late Paginator _paginator;
 

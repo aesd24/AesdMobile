@@ -4,7 +4,7 @@ import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/new_version/auth/recover_account/validation.dart';
-import 'package:aesd_app/widgets/auth_overlay_loading.dart';
+import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

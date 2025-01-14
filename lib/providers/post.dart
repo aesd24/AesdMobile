@@ -1,33 +1,22 @@
-import 'package:aesd_app/models/paginator.dart';
 import 'package:aesd_app/models/post_model.dart';
-import 'package:aesd_app/services/web/post_service.dart';
+import 'package:aesd_app/requests/post_request.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 class PostProvider extends ChangeNotifier {
-  final PostService _postService = PostService();
-  List<PostModel> _posts = [];
-  late Paginator _paginator;
+  final PostRequest _postService = PostRequest();
 
-  Future create() async {
-    //
+  Future create(Map<String, dynamic> data) async {
+    final FormData formData = FormData.fromMap({
+      'title': data['title'],
+      'content': data['content'],
+      'media': data['media'],
+      'media_type': data['media_type']
+    });
+    _postService.create(data: formData);
   }
 
-  Future<Tuple2<List<PostModel>, Paginator>> all(
-      {dynamic queryParameters}) async {
-    _posts = [];
-    try {
-      final data = await _postService.all(queryParameters: queryParameters);
-
-      data['data'].forEach((d) {
-        _posts.add(PostModel.fromJson(d));
-      });
-
-      _paginator = Paginator.fromJson(data);
-    } catch (e) {
-      //
-    }
-
-    return Tuple2(_posts, _paginator);
+  Future<List<PostModel>> all() async {
+    return await _postService.all();
   }
 }

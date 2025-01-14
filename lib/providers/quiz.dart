@@ -1,11 +1,11 @@
 import 'package:aesd_app/models/paginator.dart';
 import 'package:aesd_app/models/quiz_model.dart';
-import 'package:aesd_app/services/web/quiz_service.dart';
+import 'package:aesd_app/requests/quiz_request.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 class Quiz extends ChangeNotifier {
-  final QuizService _quizService = QuizService();
+  final QuizRequest _quizService = QuizRequest();
   List<QuizModel> _quizzes = [];
   late Paginator _paginator;
 

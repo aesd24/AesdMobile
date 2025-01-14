@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:aesd_app/widgets/auth_overlay_loading.dart';
+import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {

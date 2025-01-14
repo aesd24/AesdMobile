@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/screens/new_version/auth/recover_account/change_pass.dart';
-import 'package:aesd_app/widgets/auth_overlay_loading.dart';
+import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 

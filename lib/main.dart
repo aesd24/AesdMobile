@@ -3,21 +3,12 @@ import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/splash_screen.dart';
-//import 'package:aesd_app/screens/splash_screen.dart';
 import '/providers/auth.dart';
-import 'providers/chat.dart';
 import 'providers/church.dart';
-import 'providers/donation.dart';
-import 'providers/message.dart';
 import 'providers/quiz.dart';
 import 'providers/servant.dart';
 import 'providers/singer.dart';
-import 'providers/forum.dart';
 import 'providers/post.dart';
-import 'providers/job.dart';
-import 'providers/course.dart';
-import 'providers/participant.dart';
-import 'utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -32,16 +23,9 @@ void main() async {
       ChangeNotifierProvider(create: (context) => Church()),
       ChangeNotifierProvider(create: (context) => Servant()),
       ChangeNotifierProvider(create: (context) => Singer()),
-      ChangeNotifierProvider(create: (context) => Forum()),
       ChangeNotifierProvider(create: (context) => PostProvider()),
       ChangeNotifierProvider(create: (context) => Ceremonies()),
-      ChangeNotifierProvider(create: (context) => Job()),
-      ChangeNotifierProvider(create: (context) => Course()),
-      ChangeNotifierProvider(create: (context) => Donation()),
       ChangeNotifierProvider(create: (context) => Quiz()),
-      ChangeNotifierProvider(create: (context) => Chat()),
-      ChangeNotifierProvider(create: (context) => Message()),
-      ChangeNotifierProvider(create: (context) => Participant()),
       ChangeNotifierProvider(create: (context) => CinetPay())
     ],
     child: const MyApp(),
@@ -77,7 +61,6 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       home: const SplashScreen(),
-      routes: routes,
     );
   }
 }

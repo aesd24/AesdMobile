@@ -8,7 +8,6 @@ import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/new_version/church/creation/main.dart';
 import 'package:aesd_app/screens/new_version/church/detail.dart';
-import 'package:aesd_app/screens/new_version/home.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -51,59 +50,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
     }
     return returned;
   }
-
-  // fonction a éffectué au clique du bouton
-  _chooseChurch() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Choisir l'église ?"),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "Une demande de validation sera envoyé au serviteur principale."),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "En attendant la réponse, vous profiterez de l'application en tant que fidèle."),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text("Choisir cette église ?"),
-                )
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const HomePage()),
-                    (route) => route.isFirst),
-                style: ButtonStyle(
-                    foregroundColor: WidgetStateProperty.all(Colors.green),
-                    overlayColor:
-                        WidgetStateProperty.all(Colors.green.shade100)),
-                child: const Text("Oui"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ButtonStyle(
-                    foregroundColor: WidgetStateProperty.all(Colors.red),
-                    overlayColor: WidgetStateProperty.all(Colors.red.shade100)),
-                child: const Text('Non'),
-              )
-            ],
-          );
-        });
-  }
-
+  
   Future loadChurches() async {
     // Load churches from API
     try {

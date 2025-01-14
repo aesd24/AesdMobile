@@ -198,14 +198,24 @@ class _HomePageState extends State<HomePage> {
                   child: Text("Chargement..."),
                 ),
         ][_currentPageIndex],
-        floatingActionButton: _currentPageIndex == 1 ? FloatingActionButton(
-          onPressed: () => pushForm(context, destination: const CreatePostForm()),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          shape: CircleBorder(),
-          child: FaIcon(FontAwesomeIcons.plus),
-        ) : null,
+        floatingActionButton: getFloatingButton(),
       ),
+    );
+  }
+
+  FloatingActionButton? getFloatingButton(){
+    if (_currentPageIndex != 1){
+      return null;
+    }
+    if (user!.accountType != UserModel.servant){
+      return null;
+    }
+    return FloatingActionButton(
+      onPressed: () => pushForm(context, destination: const CreatePostForm()),
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
+      shape: CircleBorder(),
+      child: FaIcon(FontAwesomeIcons.plus),
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'package:aesd_app/models/paginator.dart';
 import 'package:aesd_app/models/servant_model.dart';
-import 'package:aesd_app/services/web/servant_service.dart';
+import 'package:aesd_app/requests/servant_request.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 class Servant extends ChangeNotifier {
-  final ServantService _servantService = ServantService();
+  final ServantRequest _servantService = ServantRequest();
   List<ServantModel> _servants = [];
   late Paginator _paginator;
 
