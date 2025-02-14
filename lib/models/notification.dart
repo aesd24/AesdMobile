@@ -1,5 +1,5 @@
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/new_version/notifications/detail.dart';
+import 'package:aesd_app/screens/notifications/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

@@ -1,6 +1,6 @@
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/user_model.dart';
-import 'package:aesd_app/screens/new_version/social/social.dart';
+import 'package:aesd_app/screens/social/social.dart';
 import 'package:flutter/material.dart';
 
 class SocialHelpModel {

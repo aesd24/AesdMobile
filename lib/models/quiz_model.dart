@@ -1,6 +1,6 @@
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/question_model.dart';
-import 'package:aesd_app/screens/new_version/quiz/main.dart';
+import 'package:aesd_app/screens/quiz/main.dart';
 import 'package:flutter/material.dart';
 
 class QuizModel {

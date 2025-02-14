@@ -13,3 +13,10 @@ pushReplaceForm(BuildContext context, {required Widget destination}) {
 closeForm(BuildContext context) {
   Navigator.of(context).pop();
 }
+
+closeAllAndPush(BuildContext context, Widget page) {
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => page),
+    (Route<dynamic> route) => false,
+  );
+}

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Widget customRoundedAvatar({
   required File? image,
@@ -51,51 +52,59 @@ Widget imageSelectionBox({
   borderColor = borderColor ?? Theme.of(context).colorScheme.primary;
   Size size = MediaQuery.of(context).size;
 
-  return GestureDetector(
-    onTap: onClick,
-    child: Container(
-      height: height ?? size.height * .3,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: picture == null ? Border.all(color: borderColor, width: 2) : null,
-        borderRadius: BorderRadius.circular(7),
-        color: picture == null ? backgroundColor : null,
-        image: picture != null ? DecorationImage(
-          image: FileImage(picture),
-          fit: BoxFit.cover
-        ) : null
-      ),
-      child: picture == null ? Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: foregroundColor,
-                fontSize: 18,
+  return Padding(
+    padding: const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 10
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: onClick,
+          child: Container(
+            height: height ?? size.height * .3,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color: picture == null ? backgroundColor : null,
+              image: picture != null ? DecorationImage(
+                image: FileImage(picture),
+                fit: BoxFit.cover
+              ) : null,
+            ),
+            child: picture == null ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  FaIcon(icon, size: 40, color: foregroundColor)
+                ],
+              )
+            ) : overlayText != null ? Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(100),
+                borderRadius: BorderRadius.circular(7)
               ),
-            ),
-            const SizedBox(height: 20),
-            Icon(icon, size: 40, color: foregroundColor,)
-          ],
-        )
-      ) : overlayText != null ? Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(7)
-        ),
-        child: Center(
-          child: Text(
-            overlayText,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Colors.white
-            ),
+              child: Center(
+                child: Text(
+                  overlayText,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Colors.white
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ) : null,
           ),
         ),
-      ) : null,
+        Padding(
+          padding: const EdgeInsets.only(top: 3),
+          child: Text(label, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+            color: Colors.grey.shade600
+          ),),
+        )
+      ],
     ),
   );
 }

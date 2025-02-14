@@ -1,7 +1,7 @@
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/new_version/home.dart';
+import 'package:aesd_app/screens/home/home.dart';
 import 'package:aesd_app/providers/auth.dart';
-import 'package:aesd_app/screens/new_version/auth/login.dart';
+import 'package:aesd_app/screens/auth/login.dart';
 //import 'package:aesd_app/screens/home_screen.dart';
 //import 'package:aesd_app/services/session/storage_auth_token_session.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     Future.delayed(const Duration(seconds: 5), () {
-      pushForm(context,
+      pushReplaceForm(context,
           destination: logged ? const HomePage() : const LoginPage());
     });
   }

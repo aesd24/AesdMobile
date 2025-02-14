@@ -1,5 +1,5 @@
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/new_version/events/event.dart';
+import 'package:aesd_app/screens/events/event.dart';
 import 'package:flutter/material.dart';
 
 class EventModel {
@@ -12,15 +12,16 @@ class EventModel {
     id = json['id'];
     title = json['title'];
     imageUrl = json['image_url'];
-    date = json['date'];
+    date = DateTime.parse(json['date']);
   }
 
   Widget getWidget(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => pushForm(context, destination: const EventPage()),
       child: Container(
-        width: double.infinity,
-        height: 170,
+        width: size.width * .9,
+        height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
@@ -48,15 +49,16 @@ class EventModel {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                    color: Colors.white, fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
               Text(
                 "${date.day}/${date.month}/${date.year}",
                 style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(color: Colors.white60),
+                .textTheme
+                .labelMedium!
+                .copyWith(color: Colors.white60),
               )
             ],
           ),

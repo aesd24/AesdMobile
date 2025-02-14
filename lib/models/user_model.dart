@@ -18,7 +18,7 @@ class UserModel {
     id = json['id'];
     name = json['name'];
     email = json['email'] ?? "";
-    adress = json['adress'] ?? "";
+    adress = json['adresse'] ?? "";
     phone = json['phone'] ?? "";
     photo = json['profile_photo_url'];
     accountType = json['account_type'];

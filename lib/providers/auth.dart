@@ -45,11 +45,11 @@ class Auth extends ChangeNotifier {
       "password": data["password"],
       "password_confirmation": data['password_confirmation'],
       "adresse": data['adress'],
-      "call": data['call'],
-      /* "id_picture": data["account_type"].toLowerCase() != "fidele"
+      "appel": data['call'],
+      "profile_photo": data["account_type"].toLowerCase() != "serviteur_de_dieu"
           ? await MultipartFile.fromFile(data['id_picture'].path,
               filename: "${data["name"]}_id_pic.jpg")
-          : null, */
+          : null,
       "id_card_recto": data["account_type"] == "serviteur_de_dieu"
           ? await MultipartFile.fromFile(data['id_card_recto'].path,
               filename: "${data["name"]}_card_recto.jpg")
@@ -63,7 +63,7 @@ class Auth extends ChangeNotifier {
     // envoie de la requête et le résultat est stocké dans la variable "response"
     final response = await request.register(data: formData);
 
-    //print(response.data);
+    print(response.data);
 
     if (response.statusCode == 201) {
       return response;
@@ -97,11 +97,65 @@ class Auth extends ChangeNotifier {
   }
 
   Future verifyOtp({required String otpCode}) async {
-    return await request.verifyOtp(code: otpCode);
+    var result = await request.verifyOtp(code: otpCode);
+    if (result.data["errors"] != null){
+      for (var error in result.data['errors']) {
+        throw HttpException(error);
+      }
+    }
+    if (result.statusCode >= 400){
+      throw HttpException(result.data['message']);
+    }
+    return result;
   }
 
   Future forgotPassword({required String email}) async {
-    return await request.forgotPassword(user_info: email);
+    var result = await request.forgotPassword(user_info: email);
+    if (result.data['errors'] != null) {
+      for (var error in result.data['errors']) {
+        throw HttpException(error);
+      }
+    }
+    if (result.statusCode >= 400){
+      throw HttpException(result.data['message']);
+    }
+    return result;
+  }
+
+  Future changePassword({
+    required String email,
+    required String newPassword,
+    required String newPasswordConfirmation
+  }) async {
+    final formData = FormData.fromMap({
+      "email": email,
+      "password": newPassword,
+      "password_confirmation": newPasswordConfirmation
+    });
+    final result = await request.changePassword(formData);
+    if (result.data['errors'] != null) {
+      for (var error in result.data['errors']) {
+        throw HttpException(error);
+      }
+    }
+    if (result.statusCode >= 400){
+      throw HttpException(result.data['message']);
+    }
+    return result;
+  }
+
+  Future modifyInformation(Map<String, dynamic> data) async {
+    final formData = FormData.fromMap(data);
+    final result = await request.modifyInformation(formData);
+    if (result.data['errors'] != null) {
+      for (var error in result.data['errors']) {
+        throw HttpException(error);
+      }
+    }
+    if (result.statusCode >= 400){
+      throw HttpException(result.data['message']);
+    }
+    return result;
   }
 
   // Récupérer le token de l'utilisateur

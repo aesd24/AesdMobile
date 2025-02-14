@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import 'dio_client.dart';
 
 class AuthRequest extends DioClient {
@@ -25,8 +27,18 @@ class AuthRequest extends DioClient {
     return await client.post('password/forgot', data: {'user_info': user_info});
   }
 
+  Future changePassword(FormData formdata) async {
+    final client = await getApiClient();
+    return await client.post('password/reset', data: formdata);
+  }
+
   Future verifyOtp({required String code}) async {
     final client = await getApiClient();
-    return client.post('password/verify', data: {'code': code});
+    return client.post('verify-Otp', data: {'otp_code': code});
+  }
+
+  Future modifyInformation(FormData formData) async {
+    final client = await getApiClient();
+    return await client.post('update-profile', data: formData);
   }
 }

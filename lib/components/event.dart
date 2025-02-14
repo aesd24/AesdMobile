@@ -1,5 +1,5 @@
 import "package:aesd_app/functions/navigation.dart";
-import "package:aesd_app/screens/new_version/events/event.dart";
+import "package:aesd_app/screens/events/event.dart";
 import "package:flutter/material.dart";
 
 Widget customEventBox(BuildContext context,

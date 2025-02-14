@@ -1,6 +1,6 @@
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/category.dart';
-import 'package:aesd_app/screens/new_version/posts/single_post.dart';
+import 'package:aesd_app/screens/posts/single_post.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
