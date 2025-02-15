@@ -46,7 +46,9 @@ class Auth extends ChangeNotifier {
       "password_confirmation": data['password_confirmation'],
       "adresse": data['adress'],
       "appel": data['call'],
-      "profile_photo": data["account_type"].toLowerCase() != "serviteur_de_dieu"
+      "manager": data['manager'],
+      "description": data['description'],
+      "profile_photo": data["account_type"].toLowerCase() == "serviteur_de_dieu"
           ? await MultipartFile.fromFile(data['id_picture'].path,
               filename: "${data["name"]}_id_pic.jpg")
           : null,
