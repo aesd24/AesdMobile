@@ -42,7 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       e.printError();
       showSnackBar(
         context: context,
-        message: "Erreur réseau. Vérifier votre connexion server",
+        message: "Erreur réseau. Vérifier votre connexion internet", 
         type: SnackBarType.danger
       );
     } on HttpException catch (e) {

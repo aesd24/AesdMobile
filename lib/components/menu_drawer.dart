@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/models/user_model.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/dashboard/dashboard.dart';
@@ -122,7 +123,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     icon: const FaIcon(FontAwesomeIcons.house),
                     onTap: () => pushReplaceForm(context,
                         destination: const HomePage())),
-                _customTile(
+                if (user.accountType == UserModel.servant) _customTile(
                     id: 1,
                     title: "Admin",
                     icon: const FaIcon(FontAwesomeIcons.gaugeHigh),
@@ -169,11 +170,13 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     icon: const FaIcon(FontAwesomeIcons.rightFromBracket),
                     iconAlignment: IconAlignment.end,
                     style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStateProperty.all(Colors.red.withOpacity(.2)),
-                        foregroundColor: WidgetStateProperty.all(Colors.red),
-                        overlayColor: WidgetStateProperty.all(
-                            Colors.red.withOpacity(.2))),
+                      backgroundColor:
+                        WidgetStateProperty.all(Colors.red.withAlpha(40)),
+                      foregroundColor: WidgetStateProperty.all(Colors.red),
+                      iconColor: WidgetStateProperty.all(Colors.red),
+                      overlayColor: 
+                        WidgetStateProperty.all(Colors.red.withAlpha(50))
+                    ),
                   ),
                 )
               ],

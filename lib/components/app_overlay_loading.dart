@@ -1,4 +1,3 @@
-import 'package:aesd_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
@@ -18,9 +17,9 @@ class _AppOverlayLoadingState extends State<AppOverlayLoading> {
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: widget.loading,
-      color: kBlack.withOpacity(0.5),
+      color: Colors.black.withAlpha(100),
       progressIndicator:
-          const CircularProgressIndicator(color: kBlack, strokeWidth: 3.0),
+          const CircularProgressIndicator(color: Colors.white, strokeWidth: 3.0),
       child: widget.child,
     );
   }

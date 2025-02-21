@@ -37,8 +37,9 @@ class _ProgramListPageState extends State<ProgramListPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => closeForm(context),
-          icon: FaIcon(FontAwesomeIcons.xmark)
+          icon: FaIcon(FontAwesomeIcons.xmark, size: 20)
         ),
+        title: Text("Programme", style: TextStyle(fontSize: 20))
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),

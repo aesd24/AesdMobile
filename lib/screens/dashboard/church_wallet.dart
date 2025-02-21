@@ -21,8 +21,9 @@ class _ChurchWalletState extends State<ChurchWallet> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => closeForm(context),
-          icon: FaIcon(FontAwesomeIcons.xmark)
+          icon: FaIcon(FontAwesomeIcons.xmark, size: 20)
         ),
+        title: Text('Porte-feuille', style: TextStyle(fontSize: 20)),
         elevation: 0,
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,

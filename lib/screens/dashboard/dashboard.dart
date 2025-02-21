@@ -19,24 +19,44 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        actions: const [
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        shadowColor: Colors.grey.shade300,
+        toolbarHeight: size.height * .1,
+        elevation: 2,
+        actions: [
           Padding(
             padding: EdgeInsets.only(right: 15),
-            child: CircleAvatar(),
+            child: Row(
+              children: [
+                Text(
+                  widget.user.name,
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+                SizedBox(width: 10),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(widget.user.photo!),
+                ),
+              ],
+            ),
           )
         ],
       ),
       drawer: MenuDrawer(pageIndex: 1),
       body: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              customContainer(
-                context,
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                margin: EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -52,90 +72,104 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               //if (widget.user.church != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text(
-                  "Mon église",
-                  style: Theme.of(context).textTheme.titleLarge,
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                      blurRadius: 2,
+                      offset: Offset(0.5, 0.5)
+                    )
+                  ]
                 ),
-              ),
-
-              //if (widget.user.church != null)
-              customContainer(context,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          const CircleAvatar(
-                            radius: 25,
-                            backgroundImage: NetworkImage(""
-                                //widget.user.church!.logo!
-                                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Text(
+                            "Mon église",
+                            style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          SizedBox(width: 10),
-                          Flexible(
-                              child: Text(
-                                  "Nom de l'église", //widget.user.church!.name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.clip)),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Wrap(
-                          runAlignment: WrapAlignment.start,
-                          spacing: 20,
-                          runSpacing: 20,
-                          children: [
-                            customSquaredButton(
-                              destination: const ChurchWallet(),
-                              color: Colors.green,
-                              icon: FontAwesomeIcons.wallet,
-                              label: "Porte-feuille"
-                            ),
-                            customSquaredButton(
-                              destination: ProgramListPage(),
-                              color: Colors.purple,
-                              icon: FontAwesomeIcons.calendar,
-                              label: "Programme"
-                            ),
-                            customSquaredButton(
-                              destination: CeremoniesManagement(),
-                              color: Colors.orange,
-                              icon: FontAwesomeIcons.film,
-                              label: "Cérémonies"
-                            ),
-                            customSquaredButton(
-                              color: Colors.blue,
-                              icon: FontAwesomeIcons.peopleGroup,
-                              label: "Communauté"
-                            ),
-                          ],
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Annexes",
-                            style: Theme.of(context).textTheme.titleMedium,
+                        
+                        PopupMenuButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.ellipsisVertical,
+                            size: 16,
+                            color: Colors.black
                           ),
-                          Card(
-                            elevation: 2,
-                            shadowColor: Colors.green,
-                            color: Colors.green.shade50,
-                            child: const ListTile(
-                              title: Text("Localisation de l'annexe"),
-                              subtitle: Text("Géré par: Serviteur de l'annexe"),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(value: "item 1", child: Text("Item 1")),
+                            PopupMenuItem(value: "item 2", child: Text("Item 2"))
+                          ]
+                        )
+                      ],
+                    ),
+
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 35,
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "<ChurchName>"
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30, bottom: 10),
+                            child: Wrap(
+                              runAlignment: WrapAlignment.center,
+                              alignment: WrapAlignment.center,
+                              spacing: 13,
+                              runSpacing: 10,
+                              children: [
+                                customIconButton(
+                                  label: "Porte-feuille",
+                                  icon: FontAwesomeIcons.wallet,
+                                  color: Colors.green,
+                                  destination: ChurchWallet()
+                                ),
+                                customIconButton(
+                                  destination: ProgramListPage(),
+                                  color: Colors.purple,
+                                  icon: FontAwesomeIcons.calendar,
+                                  label: "Programme"
+                                ),
+                                customIconButton(
+                                  destination: CeremoniesManagement(),
+                                  color: Colors.orange,
+                                  icon: FontAwesomeIcons.film,
+                                  label: "Cérémonies"
+                                ),
+                                customIconButton(
+                                  color: Colors.blue,
+                                  icon: FontAwesomeIcons.peopleGroup,
+                                  label: "Communauté"
+                                ),
+                              ],
                             ),
                           )
                         ],
                       ),
-                    ],
-                  ))
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -143,51 +177,26 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget customSquaredButton({
+  Widget customIconButton({
     required String label,
     required IconData icon,
     Color color = Colors.blue,
     Widget? destination
   }) {
-    return GestureDetector(
-      onTap: destination != null
-          ? () => pushForm(context, destination: destination)
-          : null,
-      child: Column(
-        children: [
-          Container(
-            height: 65,
-            width: 65,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border.all(width: 1.5, color: color),
-                color: color.withOpacity(.4),
-                borderRadius: BorderRadius.circular(7)),
-            child: Center(
-              child: FaIcon(
-                icon,
-                size: 25,
-                color: color,
-              ),
-            ),
-          ),
-          const SizedBox(height: 7),
-          Text(label)
-        ],
+    return IconButton(
+      onPressed: destination != null ?
+      () => pushForm(context, destination: destination) : null,
+      icon: FaIcon(icon, size: 18),
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          color.withAlpha(80)
+        ),
+        iconColor: WidgetStatePropertyAll(color),
+        overlayColor: WidgetStatePropertyAll(
+          color.withAlpha(100)
+        ),
       ),
     );
-  }
-
-  Container customContainer(BuildContext context, {required Widget child}) {
-    return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        margin: const EdgeInsets.symmetric(vertical: 7),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(7),
-            border: Border.all(
-                color: Theme.of(context).colorScheme.primary, width: 2)),
-        child: child);
   }
 
   Column customStat(BuildContext context,
@@ -202,10 +211,9 @@ class _DashboardState extends State<Dashboard> {
         ),
         Text(
           label,
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(color: Theme.of(context).colorScheme.primary),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary
+          ),
         )
       ],
     );
