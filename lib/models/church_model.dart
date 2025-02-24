@@ -16,6 +16,7 @@ class ChurchModel {
   late String? type;
   late List<ServantModel> servants = [];
   late ServantModel? mainServant;
+  late int mainServantId;
   late DayProgramModel? programm;
 
   ChurchModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +34,7 @@ class ChurchModel {
     mainServant = json['main_servant'] == null
         ? null
         : ServantModel.fromJson(json['main_servant']);
+    mainServantId = json['owner_servant_id'];
     json['servants']?.forEach((d) {
       servants.add(ServantModel.fromJson(d));
     });
@@ -40,6 +42,19 @@ class ChurchModel {
         ? DayProgramModel.fromJson(json['program'])
         : null;
   }
+
+  toJson() => {
+    'id': id,
+    'name': name,
+    'image': image,
+    'email': email,
+    'logo_url': logo,
+    'cover_url': cover,
+    'adresse': address,
+    'description': description,
+    'phone': phone,
+    'servant': mainServant
+  };
 
   Widget card(BuildContext context) {
     return Container(
@@ -126,7 +141,7 @@ class ChurchPaginator {
 
   ChurchPaginator.fromJson(Map<String, dynamic> json) {
     churches =
-        (json['data'] as List).map((e) => ChurchModel.fromJson(e)).toList();
+        (json['churches'] as List).map((e) => ChurchModel.fromJson(e)).toList();
     currentPage = json['current_page'] ?? 0;
     totalPages = json['total_pages'] ?? 1;
   }

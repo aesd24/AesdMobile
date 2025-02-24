@@ -12,7 +12,7 @@ class EventModel {
     id = json['id'];
     title = json['title'];
     imageUrl = json['image_url'];
-    date = DateTime.parse(json['date']);
+    date = json['dateTime'];
   }
 
   Widget getWidget(BuildContext context) {
@@ -32,14 +32,16 @@ class EventModel {
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.green.withOpacity(.7),
-                    Colors.green.withOpacity(.3),
-                  ])),
+            borderRadius: BorderRadius.circular(10),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.green.withAlpha(180),
+                Colors.green.withAlpha(80),
+              ]
+            )
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,

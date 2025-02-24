@@ -13,6 +13,7 @@ class User extends ChangeNotifier {
   getUserData() async {
     var response = await _request.getUserData();
     if (response.statusCode == 200) {
+      print(response.data);
       _userData = UserModel.fromJson(response.data);
     } else {
       throw const HttpException("Impossible de récupérer les informations de l'utilisateur");

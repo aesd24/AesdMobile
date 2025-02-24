@@ -17,7 +17,7 @@ class Church extends ChangeNotifier {
     final response = await _request.all(page: _currentPage);
     if (response.statusCode == 200) {
       final data = response.data;
-      //print(data);
+      print(data);
       _paginator = ChurchPaginator.fromJson(data);
       if (_churches.isNotEmpty && _currentPage == 0) {
         _churches.clear();
@@ -26,10 +26,15 @@ class Church extends ChangeNotifier {
     }
   }
 
-  Future one() async {
+  Future one(int id) async {
     try {
-      var response = await _request.one();
-      return response;
+      var response = await _request.one(id);
+      print(response);
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception("Impossible de récupérer l'église");
+      }
     } catch (e) {
       //print("Une erreur est survenue lors de la récupération de l'église");
     }
@@ -56,6 +61,20 @@ class Church extends ChangeNotifier {
       return true;
     } else {
       throw const HttpException("La création de l'église à échoué. Rééssayez");
+    }
+  }
+
+  Future subscribe(int id) async {
+    try {
+      var response = await _request.subscribe(id);
+      print(response);
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw const HttpException("L'inscription à l'église à échoué.");
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

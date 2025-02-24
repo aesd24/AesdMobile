@@ -140,7 +140,9 @@ class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
 
       if (widget.editMode == true) {
         // obtention de l'église du serviteur
-        var result = await Provider.of<Church>(context, listen: false).one();
+        var result = await Provider.of<Church>(context, listen: false).one(
+          0
+        );
         ChurchModel church = ChurchModel.fromJson(result.data['church']);
 
         //mise en place des données dans les champs

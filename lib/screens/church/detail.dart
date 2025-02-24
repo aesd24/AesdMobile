@@ -2,8 +2,11 @@ import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/models/day_program.dart';
 import 'package:aesd_app/models/event.dart';
+import 'package:aesd_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:provider/provider.dart';
 
 class ChurchDetailPage extends StatefulWidget {
   ChurchDetailPage({super.key, required this.church});
@@ -15,6 +18,7 @@ class ChurchDetailPage extends StatefulWidget {
 }
 
 class _ChurchDetailPageState extends State<ChurchDetailPage> {
+  bool _isLoading = false;
   int _pageIndex = 0;
   setPageIndex(int index) {
     setState(() {
@@ -22,149 +26,211 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
     });
   }
 
+  final _pageController = PageController(initialPage: 0);
+
+  handleSubscribtion() async {
+    /* try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Church>(context, listen: false).subscribe(
+        widget.church.id,
+      );
+    } on HttpException {
+      showSnackBar(context: context, message: "L'abonnement a échoué !");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    } */
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image de présentation de l'église
-              Container(
-                height: 250,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        image: NetworkImage(widget.church.image),
-                        fit: BoxFit.cover)),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
+    final user = Provider.of<User>(context).user;
+    bool subscribed = widget.church.id == user.church?.id;
+
+    return LoadingOverlay(
+      isLoading: _isLoading,
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image de présentation de l'église
+                Container(
+                  height: 250,
+                  width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(.1),
-                            Colors.black.withOpacity(.6)
-                          ])),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.grey,
-                          backgroundImage: widget.church.logo != null
-                              ? NetworkImage(widget.church.logo!)
-                              : const AssetImage("assets/images/bg-5.jpg"),
+                      image: DecorationImage(
+                          image: NetworkImage(widget.church.image),
+                          fit: BoxFit.cover)),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withAlpha(25),
+                              Colors.black.withAlpha(160)
+                            ])),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.grey,
+                            backgroundImage: widget.church.logo != null
+                                ? NetworkImage(widget.church.logo!)
+                                : const AssetImage("assets/images/bg-5.jpg"),
+                          ),
                         ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                              child: Text(
-                            widget.church.name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.clip,
-                          )),
-                          const SizedBox(height: 7),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                  child: Text(
-                                widget.church.mainServant != null
-                                    ? widget.church.mainServant!.name
-                                    : "Inconnu",
-                                style: Theme.of(context)
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                                child: Text(
+                              widget.church.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.clip,
+                            )),
+                            const SizedBox(height: 7),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                  widget.church.mainServant != null
+                                      ? widget.church.mainServant!.name
+                                      : "Inconnu",
+                                  style: Theme.of(context)
                                     .textTheme
-                                    .labelLarge!
-                                    .copyWith(color: Colors.white),
-                                overflow: TextOverflow.clip,
-                              )),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const Icon(
-                                    Icons.location_pin,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    widget.church.address,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge!
-                                        .copyWith(color: Colors.white),
-                                  )
-                                ],
-                              )
-                            ],
-                          )
-                        ],
+                                    .labelMedium!
+                                    .copyWith(color: Colors.white.withAlpha(170)),
+                                  overflow: TextOverflow.clip,
+                                )),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const Icon(
+                                      Icons.location_pin,
+                                      size: 15,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      widget.church.address,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium!
+                                          .copyWith(color: Colors.white),
+                                    )
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+      
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextButton.icon(
+                      onPressed: () => handleSubscribtion(),
+                      icon: FaIcon(
+                        subscribed ? FontAwesomeIcons.bookmark :
+                        FontAwesomeIcons.solidBookmark
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add),
-                    iconAlignment: IconAlignment.end,
-                    label: const Text("S'abonner"),
-                    style: ButtonStyle(
+                      iconAlignment: IconAlignment.end,
+                      label: Text(subscribed ? "Se désabonner" : "S'abonner"),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          subscribed ? Colors.transparent : Colors.blue
+                        ),
                         overlayColor: WidgetStateProperty.all(
-                            Colors.blue.withOpacity(.4)),
-                        foregroundColor: WidgetStateProperty.all(Colors.blue),
-                        shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                            side:
-                                const BorderSide(width: 2, color: Colors.blue),
-                            borderRadius: BorderRadius.circular(100)))),
+                          subscribed ? Colors.red.withAlpha(110)
+                          : Colors.white.withAlpha(110)
+                        ),
+                        iconColor: WidgetStateProperty.all(
+                          subscribed ? Colors.red : Colors.white
+                        ),
+                        foregroundColor: WidgetStateProperty.all(
+                          subscribed ? Colors.red : Colors.white
+                        ),
+                        shape: subscribed ? WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            side: const BorderSide(width: 2, color: Colors.red),
+                            borderRadius: BorderRadius.circular(100)
+                          )
+                        ) : null
+                      ),
+                    ),
                   ),
                 ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(top: 5, bottom: 30),
-                child: Text(widget.church.description),
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  customNavitem(context,
+      
+                Padding(
+                  padding: const EdgeInsets.only(top: 5, bottom: 30),
+                  child: Text(widget.church.description),
+                ),
+      
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    customNavitem(context,
                       currentIndex: _pageIndex, index: 0, label: "Programme"),
-                  customNavitem(context,
+                    customNavitem(context,
                       currentIndex: _pageIndex, index: 1, label: "Céremonies"),
-                  customNavitem(context,
+                    customNavitem(context,
                       currentIndex: _pageIndex, index: 2, label: "Communauté"),
-                ],
-              ),
-
-              [const Program(), const Ceremonies(), const Community()][_pageIndex]
-            ],
+                  ],
+                ),
+      
+                SizedBox(height: 20),
+      
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * .6,
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (value) => setPageIndex(value),
+                      children: [
+                        Placeholder(),
+                        Ceremonies(),
+                        Community()
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -174,7 +240,13 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
   InkWell customNavitem(BuildContext context,
       {required int index, required String label, required int currentIndex}) {
     return InkWell(
-        onTap: () => setPageIndex(index),
+        onTap: () {
+          _pageController.animateToPage(
+            index,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.ease,
+          );
+        },
         child: AnimatedContainer(
           padding: const EdgeInsets.all(7),
           duration: const Duration(milliseconds: 300),
@@ -187,7 +259,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
             label,
             style: Theme.of(context)
                 .textTheme
-                .bodyLarge!
+                .bodyMedium!
                 .copyWith(color: index == currentIndex ? Colors.green : null),
           ),
         ));
