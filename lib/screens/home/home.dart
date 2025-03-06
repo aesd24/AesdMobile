@@ -57,11 +57,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         isLoading = true;
       });
-      await Provider.of<User>(context, listen: false)
-          .getUserData()
-          .then((value) {
-        user = Provider.of<User>(context, listen: false).user;
-      });
+      await Provider.of<User>(context, listen: false).getUserData();
+      user = Provider.of<User>(context, listen: false).user;
     } on HttpException catch (e) {
       showSnackBar(context: context, message: e.message, type: SnackBarType.danger);
       messageBox(
@@ -182,35 +179,39 @@ class _HomePageState extends State<HomePage> {
         drawer: MenuDrawer(
           pageIndex: 0,
         ),
-        body: [
-          user != null
-              ? FrontPage(userChurch: user!.church, setOpacity: setOpacity)
-              : const Center(
-                  child: Text("Chargement..."),
-                ),
+        body: user != null ? [
+          Consumer<User>(
+            builder: (context, userProvider, child) {
+              return FrontPage(
+                churchId: userProvider.user.churchId,
+                setOpacity: setOpacity
+              );
+            },
+          ),
           const CommunityPage(),
-          /* const SocialDemandes(), */
-          user != null
-              ? ProfilPage(user: user!)
-              : const Center(
-                  child: Text("Chargement..."),
-                ),
-        ][_currentPageIndex],
-        floatingActionButton: getFloatingButton(),
+          Consumer<User>(
+            builder: (context, userProvider, child) {
+              return ProfilPage(user: userProvider.user);
+            },
+          ),
+        ][_currentPageIndex] : Center(
+          child: Text('chargement...'),
+        ),
+        floatingActionButton: getFloatingButton(user != null ? user!.accountType : ""),
       ),
     );
   }
 
-  FloatingActionButton? getFloatingButton(){
+  FloatingActionButton? getFloatingButton(String accountType){
     if (_currentPageIndex != 1){
       return null;
     }
-    if (user!.accountType != UserModel.servant){
+    if (accountType != UserModel.servant){
       return null;
     }
     return FloatingActionButton(
       onPressed: () => pushForm(context, destination: const CreatePostForm()),
-      backgroundColor: Colors.blue,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Colors.white,
       shape: CircleBorder(),
       child: FaIcon(FontAwesomeIcons.plus),

@@ -20,10 +20,11 @@ class Type {
 }
 
 List<Type> churchTypes = [
-  Type(code: "CAT", name: "Catholique"),
-  Type(code: "EVE", name: "Evangélique"),
-  Type(code: "ORT", name: "Orthodoxe"),
-  Type(code: "PRO", name: "Protestante")
+  Type(code: "Catholique", name: "Catholique"),
+  Type(code: "Evangelique", name: "Evangélique"),
+  Type(code: "Orthodoxe", name: "Orthodoxe"),
+  Type(code: "Protestante", name: "Protestante"),
+  Type(code: "Baptiste", name: "Baptiste")
 ];
 
 List<Type> servantTypes = [

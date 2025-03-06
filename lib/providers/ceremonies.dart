@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aesd_app/models/ceremony.dart';
 import 'package:aesd_app/requests/ceremony_request.dart';
 import 'package:dio/dio.dart';
@@ -9,7 +11,7 @@ class Ceremonies extends ChangeNotifier {
 
   get ceremonies => _ceremonies;
 
-  Future all() async {
+  Future all({required int churchId}) async {
     final response = await _handler.getAll();
     if (response.statusCode == 200){
       _ceremonies.clear();
@@ -17,10 +19,9 @@ class Ceremonies extends ChangeNotifier {
         _ceremonies.add(CeremonyModel.fromJson(element));
       }
       notifyListeners();
-      return _ceremonies;
     }
     else {
-      throw Exception("Impossible d'obtenir la liste des cérémonies");
+      throw HttpException("Impossible d'obtenir la liste des cérémonies");
     }
   }
 
@@ -29,9 +30,16 @@ class Ceremonies extends ChangeNotifier {
       "title" : data['title'],
       "description" : data['description'],
       "event_date": data['date'],
-      "video" : await MultipartFile.fromFile(data['video'])
+      "media" : await MultipartFile.fromFile(data['movie']),
+      "id_eglise": data['church_id'],
     });
 
-    return _handler.create(body);
+    var response = await _handler.create(body);
+    print(response);
+    if (response.statusCode == 201) {
+      return response.data;
+    } else {
+      throw HttpException("erreur: ${response.data['message']}");
+    }
   }
 }

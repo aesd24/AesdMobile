@@ -30,17 +30,17 @@ class _CommunityPageState extends State<CommunityPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: List.generate(3, (value) {
-                return _posts[value]
-                    .getWidget(context, stateNotifier: stateNotifier);
-              }),
+      child: Expanded(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(Duration(seconds: 2), stateNotifier());
+          },
+          child: ListView.builder(
+            itemCount: _posts.length,
+            itemBuilder: (context, index) => _posts[index].getWidget(
+              context, stateNotifier: stateNotifier
             ),
-          ],
+          ),
         ),
       ),
     );

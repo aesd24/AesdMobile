@@ -29,8 +29,8 @@ class ChurchModel {
     cover = json['cover_url'];
     address = json['adresse'];
     description = json['description'];
-    phone = "${json['dial_code']} + ${json['phone']}";
-    type = json['church_type'];
+    phone = json['phone'];
+    type = json['type_church'];
     mainServant = json['main_servant'] == null
         ? null
         : ServantModel.fromJson(json['main_servant']);
@@ -57,6 +57,8 @@ class ChurchModel {
   };
 
   Widget card(BuildContext context) {
+    String elipsedAdress = address.length > 10 ? '${address.substring(0, 10)}...' : address;
+    String elipsedEmail = email.length > 20 ? '${email.substring(0, 20)}...' : email;
     return Container(
       width: double.infinity,
       height: 180,
@@ -97,10 +99,10 @@ class ChurchModel {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      mainServant != null ? mainServant!.name : "Inconnu",
+                      elipsedEmail,
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Colors.white60,
-                          ),
+                        color: Colors.white60,
+                      ),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -111,7 +113,7 @@ class ChurchModel {
                         const SizedBox(width: 5),
                         Flexible(
                           child: Text(
-                            address,
+                            elipsedAdress,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleSmall!

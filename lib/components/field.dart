@@ -77,10 +77,14 @@ Widget customMultilineField({
 Widget customDateField({
   required String label,
   DateTime? value,
+  DateTime? firstDate,
+  DateTime? lastDate,
   ValueChanged<DateTime?>? onChanged,
   DateTimeFieldPickerMode? mode
 }) {
   return DateTimeField(
+    firstDate: firstDate,
+    lastDate: lastDate,
     decoration: InputDecoration(
       border: OutlineInputBorder(),
       label: Text(label),

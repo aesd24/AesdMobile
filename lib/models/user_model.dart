@@ -8,6 +8,7 @@ class UserModel {
   late String? photo;
   late String adress;
   late String accountType;
+  late int? churchId;
   late ChurchModel? church;
 
   static String get servant => "serviteur_de_dieu";
@@ -22,6 +23,7 @@ class UserModel {
     phone = json['phone'] ?? "";
     photo = json['profile_photo_url'];
     accountType = json['account_type'];
+    churchId = json['details'] == null ? null : json['details']['church_id'];
     church = json['church'] == null ? null : ChurchModel.fromJson(json['church']);
   }
 

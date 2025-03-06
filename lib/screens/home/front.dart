@@ -13,9 +13,9 @@ import 'package:aesd_app/screens/testimony/testimonies.dart';
 import 'package:flutter/material.dart';
 
 class FrontPage extends StatefulWidget {
-  FrontPage({super.key, required this.userChurch, required this.setOpacity});
+  FrontPage({super.key, required this.churchId, required this.setOpacity});
 
-  var userChurch;
+  int? churchId;
   Function(double) setOpacity;
 
   @override
@@ -104,9 +104,9 @@ class _FrontPageState extends State<FrontPage> {
                                     iconUrl: "assets/icons/church.png",
                                     text: "Mon église",
                                     onTap: () => pushForm(context,
-                                        destination: widget.userChurch != null
+                                        destination: widget.churchId != null
                                             ? ChurchDetailPage(
-                                                church: widget.userChurch,
+                                                churchId: widget.churchId!,
                                               )
                                             : const ChooseChurch())),
                                 customNavItem(

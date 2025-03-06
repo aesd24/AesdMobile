@@ -18,6 +18,7 @@ class User extends ChangeNotifier {
     } else {
       throw const HttpException("Impossible de récupérer les informations de l'utilisateur");
     }
+    notifyListeners();
   }
 
   // sauvegarde des données d'enregistrement ou de mise a jour d'utilisateur
@@ -29,5 +30,6 @@ class User extends ChangeNotifier {
     data.forEach((key, value) {
       _registerData[key] = value;
     });
+    notifyListeners();
   }
 }

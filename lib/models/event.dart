@@ -12,7 +12,7 @@ class EventModel {
     id = json['id'];
     title = json['title'];
     imageUrl = json['image_url'];
-    date = json['dateTime'];
+    date = json['date'];
   }
 
   Widget getWidget(BuildContext context) {

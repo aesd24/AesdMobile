@@ -10,33 +10,66 @@ class Church extends ChangeNotifier {
   late ChurchPaginator _paginator;
   final ChurchRequest _request = ChurchRequest();
   final List<ChurchModel> _churches = [];
+  final List<ChurchModel> _userChurches = [];
 
   List<ChurchModel> get churches => _churches;
+  List<ChurchModel> get userChurches => _userChurches;
+
+  Future getUserChurches() async {
+    final response = await _request.userChurches();
+    print(response);
+    if (response.statusCode == 200) {
+      var data = response.data['data']['churches'];
+      _userChurches.clear();
+      for (var church in data) {
+        _userChurches.add(ChurchModel.fromJson(church));
+      }
+    } else {
+      throw HttpException("erreur : ${response.data['message']}");
+    }
+    notifyListeners();
+  }
 
   Future fetchChurches() async {
     final response = await _request.all(page: _currentPage);
     if (response.statusCode == 200) {
       final data = response.data;
-      print(data);
       _paginator = ChurchPaginator.fromJson(data);
       if (_churches.isNotEmpty && _currentPage == 0) {
         _churches.clear();
       }
       _churches.addAll(_paginator.churches);
+
+      notifyListeners();
     }
   }
 
-  Future one(int id) async {
-    try {
-      var response = await _request.one(id);
-      print(response);
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        throw Exception("Impossible de récupérer l'église");
-      }
-    } catch (e) {
-      //print("Une erreur est survenue lors de la récupération de l'église");
+  Future fetchChurch(int id) async {
+    var response = await _request.one(id);
+    print(response);
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception("Impossible de récupérer l'église");
+    }
+  }
+
+  Future update(int id, {required Map<String, dynamic> data}) async {
+    FormData formData = FormData.fromMap({
+      'name': data['name'],
+      'adresse': data['location'],
+      'phone': data['phone'],
+      'email': data['email'],
+      'description': data['description'],
+      'type_church': data['churchType'],
+      'logo': await MultipartFile.fromFile(data['image'].path),
+    });
+    var response = await _request.update(churchId: id, formData);
+    print(response);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw const HttpException("La modification de l'église à échoué. Rééssayez");
     }
   }
 
@@ -55,7 +88,7 @@ class Church extends ChangeNotifier {
       'main_church_id': data['mainChurchId']
     });
 
-    var response = await ChurchRequest().create(formData);
+    var response = await _request.create(formData);
     print(response);
     if (response.statusCode == 201) {
       return true;
@@ -64,17 +97,12 @@ class Church extends ChangeNotifier {
     }
   }
 
-  Future subscribe(int id) async {
-    try {
-      var response = await _request.subscribe(id);
-      print(response);
-      if (response.statusCode == 200) {
-        return response;
-      } else {
-        throw const HttpException("L'inscription à l'église à échoué.");
-      }
-    } catch (e) {
-      print(e);
+  Future subscribe(int id, {required bool willSubscribe}) async {
+    var response = await _request.subscribe(id, willSubscribe: willSubscribe);
+    if (response.statusCode == 200) {
+      return response.data['message'];
+    } else {
+      throw const HttpException("L'inscription à l'église à échoué.");
     }
   }
 }

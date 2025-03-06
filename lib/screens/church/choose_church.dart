@@ -146,7 +146,7 @@ class _ChooseChurchState extends State<ChooseChurch> {
                               return GestureDetector(
                                 onTap: () => pushForm(context,
                                     destination:
-                                        ChurchDetailPage(church: church)),
+                                        ChurchDetailPage(churchId: church.id)),
                                 child: church.card(context),
                               );
                             } else {

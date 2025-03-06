@@ -1,7 +1,13 @@
+import 'dart:io';
+import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/components/field.dart';
+import 'package:aesd_app/components/snack_bar.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/models/day_program.dart';
 import 'package:aesd_app/models/event.dart';
+import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,15 +15,17 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ChurchDetailPage extends StatefulWidget {
-  ChurchDetailPage({super.key, required this.church});
+  ChurchDetailPage({super.key, required this.churchId});
 
-  ChurchModel church;
+  int churchId;
 
   @override
   State<ChurchDetailPage> createState() => _ChurchDetailPageState();
 }
 
 class _ChurchDetailPageState extends State<ChurchDetailPage> {
+  ChurchModel? church;
+  UserModel? owner;
   bool _isLoading = false;
   int _pageIndex = 0;
   setPageIndex(int index) {
@@ -28,32 +36,146 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
 
   final _pageController = PageController(initialPage: 0);
 
-  handleSubscribtion() async {
-    /* try {
+  onSubscribe(subscribed) async {
+    if (subscribed) {
+      messageBox(
+        context,
+        title: "Désabonnement",
+        content: Text("Vous allez vous désabonner. Voulez-vous continuer ?"),
+        actions: [
+          TextButton(
+            onPressed: () => closeForm(context),
+            iconAlignment: IconAlignment.end,
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(Colors.grey),
+            ),
+            child: Text("Annuler"),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              closeForm(context);
+              handleSubscribtion(!subscribed);
+            },
+            icon: FaIcon(FontAwesomeIcons.xmark),
+            iconAlignment: IconAlignment.end,
+            label: Text("Me désabonner"),
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(Colors.red),
+              iconColor: WidgetStatePropertyAll(Colors.red),
+              overlayColor: WidgetStatePropertyAll(Colors.red.shade100),
+            ),
+          )
+        ]
+      );
+      return;
+    } else {
+      if (Provider.of<User>(context, listen: false).user.churchId != null){
+        messageBox(
+          context,
+          title: "Changer d'église",
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Vous serez désabonner à votre église actuelle."),
+              Text("Voulez-vous vraiment continuer ?"),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => closeForm(context),
+              iconAlignment: IconAlignment.end,
+              style: ButtonStyle(
+                foregroundColor: WidgetStatePropertyAll(Colors.grey),
+              ),
+              child: Text("Annuler"),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                closeForm(context);
+                handleSubscribtion(!subscribed);
+              },
+              icon: FaIcon(FontAwesomeIcons.arrowsRotate),
+              iconAlignment: IconAlignment.end,
+              label: Text("Changer"),
+              style: ButtonStyle(
+                foregroundColor: WidgetStatePropertyAll(Colors.orange),
+                iconColor: WidgetStatePropertyAll(Colors.orange),
+                overlayColor: WidgetStatePropertyAll(Colors.orange.shade100),
+              ),
+            )
+          ]
+        );
+      } else {
+        handleSubscribtion(!subscribed);
+      }
+    }
+  }
+
+  handleSubscribtion(bool willSubscribe) async {
+    try {
       setState(() {
         _isLoading = true;
       });
       await Provider.of<Church>(context, listen: false).subscribe(
-        widget.church.id,
-      );
+        widget.churchId,
+        willSubscribe: willSubscribe
+      ).then((value) async {
+        showSnackBar(context: context, message: value, type: SnackBarType.success);
+        await Provider.of<User>(context, listen: false).getUserData();
+      });
     } on HttpException {
-      showSnackBar(context: context, message: "L'abonnement a échoué !");
+      showSnackBar(
+        context: context,
+        message: "L'opération a échoué !",
+        type: SnackBarType.danger
+      );
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu est survenue",
+        type: SnackBarType.danger
+      );
     } finally {
       setState(() {
         _isLoading = false;
       });
-    } */
+    }
+  }
+
+  getChurch() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Church>(context, listen: false)
+      .fetchChurch(widget.churchId)
+      .then((value) => {
+        setState(() {
+          church = ChurchModel.fromJson(value['eglise']);
+          owner = UserModel.fromJson(value['user']);
+        })
+      });
+    } /* catch(e) {
+      e.printError();
+      showSnackBar(context: context, message: "Une erreur inattendu est survenue !", type: SnackBarType.danger);
+    } */ finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    getChurch();
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context).user;
-    bool subscribed = widget.church.id == user.church?.id;
+    bool subscribed = widget.churchId == user.churchId;
 
     return LoadingOverlay(
       isLoading: _isLoading,
@@ -61,7 +183,9 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
         appBar: AppBar(),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          child: SingleChildScrollView(
+          child: church == null ? Center(
+            child: Text("Chargement..."),
+          ) : SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -72,7 +196,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                          image: NetworkImage(widget.church.image),
+                          image: NetworkImage(church!.image),
                           fit: BoxFit.cover)),
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -95,8 +219,8 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                           child: CircleAvatar(
                             radius: 30,
                             backgroundColor: Colors.grey,
-                            backgroundImage: widget.church.logo != null
-                                ? NetworkImage(widget.church.logo!)
+                            backgroundImage: church!.logo != null
+                                ? NetworkImage(church!.logo!)
                                 : const AssetImage("assets/images/bg-5.jpg"),
                           ),
                         ),
@@ -107,7 +231,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                           children: [
                             Flexible(
                                 child: Text(
-                              widget.church.name,
+                              church!.name,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
@@ -117,44 +241,88 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                               overflow: TextOverflow.clip,
                             )),
                             const SizedBox(height: 7),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                  widget.church.mainServant != null
-                                      ? widget.church.mainServant!.name
-                                      : "Inconnu",
-                                  style: Theme.of(context)
-                                    .textTheme
-                                    .labelMedium!
-                                    .copyWith(color: Colors.white.withAlpha(170)),
-                                  overflow: TextOverflow.clip,
-                                )),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    const Icon(
-                                      Icons.location_pin,
-                                      size: 15,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      widget.church.address,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium!
-                                          .copyWith(color: Colors.white),
-                                    )
-                                  ],
-                                )
-                              ],
+                            Text(
+                              owner != null
+                              ? owner!.name
+                              : "Inconnu",
+                              style: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .copyWith(color: Colors.white.withAlpha(170)),
+                              overflow: TextOverflow.clip,
                             )
                           ],
                         ),
                       ],
                     ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.location_pin,
+                              size: 15,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                church!.address,
+                                style: Theme.of(context).textTheme.labelMedium!,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.phone,
+                              size: 12,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                church!.phone,
+                                style: Theme.of(context).textTheme.labelMedium!,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.solidEnvelope,
+                              size: 12,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                church!.email,
+                                style: Theme.of(context).textTheme.labelMedium!,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
       
@@ -163,7 +331,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: TextButton.icon(
-                      onPressed: () => handleSubscribtion(),
+                      onPressed: () => onSubscribe(subscribed),
                       icon: FaIcon(
                         subscribed ? FontAwesomeIcons.bookmark :
                         FontAwesomeIcons.solidBookmark
@@ -197,7 +365,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
       
                 Padding(
                   padding: const EdgeInsets.only(top: 5, bottom: 30),
-                  child: Text(widget.church.description),
+                  child: Text(church!.description),
                 ),
       
                 Row(
@@ -222,7 +390,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                       controller: _pageController,
                       onPageChanged: (value) => setPageIndex(value),
                       children: [
-                        Placeholder(),
+                        Program(),
                         Ceremonies(),
                         Community()
                       ],
@@ -395,33 +563,35 @@ class _ProgramState extends State<Program> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Programme du jour",
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.keyboard_arrow_right),
-                  iconAlignment: IconAlignment.end,
-                  label: const Text("Tout voir"))
-            ],
-          ),
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: lastEvent.getWidget(context)),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            child: currentProgram.getWidget(context),
-          )
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Programme du jour",
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                TextButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.keyboard_arrow_right),
+                    iconAlignment: IconAlignment.end,
+                    label: const Text("Tout voir"))
+              ],
+            ),
+            Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: lastEvent.getWidget(context)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: currentProgram.getWidget(context),
+            )
+          ],
+        ),
       ),
     );
   }
