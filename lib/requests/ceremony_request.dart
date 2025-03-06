@@ -9,8 +9,13 @@ class CeremonyRequest extends DioClient {
     return await client.post('/ceremonies', data: formData);
   }
 
-  Future getAll() async {
+  Future delete(int churchId) async {
     var client = await getApiClient();
-    return await client.get('/ceremonies');
+    return await client.delete('/ceremonies/$churchId');
+  }
+
+  Future getAll(int churchId) async {
+    var client = await getApiClient();
+    return await client.get('eglise/ceremonies/$churchId');
   }
 }

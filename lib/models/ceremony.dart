@@ -1,20 +1,24 @@
-import 'package:aesd_app/models/church_model.dart';
+import 'package:aesd_app/components/dialog.dart';
+import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/screens/ceremonies/create.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CeremonyModel {
+  late int id;
   late String title;
   late String description;
   late String video;
   late DateTime date;
-  late ChurchModel churchOwner;
+  late int churchId;
 
   CeremonyModel.fromJson(json){
+    id = json['id'];
     title = json['title'];
     description = json['description'];
     video = json['media'];
     date = DateTime.parse(json['event_date']);
-    churchOwner = ChurchModel.fromJson(json['church']);
+    churchId = json['id_eglise'];
   }
 
   toJson() => {
@@ -22,10 +26,10 @@ class CeremonyModel {
     'description': description,
     'video_url': video,
     'date': date,
-    'church': churchOwner.name,
+    'church_id': churchId,
   };
 
-  Widget card(BuildContext context) {
+  Widget card(BuildContext context, {required Future Function() onDelete}) {
     return InkWell(
     overlayColor: WidgetStateProperty.all(Colors.orange.shade50),
     onTap: () {},
@@ -85,7 +89,14 @@ class CeremonyModel {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
-                        onPressed: (){},
+                        onPressed: () => pushForm(
+                          context,
+                          destination: CreateCeremony(
+                            editMode: false,
+                            ceremony: this,
+                            churchId: churchId
+                          )
+                        ),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(Colors.amber.shade100),
                           iconColor: WidgetStateProperty.all(Colors.amber)
@@ -93,7 +104,34 @@ class CeremonyModel {
                         icon: FaIcon(FontAwesomeIcons.pen, size: 20)
                       ),
                       IconButton(
-                        onPressed: (){},
+                        onPressed: () => messageBox(
+                          context,
+                          title: "Suppréssion",
+                          content: Text("Vous allez supprimer cette cérémonie. Voulez-vous continuer ?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => closeForm(context),
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStatePropertyAll(Colors.grey),
+                              ),
+                              child: Text("Annuler")
+                            ),
+                            TextButton.icon(
+                              iconAlignment: IconAlignment.end,
+                              onPressed: () async {
+                                closeForm(context);
+                                await onDelete();
+                              },
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStatePropertyAll(Colors.red),
+                                iconColor: WidgetStatePropertyAll(Colors.red),
+                                overlayColor: WidgetStatePropertyAll(Colors.red.shade100),
+                              ),
+                              icon: FaIcon(FontAwesomeIcons.trashCan),
+                              label: Text("Supprimer")
+                            ),
+                          ]
+                        ),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(Colors.red.shade100),
                           iconColor: WidgetStateProperty.all(Colors.red)

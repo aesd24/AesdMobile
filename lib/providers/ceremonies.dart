@@ -9,10 +9,11 @@ class Ceremonies extends ChangeNotifier {
   final _handler = CeremonyRequest();
   final List<CeremonyModel> _ceremonies = [];
 
-  get ceremonies => _ceremonies;
+  List<CeremonyModel> get ceremonies => _ceremonies;
 
   Future all({required int churchId}) async {
-    final response = await _handler.getAll();
+    final response = await _handler.getAll(churchId);
+    print(response.data);
     if (response.statusCode == 200){
       _ceremonies.clear();
       for (var element in response.data['data']){
@@ -22,6 +23,18 @@ class Ceremonies extends ChangeNotifier {
     }
     else {
       throw HttpException("Impossible d'obtenir la liste des cérémonies");
+    }
+  }
+
+  Future delete({required CeremonyModel element}) async {
+    final response = await _handler.delete(element.id);
+    print(response.data);
+    if (response.statusCode == 200){
+      _ceremonies.remove(element);
+      return true;
+    }
+    else {
+      throw HttpException("Impossible de supprimer cet évènement");
     }
   }
 

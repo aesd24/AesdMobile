@@ -4,7 +4,9 @@ import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
+import 'package:aesd_app/models/ceremony.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -12,9 +14,17 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class CreateCeremony extends StatefulWidget {
-  const CreateCeremony({super.key, required this.churchId});
+  const CreateCeremony({
+    super.key,
+    required this.churchId,
+    this.ceremony,
+    this.editMode = false,
+  });
 
   final int churchId;
+  final CeremonyModel? ceremony;
+  final bool editMode;
+
 
   @override
   State<CreateCeremony> createState() => _CreateCeremonyState();
@@ -31,6 +41,21 @@ class _CreateCeremonyState extends State<CreateCeremony> {
   // controllers
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  init() async {
+    if (widget.editMode) {
+      _titleController.text = widget.ceremony!.title;
+      _descriptionController.text = widget.ceremony!.description;
+      date = widget.ceremony!.date;
+      movie = File.fromUri(Uri.parse(widget.ceremony!.video));
+    }
+  }
+
+  @override
+  initState(){
+    init();
+    super.initState();
+  }
 
   // functions
   handleSubmit() async {
@@ -77,11 +102,21 @@ class _CreateCeremonyState extends State<CreateCeremony> {
           message: "Cérémonie créé avec succès",
           type: SnackBarType.success
         );
+        Provider.of<Ceremonies>(context, listen: false).all(
+          churchId: widget.churchId
+        );
       });
-    } on HttpException catch (e) {
+    } on HttpException catch(e) {
       showSnackBar(
         context: context,
         message: e.message,
+        type: SnackBarType.danger
+      );
+    } on DioException catch(e) {
+      e.printError();
+      showSnackBar(
+        context: context,
+        message: "Erreur réseau. Vérifiez votre connexion internet et rééssayez...",
         type: SnackBarType.danger
       );
     } catch (e) {
@@ -100,13 +135,13 @@ class _CreateCeremonyState extends State<CreateCeremony> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Création de cérémonie"),
-      ),
-      body: LoadingOverlay(
-        isLoading: _isLoading,
-        child: Padding(
+    return LoadingOverlay(
+      isLoading: _isLoading,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Création de cérémonie"),
+        ),
+        body: Padding(
           padding: const EdgeInsets.all(15),
           child: Form(
             key: _formKey,
@@ -121,7 +156,13 @@ class _CreateCeremonyState extends State<CreateCeremony> {
                     ),
                     controller: _titleController,
                     label: "Titre",
-                    placeholder: "Titre de la cérémonie"
+                    placeholder: "Titre de la cérémonie",
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Ce champs est obligatoire";
+                      }
+                      return null;
+                    }
                   ),
                   
                   customDateField(
@@ -133,7 +174,13 @@ class _CreateCeremonyState extends State<CreateCeremony> {
               
                   customMultilineField(
                     label: "Descrivez la cérémonie...",
-                    controller: _descriptionController
+                    controller: _descriptionController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Ce champs est obligatoire";
+                      }
+                      return null;
+                    }
                   ),
               
                   InkWell(
