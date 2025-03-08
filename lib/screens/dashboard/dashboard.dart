@@ -7,6 +7,7 @@ import 'package:aesd_app/screens/church/creation/main.dart';
 import 'package:aesd_app/screens/church/detail.dart';
 import 'package:aesd_app/screens/dashboard/ceremony.dart';
 import 'package:aesd_app/screens/dashboard/church_wallet.dart';
+import 'package:aesd_app/screens/dashboard/events.dart';
 import 'package:aesd_app/screens/dashboard/programs.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -212,8 +213,14 @@ class _DashboardState extends State<Dashboard> {
                       customIconButton(
                         destination: ProgramListPage(),
                         color: Colors.purple,
-                        icon: FontAwesomeIcons.calendar,
+                        icon: FontAwesomeIcons.calendarWeek,
                         label: "Programme"
+                      ),
+                      customIconButton(
+                        destination: ChurchEvents(churchId: church.id),
+                        color: Colors.amber,
+                        icon: FontAwesomeIcons.solidCalendarDays,
+                        label: "Evènements"
                       ),
                       customIconButton(
                         destination: CeremoniesManagement(churchId: church.id),

@@ -1,5 +1,6 @@
 import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/screens/ceremonies/ceremony_viewer.dart';
 import 'package:aesd_app/screens/ceremonies/create.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,7 +33,7 @@ class CeremonyModel {
   Widget card(BuildContext context, {required Future Function() onDelete}) {
     return InkWell(
     overlayColor: WidgetStateProperty.all(Colors.orange.shade50),
-    onTap: () {},
+    onTap: () => pushForm(context, destination: CeremonyViewer(ceremony: this)),
     child: Container(
       margin: EdgeInsets.symmetric(vertical: 7),
       decoration: BoxDecoration(
@@ -91,8 +92,8 @@ class CeremonyModel {
                       IconButton(
                         onPressed: () => pushForm(
                           context,
-                          destination: CreateCeremony(
-                            editMode: false,
+                          destination: CeremonyForm(
+                            editMode: true,
                             ceremony: this,
                             churchId: churchId
                           )

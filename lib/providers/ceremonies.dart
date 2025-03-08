@@ -55,4 +55,22 @@ class Ceremonies extends ChangeNotifier {
       throw HttpException("erreur: ${response.data['message']}");
     }
   }
+
+  Future update(Map<String, dynamic> data, {required int id}) async {
+    var body = FormData.fromMap({
+      "title" : data['title'],
+      "description" : data['description'],
+      "event_date": data['date'],
+      if (data["media"] != null) "media" : await MultipartFile.fromFile(data['movie']),
+      "id_eglise": data['church_id'],
+    });
+
+    var response = await _handler.update(id, body);
+    print(response);
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw HttpException("erreur: ${response.data['message']}");
+    }
+  }
 }

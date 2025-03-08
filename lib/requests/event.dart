@@ -1,26 +1,26 @@
 import 'package:aesd_app/requests/dio_client.dart';
 import 'package:dio/dio.dart';
 
-class CeremonyRequest extends DioClient {
+class EventRequest extends DioClient {
   Future create(FormData formData) async {
     var client = await getApiClient(
       contentType: "multipart/form-data; boundary=${formData.boundary}"
     );
-    return await client.post('/ceremonies', data: formData);
+    return await client.post('/events', data: formData);
   }
 
   Future update(int id, FormData formData) async {
     var client = await getApiClient();
-    return await client.post('/ceremonies/$id', data: formData);
+    return await client.post('/events/$id', data: formData);
   }
 
-  Future delete(int churchId) async {
+  Future delete(int id) async {
     var client = await getApiClient();
-    return await client.delete('/ceremonies/$churchId');
+    return await client.delete('/events/$id');
   }
 
-  Future getAll(int churchId) async {
+  Future getEvents(int churchId) async {
     var client = await getApiClient();
-    return await client.get('eglise/ceremonies/$churchId');
+    return await client.get('events/$churchId');
   }
 }

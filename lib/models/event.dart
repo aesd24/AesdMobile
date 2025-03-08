@@ -1,3 +1,4 @@
+import 'package:aesd_app/functions/formatteurs.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/screens/events/event.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +6,30 @@ import 'package:flutter/material.dart';
 class EventModel {
   late int id;
   late String title;
+  late String description;
+  late DateTime startDate;
+  late DateTime endDate;
+  late String location;
   late String? imageUrl;
-  late DateTime date;
+  late String type;
+  late String category;
+  late String organizer;
+  late int churchId;
+  late bool isPublic;
 
   EventModel.fromJson(json) {
     id = json['id'];
-    title = json['title'];
-    imageUrl = json['image_url'];
-    date = json['date'];
+    title = json['titre'];
+    description = json['description'];
+    startDate = DateTime.parse(json['date_debut']);
+    endDate = DateTime.parse(json['date_fin']);
+    location = json['lieu'];
+    imageUrl = json['file'];
+    type = json['type_evenement'];
+    category = json['categorie_evenement'];
+    organizer = json['organisateur'];
+    churchId = json['eglise_id'];
+    isPublic = json['est_public'] == 1;
   }
 
   Widget getWidget(BuildContext context) {
@@ -56,7 +73,7 @@ class EventModel {
                 ),
               ),
               Text(
-                "${date.day}/${date.month}/${date.year}",
+                "Du ${formatDate(startDate)} au ${formatDate(endDate)}",
                 style: Theme.of(context)
                 .textTheme
                 .labelMedium!

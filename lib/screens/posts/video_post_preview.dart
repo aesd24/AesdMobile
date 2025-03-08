@@ -147,10 +147,10 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
 
   init() async {
     var result = await verifyVideoSize(widget.video);
-    if (!result['result']) {
+    if (!result.isGood) {
       showSnackBar(
           context: context,
-          message: "La vidéo est trop grande. taille: ${result['length']}Mo",
+          message: "La vidéo est trop grande. taille: ${result.length}Mo",
           type: SnackBarType.warning);
       Navigator.of(context).pop();
       return;

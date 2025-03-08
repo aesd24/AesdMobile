@@ -16,7 +16,7 @@ Future<Map<String, dynamic>> verifyImageSize(File file) async {
   return {'result': result, 'length': (length / divider).toStringAsFixed(2)};
 }
 
-Future<Map<String, dynamic>> verifyVideoSize(File file) async {
+Future<VerificationResult> verifyVideoSize(File file) async {
   int length = await file.length();
   bool result = true;
 
@@ -24,5 +24,15 @@ Future<Map<String, dynamic>> verifyVideoSize(File file) async {
   if (length / divider > maxVideoSize) {
     result = false;
   }
-  return {'result': result, 'length': (length / divider).toStringAsFixed(2)};
+  return VerificationResult(
+    isGood: result,
+    length: (length / divider).toStringAsFixed(2)
+  );
+}
+
+class VerificationResult {
+  bool isGood;
+  String length;
+
+  VerificationResult({required this.isGood, required this.length});
 }

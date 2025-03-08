@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/models/ceremony.dart';
 import 'package:chewie/chewie.dart';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
@@ -13,9 +15,9 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CeremonyViewer extends StatefulWidget {
-  CeremonyViewer({super.key, required this.ceremony});
+  const CeremonyViewer({super.key, required this.ceremony});
 
-  Map<String, dynamic> ceremony;
+  final CeremonyModel ceremony;
 
   @override
   State<CeremonyViewer> createState() => _CeremonyViewerState();
@@ -33,21 +35,24 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
   ChewieController? _chewieController;
 
   initializeVideo() {
-    // initialisation du controller de vidéo
-    _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(widget.ceremony['video_url']));
-    _videoPlayerController.initialize();
+    try {
+      // initialisation du controller de vidéo
+      _videoPlayerController = VideoPlayerController.networkUrl(
+          Uri.parse(widget.ceremony.video));
+      _videoPlayerController.initialize();
 
-    // initialisation du conteneur de vidéo personnalisé
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      deviceOrientationsOnEnterFullScreen: [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
-      ],
-      deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
-    );
-
+      // initialisation du conteneur de vidéo personnalisé
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        deviceOrientationsOnEnterFullScreen: [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ],
+        deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
+      );
+    } catch (e) {
+      //
+    }
     setState(() {});
   }
 
@@ -82,15 +87,14 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
         var json = jsonDecode(response.body);
         var data = json["data"];
         Uri paymentUrl = Uri.parse(data['payment_url']);
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => CustomWebView(
-                  url: paymentUrl.toString(),
-                  title: "Faire un paiement",
-                )));
-      } else {
-        //print(response.statusCode);
+        pushForm(
+          context,
+          destination: CustomWebView(
+            url: paymentUrl.toString(),
+            title: "Faire un paiement",
+          )
+        );
       }
-      //print(response.body);
     } catch (e) {
       e.printError();
     } finally {
@@ -112,21 +116,21 @@ class _CeremonyViewerState extends State<CeremonyViewer> {
     return LoadingOverlay(
       isLoading: isLoading,
       child: Scaffold(
-          appBar: AppBar(title: Text(widget.ceremony['title'])),
+          appBar: AppBar(title: Text(widget.ceremony.title)),
           body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${widget.ceremony['date'].day}/${widget.ceremony['date'].month}/${widget.ceremony['date'].year}",
+                      "${widget.ceremony.date.day}/${widget.ceremony.date.month}/${widget.ceremony.date.year}",
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge!
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      widget.ceremony['description'],
+                      widget.ceremony.description,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium!

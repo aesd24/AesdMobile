@@ -1,7 +1,6 @@
 import 'package:aesd_app/components/event.dart';
 import 'package:aesd_app/components/title.dart';
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/events/create_event.dart';
 import 'package:aesd_app/screens/program/create.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -121,8 +120,7 @@ class _ChurchProgramState extends State<ChurchProgram> {
             children: [
               customTitle(context, text: "Evènements"),
               trailButton(
-                  onPressed: () =>
-                      pushForm(context, destination: const CreateEventPage()),
+                  onPressed: () {},
                   text: "Ajouter",
                   icon: const FaIcon(
                     FontAwesomeIcons.plus,

@@ -4,16 +4,25 @@ import 'package:aesd_app/components/picture_containers.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
+import 'package:aesd_app/providers/event.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:provider/provider.dart';
 
-class CreateEventPage extends StatefulWidget {
-  const CreateEventPage({super.key});
+class EventForm extends StatefulWidget {
+  const EventForm({super.key, required this.churchId});
+
+  final int churchId;
 
   @override
-  State<CreateEventPage> createState() => _CreateEventPageState();
+  State<EventForm> createState() => _EventFormState();
 }
 
-class _CreateEventPageState extends State<CreateEventPage> {
+class _EventFormState extends State<EventForm> {
+  bool isLoading = false;
   List months = [
     "Janvier",
     "Février",
@@ -29,155 +38,318 @@ class _CreateEventPageState extends State<CreateEventPage> {
     "Décembre"
   ];
 
+  bool isPublic = false;
+
   // affiche de l'évènement
   File? image;
 
   // date de l'évènement
-  DateTime? _eventDate;
+  DateTime? startDate;
+  DateTime? endDate;
 
   // controllers
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  final typeController = TextEditingController();
+  final categoryController = TextEditingController();
+  final locationController = TextEditingController();
+  final organizerController = TextEditingController();
 
   // clé de formulaire
   final _formKey = GlobalKey<FormState>();
 
+  handleSubmit() async {
+    if (!_formKey.currentState!.validate()) {
+      showSnackBar(
+        context: context,
+        message: "Remplissez correctement le formulaire",
+        type: SnackBarType.danger
+      );
+      return;
+    }
+
+    if (image == null) {
+      showSnackBar(
+        context: context,
+        message: "Veuillez sélectionner l'affiche de l'évènement",
+        type: SnackBarType.warning
+      );
+      return;
+    }
+
+    if (startDate == null || endDate == null) {
+      showSnackBar(
+        context: context,
+        message: "Renseignez correctement les dates de début et de fin",
+        type: SnackBarType.warning
+      );
+      return;
+    }
+
+    createEvent();
+  }
+
+  createEvent() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<Event>(context, listen: false).createEvent({
+        'is_public': isPublic,
+        'title': titleController.text,
+        'startDate': startDate,
+        'endDate': endDate,
+        'location': locationController.text,
+        'type': typeController.text,
+        'category': categoryController.text,
+        'organizer': organizerController.text,
+        'description': descriptionController.text,
+        'churchId': widget.churchId,
+        'file': image
+      }).then((value) {
+        showSnackBar(
+          context: context,
+          message: "Evènement créé avec succès !",
+          type: SnackBarType.success
+        );
+      });
+    } on DioException {
+      showSnackBar(
+        context: context,
+        message: "Erreur réseau. Vérifiez votre connexion internet",
+        type: SnackBarType.danger
+      );
+    } on HttpException catch(e) {
+      showSnackBar(
+        context: context,
+        message: e.message,
+        type: SnackBarType.danger
+      );
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu est survenue",
+        type: SnackBarType.danger
+      );
+      e.printError();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Création d'évènement"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
+    return LoadingOverlay(
+      isLoading: isLoading,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Création d'évènement"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              // partie de l'affiche
-              image == null
-                  ? GestureDetector(
-                      onTap: () async {
-                        // selectionner une photo depuis la galérie
-                        File? file = await pickImage(camera: true);
-                        if (file != null) {
-                          image = file;
-                          setState(() {});
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border:
-                                Border.all(width: 1.5, color: Colors.green)),
-                        alignment: Alignment.center,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 25),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.photo_size_select_actual_rounded,
-                                color: Colors.green),
-                            SizedBox(width: 15),
-                            Text("Ajouter l'affiche de l'évènement")
+                            Flexible(
+                              child: Text(
+                                isPublic ? "L'évènement sera tout publique" :
+                                "L'évènement sera interne à l'église",
+                                overflow: TextOverflow.clip,
+                              ),
+                            ),
+                            Switch(
+                              value: isPublic,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPublic = value;
+                                });
+                              }
+                            ),
                           ],
                         ),
                       ),
-                    )
-                  : imageSelectionBox(
-                      context: context,
-                      label: "",
-                      overlayText: "Cliquez pour changer",
-                      picture: image,
-                      onClick: () async {
-                        File? pickedFile = await pickImage(camera: true);
-                        setState(() {
-                          image = pickedFile;
-                        });
-                      }),
-
-              // formulaire de création de l'évènement
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // titre de l'évènement
-                      customTextField(
-                          label: "Titre de l'évènement",
-                          placeholder: "Ex: La campagne AESD",
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Remplissez d'abords le champs !";
-                            }
-                            return null;
-                          },
-                          prefixIcon: const Icon(Icons.event_note)),
-
-                      // date de l'évènement
-                      customButton(
-                          context: context,
-                          text: _eventDate == null
-                              ? "Ajouter la date de l'évènement"
-                              : "Prévu le : ${_eventDate!.day} ${months[_eventDate!.month - 1]} ${_eventDate!.year}",
-                          trailing: const Icon(Icons.date_range),
-                          border:
-                              const BorderSide(width: 2, color: Colors.grey),
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: Colors.black,
-                          highlightColor: Colors.white,
-                          onPressed: () async {
-                            // sélectionner une date
-                            _eventDate = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(DateTime.now().year + 2),
-                                currentDate: DateTime.now());
-                            setState(() {});
-                          }),
-
-                      // description de l'évènement
-                      customMultilineField(
-                          label: "Description de l'évènement",
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Remplissez d'abords le champs !";
-                            }
-                            if (value.length < 30) {
-                              return "Donnez une description un peu plus détaillée";
-                            }
-                            return null;
-                          })
+                      // partie de l'affiche
+                      image == null
+                          ? GestureDetector(
+                              onTap: () async {
+                                // selectionner une photo depuis la galérie
+                                File? file = await pickImage(camera: true);
+                                if (file != null) {
+                                  image = file;
+                                  setState(() {});
+                                }
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.only(bottom: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border:
+                                        Border.all(width: 1.5, color: Colors.green)),
+                                alignment: Alignment.center,
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.photo_size_select_actual_rounded,
+                                        color: Colors.green),
+                                    SizedBox(width: 15),
+                                    Text("Ajouter l'affiche de l'évènement")
+                                  ],
+                                ),
+                              ),
+                            )
+                          : imageSelectionBox(
+                              context: context,
+                              label: "",
+                              overlayText: "Cliquez pour changer",
+                              picture: image,
+                              onClick: () async {
+                                File? pickedFile = await pickImage(camera: true);
+                                setState(() {
+                                  image = pickedFile;
+                                });
+                              }),
+                
+                      // formulaire de création de l'évènement
+                      Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              // titre de l'évènement
+                              customTextField(
+                                label: "Titre de l'évènement",
+                                placeholder: "Ex: La campagne AESD",
+                                controller: titleController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Remplissez d'abords le champs !";
+                                  }
+                                  return null;
+                                },
+                                prefixIcon: const Icon(Icons.event_note)
+                              ),
+                
+                              // période de l'évènement
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: customDateField(
+                                        label: "Date de debut",
+                                        value: startDate,
+                                        onChanged: (value){
+                                          setState(() {
+                                            startDate = value;
+                                          });
+                                        }
+                                      ),
+                                    ),
+                                    SizedBox(width: 7),
+                                    Expanded(
+                                      child: customDateField(
+                                        label: "Date de fin",
+                                        value: endDate,
+                                        onChanged: (value){
+                                          setState(() {
+                                            endDate = value;
+                                          });
+                                        }
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+      
+                              customTextField(
+                                label: "Lieu",
+                                placeholder: "Ex: Grand terrain de l'Université aesd",
+                                controller: locationController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Remplissez d'abords le champs !";
+                                  }
+                                  return null;
+                                },
+                                prefixIcon: const Icon(Icons.location_pin)
+                              ),
+      
+                              customTextField(
+                                label: "Type",
+                                placeholder: "Type d'évènement",
+                                controller: typeController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Remplissez d'abords le champs !";
+                                  }
+                                  return null;
+                                },
+                              ),
+      
+                              customTextField(
+                                label: "Catégorie",
+                                placeholder: "Catégorie d'évènement",
+                                controller: categoryController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Remplissez d'abords le champs !";
+                                  }
+                                  return null;
+                                },
+                              ),
+      
+                              customTextField(
+                                label: "Organisateur",
+                                placeholder: "Ex: Zadi Tapé",
+                                controller: organizerController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Remplissez d'abords le champs !";
+                                  }
+                                  return null;
+                                },
+                                prefixIcon: Icon(FontAwesomeIcons.solidUser, size: 20)
+                              ),
+                
+                              // description de l'évènement
+                              customMultilineField(
+                                  label: "Description de l'évènement",
+                                  controller: descriptionController,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "Remplissez d'abords le champs !";
+                                    }
+                                    if (value.length < 30) {
+                                      return "Donnez une description un peu plus détaillée";
+                                    }
+                                    return null;
+                                  }),
+      
+                              SizedBox(height: 10)
+                            ],
+                          )),
                     ],
-                  )),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: customButton(
-                    context: context,
-                    text: "Soumettre",
-                    trailing: const Icon(Icons.send, color: Colors.white),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (image == null) {
-                          return showSnackBar(
-                              context: context,
-                              message: "Choisissez d'abord une affiche !",
-                              type: SnackBarType.warning);
-                        }
-
-                        if (_eventDate == null) {
-                          return showSnackBar(
-                              context: context,
-                              message:
-                                  "Vous n'avez pas sélectionné de date pour votre évènement !",
-                              type: SnackBarType.warning);
-                        }
-
-                        //TODO: Implémenter la logique d'enregistrement d'évènement
-                      }
-                    }),
-              )
+                  ),
+                ),
+              ),
+              customButton(
+                context: context,
+                text: "Soumettre",
+                trailing: const Icon(Icons.send, color: Colors.white),
+                onPressed: () => handleSubmit()
+              ),
+              SizedBox(height: 15)
             ],
           ),
         ),

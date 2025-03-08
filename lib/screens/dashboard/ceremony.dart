@@ -109,7 +109,7 @@ class _CeremoniesManagementState extends State<CeremoniesManagement> {
                 context: context,
                 text: "Ajouter une cérémonie",
                 trailing: FaIcon(FontAwesomeIcons.film, color: Colors.white),
-                onPressed: () => pushForm(context, destination: CreateCeremony(churchId: widget.churchId))
+                onPressed: () => pushForm(context, destination: CeremonyForm(churchId: widget.churchId))
               ),
               customTextField(
                 prefixIcon: Icon(Icons.search),

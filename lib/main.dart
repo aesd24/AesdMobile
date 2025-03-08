@@ -1,3 +1,4 @@
+import 'package:aesd_app/providers/event.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
@@ -25,6 +26,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => Singer()),
       ChangeNotifierProvider(create: (context) => PostProvider()),
       ChangeNotifierProvider(create: (context) => Ceremonies()),
+      ChangeNotifierProvider(create: (context) => Event()),
       ChangeNotifierProvider(create: (context) => Quiz()),
       ChangeNotifierProvider(create: (context) => CinetPay())
     ],
