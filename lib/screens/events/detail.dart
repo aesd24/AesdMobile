@@ -39,10 +39,9 @@ class _EventPageState extends State<EventPage> {
             iconAlignment: IconAlignment.end,
             label: Text(
               "Affiche",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(color: Colors.white),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: Colors.white
+              ),
             ),
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(Colors.transparent),
