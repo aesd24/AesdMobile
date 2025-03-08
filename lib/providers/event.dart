@@ -18,7 +18,7 @@ class Event extends ChangeNotifier {
       'date_debut': data['startDate'],
       'date_fin': data['endDate'],
       'lieu': data['location'],
-      'file': await MultipartFile.fromFile(data['file'].path),
+      'file': await MultipartFile.fromFile(data['file']),
       'type_evenement': data['type'],
       'categorie_evenement': data['category'],
       'organisateur': data['organizer'],
@@ -29,6 +29,35 @@ class Event extends ChangeNotifier {
     if (response.statusCode == 201) {
       _eventList.add(EventModel.fromJson(response.data['evenement']));
       notifyListeners();
+      return response.data;
+    } else {
+      throw HttpException("erreur: ${response.data['message']}");
+    }
+  }
+
+  Future delete(int id) async {
+    final response = await _request.delete(id);
+    if (response.statusCode == 200) {
+      _eventList.removeWhere((element) => element.id == id);
+    }
+  }
+
+  Future updateEvent(Map<String, dynamic> data, {required int id}) async {
+    final formData = FormData.fromMap({
+      'titre': data['title'],
+      'description': data['description'],
+      'date_debut': data['startDate'],
+      'date_fin': data['endDate'],
+      'lieu': data['location'],
+      if(data['file'] != null) 'file': await MultipartFile.fromFile(data['file']),
+      'type_evenement': data['type'],
+      'categorie_evenement': data['category'],
+      'organisateur': data['organizer'],
+      'est_public': data['is_public'] ? 1 : 0
+    });
+    final response = await _request.update(id, formData);
+    print(response);
+    if (response.statusCode == 200) {
       return response.data;
     } else {
       throw HttpException("erreur: ${response.data['message']}");

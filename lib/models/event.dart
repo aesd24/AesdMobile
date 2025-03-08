@@ -1,7 +1,10 @@
+import 'package:aesd_app/components/dialog.dart';
 import 'package:aesd_app/functions/formatteurs.dart';
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/screens/events/event.dart';
+import 'package:aesd_app/screens/events/create_event.dart';
+import 'package:aesd_app/screens/events/detail.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EventModel {
   late int id;
@@ -32,10 +35,13 @@ class EventModel {
     isPublic = json['est_public'] == 1;
   }
 
-  Widget getWidget(BuildContext context) {
+  Widget getWidget(BuildContext context, {
+    bool adminMode = false,
+    Future Function(int id)? onDelete
+  }) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => pushForm(context, destination: const EventPage()),
+      onTap: () => pushForm(context, destination: EventPage(event: this)),
       child: Container(
         width: size.width * .9,
         height: 200,
@@ -61,8 +67,66 @@ class EventModel {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              if(adminMode) Align(
+                alignment: Alignment.topRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () => pushForm(
+                        context,
+                        destination: EventForm(
+                          churchId: churchId,
+                          editMode: true,
+                          event: this,
+                        )
+                      ),
+                      icon: FaIcon(FontAwesomeIcons.pen, size: 18),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.amber),
+                        iconColor: WidgetStatePropertyAll(Colors.white)
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => messageBox(
+                        context,
+                        title: 'Supprimer ?',
+                        content: Text("Vous allez supprimer cet événement. Voulez-vous continuer ?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => closeForm(context),
+                            style: ButtonStyle(
+                              foregroundColor: WidgetStatePropertyAll(Colors.grey),
+                            ),
+                            child: Text("Annuler"),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              closeForm(context);
+                              onDelete!(id);
+                            },
+                            style: ButtonStyle(
+                              foregroundColor: WidgetStatePropertyAll(Colors.red),
+                              overlayColor: WidgetStatePropertyAll(Colors.red.shade100),
+                              iconColor: WidgetStatePropertyAll(Colors.red)
+                            ),
+                            label: Text("Supprimer"),
+                            icon: FaIcon(FontAwesomeIcons.trashCan, size: 18),
+                            iconAlignment: IconAlignment.end,
+                          ),
+                        ]
+                      ),
+                      icon: FaIcon(FontAwesomeIcons.trashCan, size: 18),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.red),
+                        iconColor: WidgetStatePropertyAll(Colors.white)
+                      ),
+                    )
+                  ]
+                ),
+              ),
+              Spacer(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Text(

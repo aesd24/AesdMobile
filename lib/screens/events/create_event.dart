@@ -4,6 +4,7 @@ import 'package:aesd_app/components/picture_containers.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
+import 'package:aesd_app/models/event.dart';
 import 'package:aesd_app/providers/event.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,16 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class EventForm extends StatefulWidget {
-  const EventForm({super.key, required this.churchId});
+  const EventForm({
+    super.key,
+    required this.churchId,
+    this.editMode = false,
+    this.event
+  });
 
   final int churchId;
+  final bool editMode;
+  final EventModel? event;
 
   @override
   State<EventForm> createState() => _EventFormState();
@@ -41,7 +49,7 @@ class _EventFormState extends State<EventForm> {
   bool isPublic = false;
 
   // affiche de l'évènement
-  File? image;
+  String? imagePath;
 
   // date de l'évènement
   DateTime? startDate;
@@ -58,6 +66,30 @@ class _EventFormState extends State<EventForm> {
   // clé de formulaire
   final _formKey = GlobalKey<FormState>();
 
+  // fonction d'initialisation
+  init() async {
+    if (widget.editMode) {
+      var event = widget.event!;
+      titleController.text = event.title;
+      descriptionController.text = event.description;
+      typeController.text = event.type;
+      categoryController.text = event.category;
+      locationController.text = event.location;
+      organizerController.text = event.organizer;
+      startDate = event.startDate;
+      endDate = event.endDate;
+      isPublic = event.isPublic;
+      imagePath = event.imageUrl;
+    }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    init();
+  }
+
+  // fonction pour la gestion des requête
   handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       showSnackBar(
@@ -68,7 +100,7 @@ class _EventFormState extends State<EventForm> {
       return;
     }
 
-    if (image == null) {
+    if (!widget.editMode && imagePath == null) {
       showSnackBar(
         context: context,
         message: "Veuillez sélectionner l'affiche de l'évènement",
@@ -86,7 +118,67 @@ class _EventFormState extends State<EventForm> {
       return;
     }
 
-    createEvent();
+    widget.editMode? await updateEvent() : await createEvent();
+  }
+
+  updateEvent() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<Event>(context, listen: false).updateEvent({
+        'is_public': isPublic,
+        'title': titleController.text,
+        'startDate': startDate,
+        'endDate': endDate,
+        'location': locationController.text,
+        'type': typeController.text,
+        'category': categoryController.text,
+        'organizer': organizerController.text,
+        'description': descriptionController.text,
+        'churchId': widget.churchId,
+        'file': imagePath == widget.event!.imageUrl ? null : imagePath
+      }, id: widget.event!.id).then((value) async {
+        await Provider.of<Event>(context, listen: false).getEvents(
+          churchId: widget.churchId
+        );
+
+        showSnackBar(
+          context: context,
+          message: "Modification éffectuée avec succès !",
+          type: SnackBarType.success
+        );
+      });
+    } on PathNotFoundException {
+      showSnackBar(
+        context: context,
+        message: "Impossible de recupérer l'image. Sélectionné encore !",
+        type: SnackBarType.danger
+      );
+    } on DioException {
+      showSnackBar(
+        context: context,
+        message: "Erreur réseau. Vérifiez votre connexion internet",
+        type: SnackBarType.danger
+      );
+    } on HttpException catch(e) {
+      showSnackBar(
+        context: context,
+        message: e.message,
+        type: SnackBarType.danger
+      );
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu est survenue",
+        type: SnackBarType.danger
+      );
+      e.printError();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   createEvent() async {
@@ -105,7 +197,7 @@ class _EventFormState extends State<EventForm> {
         'organizer': organizerController.text,
         'description': descriptionController.text,
         'churchId': widget.churchId,
-        'file': image
+        'file': imagePath
       }).then((value) {
         showSnackBar(
           context: context,
@@ -141,11 +233,12 @@ class _EventFormState extends State<EventForm> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return LoadingOverlay(
       isLoading: isLoading,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Création d'évènement"),
+          title: Text(!widget.editMode ? "Créez une évènement" : "Modification"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(10),
@@ -179,13 +272,13 @@ class _EventFormState extends State<EventForm> {
                         ),
                       ),
                       // partie de l'affiche
-                      image == null
+                      if (! widget.editMode) imagePath == null
                           ? GestureDetector(
                               onTap: () async {
                                 // selectionner une photo depuis la galérie
                                 File? file = await pickImage(camera: true);
                                 if (file != null) {
-                                  image = file;
+                                  imagePath = file.path;
                                   setState(() {});
                                 }
                               },
@@ -213,14 +306,31 @@ class _EventFormState extends State<EventForm> {
                               context: context,
                               label: "",
                               overlayText: "Cliquez pour changer",
-                              picture: image,
+                              picture: File(imagePath!),
                               onClick: () async {
                                 File? pickedFile = await pickImage(camera: true);
-                                setState(() {
-                                  image = pickedFile;
-                                });
+                                if (pickedFile != null) {
+                                  setState(() {
+                                    imagePath = pickedFile.path;
+                                  });
+                                }
                               }),
-                
+
+                      // en cas d'affichage de l'image reçu du serveur
+                      if (widget.editMode) Container(
+                        width: double.infinity,
+                        height: size.height * .3,
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(7),
+                          image: widget.event!.imageUrl != null ? DecorationImage(
+                            image: NetworkImage(widget.event!.imageUrl!),
+                            fit: BoxFit.cover,
+                          ) : null,
+                          color: Colors.grey
+                        ),
+                      ),
+
                       // formulaire de création de l'évènement
                       Form(
                           key: _formKey,

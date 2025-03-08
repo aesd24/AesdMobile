@@ -1,11 +1,9 @@
-import "package:aesd_app/functions/navigation.dart";
-import "package:aesd_app/screens/events/event.dart";
 import "package:flutter/material.dart";
 
 Widget customEventBox(BuildContext context,
     {required String title, required String date, double? height}) {
   return GestureDetector(
-    onTap: () => pushForm(context, destination: const EventPage()),
+    onTap: () => {}, //pushForm(context, destination: const EventPage()),
     child: Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       width: 300,

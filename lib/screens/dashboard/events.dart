@@ -59,6 +59,46 @@ class _ChurchEventsState extends State<ChurchEvents> {
     }
   }
 
+  Future deleteEvent(int id) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Event>(context, listen: false).delete(
+        id
+      ).then((value) {
+        showSnackBar(
+          context: context,
+          message: "Elément supprimé avec succès !",
+          type: SnackBarType.success
+        );
+      });
+    } on DioException {
+      showSnackBar(
+        context: context,
+        message: "Erreur réseau. Vérifiez votre connexion internet",
+        type: SnackBarType.danger
+      );
+    } on HttpException catch(e) {
+      showSnackBar(
+        context: context,
+        message: e.message,
+        type: SnackBarType.danger
+      );
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu est survenue",
+        type: SnackBarType.danger
+      );
+      e.printError();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -110,7 +150,14 @@ class _ChurchEventsState extends State<ChurchEvents> {
                         itemCount: eventProvider.events.length,
                         itemBuilder: (context, index) {
                           var current = eventProvider.events[index];
-                          return current.getWidget(context);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: current.getWidget(
+                              context,
+                              adminMode: true,
+                              onDelete: deleteEvent
+                            ),
+                          );
                         }
                       )
                     );

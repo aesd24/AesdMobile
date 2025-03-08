@@ -556,8 +556,12 @@ class _ProgramState extends State<Program> {
     })
   });
 
-  var lastEvent = EventModel.fromJson(
-      {'id': 0, 'title': "Intitulé de l'évènement 1", 'date': DateTime.now()});
+  var lastEvent = EventModel.fromJson({
+    'id': 0,
+    'titre':"Intitulé de l'évènement 1",
+    'date_debut': DateTime.now(),
+    'date_fin': DateTime.now(),
+  });
 
   @override
   Widget build(BuildContext context) {

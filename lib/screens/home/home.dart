@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Colors.white,
       shape: CircleBorder(),
-      child: FaIcon(FontAwesomeIcons.plus),
+      child: FaIcon(FontAwesomeIcons.feather),
     );
   }
 }
