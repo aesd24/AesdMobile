@@ -10,4 +10,9 @@ class PostRequest extends DioClient {
     final client = await getApiClient();
     return client.post('/posts', data: data);
   }
+
+  Future likePost(int postId) async {
+    final client = await getApiClient();
+    return client.post('/like/$postId');
+  }
 }

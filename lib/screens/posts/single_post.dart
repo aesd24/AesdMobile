@@ -1,13 +1,21 @@
+import 'dart:io';
+
 import 'package:aesd_app/components/field.dart';
+import 'package:aesd_app/components/snack_bar.dart';
+import 'package:aesd_app/functions/formatteurs.dart';
 import 'package:aesd_app/models/post_model.dart';
+import 'package:aesd_app/providers/post.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class SinglePost extends StatefulWidget {
-  SinglePost({super.key, required this.post, this.isCommenting = false});
+  const SinglePost({super.key, required this.post, this.isCommenting = false});
 
-  bool isCommenting;
-  PostModel post;
+  final bool isCommenting;
+  final PostModel post;
 
   @override
   State<SinglePost> createState() => _SinglePostState();
@@ -26,6 +34,38 @@ class _SinglePostState extends State<SinglePost> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
+  }
+
+  Future like(PostModel post) async {
+    try {
+      await Provider.of<PostProvider>(context, listen: false).likePost(
+        post.id
+      ).then((value) {
+        setState(() {
+          post.likes = value['likeCount'];
+          post.liked = value['like'];
+        });
+      });
+    } on DioException {
+      showSnackBar(
+        context: context,
+        message: "Erreur réseau. vérifiez votre connexion internet",
+        type: SnackBarType.danger
+      );
+    } on HttpException catch(e) {
+      showSnackBar(
+        context: context,
+        message: e.message,
+        type: SnackBarType.danger
+      );
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu s'est produite !",
+        type: SnackBarType.danger
+      );
+      e.printError();
+    }
   }
 
   @override
@@ -56,13 +96,13 @@ class _SinglePostState extends State<SinglePost> {
                             children: [
                               const CircleAvatar(),
                               const SizedBox(width: 10),
-                              Text(widget.post.author,
+                              Text(widget.post.author.name,
                                   style:
                                       Theme.of(context).textTheme.titleMedium)
                             ],
                           ),
                           Text(
-                            widget.post.date,
+                            formatDate(widget.post.date),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge!
@@ -101,13 +141,7 @@ class _SinglePostState extends State<SinglePost> {
                         child: Row(
                           children: [
                             TextButton.icon(
-                              onPressed: () {
-                                setState(() {
-                                  widget.post.liked = !widget.post.liked;
-                                  widget.post.likes +=
-                                      widget.post.liked ? 1 : -1;
-                                });
-                              },
+                              onPressed: () => like(widget.post),
                               icon: FaIcon(
                                 widget.post.liked
                                     ? FontAwesomeIcons.solidHeart
@@ -130,7 +164,7 @@ class _SinglePostState extends State<SinglePost> {
                                 FontAwesomeIcons.comment,
                               ),
                               label: Text(
-                                  "${widget.post.comments.length} commentaires"),
+                                  "${widget.post.comments} commentaires"),
                               style: ButtonStyle(
                                   foregroundColor:
                                       WidgetStateProperty.all(Colors.black),
@@ -153,7 +187,7 @@ class _SinglePostState extends State<SinglePost> {
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                customCommentTIle(context,
+                                customCommentTile(context,
                                     author: "Postant",
                                     date: "01 Jan 2024 à 11:05",
                                     comment:
@@ -164,7 +198,8 @@ class _SinglePostState extends State<SinglePost> {
                         ),
                       )
                     ]),
-              )),
+            )
+          ),
 
           // zone de texte pour faire un commentaire
           if (_isCommenting)
@@ -194,7 +229,7 @@ class _SinglePostState extends State<SinglePost> {
     );
   }
 
-  Widget customCommentTIle(BuildContext context,
+  Widget customCommentTile(BuildContext context,
       {required String author, required String date, required String comment}) {
     return Container(
         padding: const EdgeInsets.all(10),
