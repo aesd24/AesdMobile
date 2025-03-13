@@ -1,52 +1,34 @@
+import 'package:aesd_app/functions/formatteurs.dart';
 import 'package:aesd_app/functions/navigation.dart';
-import 'package:aesd_app/models/category.dart';
-import 'package:aesd_app/screens/posts/single_post.dart';
+import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/screens/posts/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
 class PostModel {
   late int id;
-  late String title;
   late String content;
-  late String body;
-  late String shortBody;
   late String? image;
-  late String author;
-  late String date;
-  List<Category> categories = [];
+  late UserModel author;
+  late DateTime date;
   bool liked = false;
-  late List comments;
+  late int comments;
   late int likes;
-  //DateTime date = DateTime.now();
-
-  PostModel();
 
   PostModel.fromJson(Map<String, dynamic> json) {
-    title = json['title'] ?? "";
-    body = json['body'] ?? "";
-    image = json['image_url'];
-    shortBody = json['short_body'] ?? "";
-
-    //DateTime dateTime = DateTime.parse(json['created_at']);
-    DateTime dateTime = DateTime.now();
-    date = DateFormat('d MMM yyyy à HH:mm').format(dateTime);
-
-    /* json['categories'].forEach((category) {
-      categories.add(Category.fromJson(category));
-    }); */
-
     id = json['id'];
-    content = json['content'];
-    author = json['author'];
+    content = json['contenu'];
+    image = json['image'];
+    author = UserModel.fromJson(json['user']);
+    date = DateTime.parse(json['created_at']);
     liked = json['liked'];
-    comments = json['comments'];
-    likes = json['likes'];
+    comments = json['comments_count'];
+    likes = json['likes_count'];
   }
 
   getWidget(
     BuildContext context, {
-    required void Function() stateNotifier,
+    required Future Function(PostModel post) onLike,
   }) {
     return GestureDetector(
       onTap: () => pushForm(context,
@@ -54,11 +36,12 @@ class PostModel {
             post: this,
           )),
       child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: const BoxDecoration(
-            border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 1),
-                top: BorderSide(color: Colors.grey, width: 1))),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.symmetric(vertical: 7),
+        decoration: BoxDecoration(
+          border: Border.all(width: 1, color: Colors.black),
+          borderRadius: BorderRadius.circular(10)
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,17 +50,21 @@ class PostModel {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(),
-                    const SizedBox(width: 10),
-                    Text(author, style: Theme.of(context).textTheme.titleMedium)
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(author.photo!),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      author.name,
+                      style: Theme.of(context).textTheme.titleMedium
+                    )
                   ],
                 ),
                 Text(
-                  date,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Colors.grey),
+                  formatDate(date),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    color: Colors.grey
+                  ),
                 )
               ],
             ),
@@ -108,11 +95,7 @@ class PostModel {
               child: Row(
                 children: [
                   TextButton.icon(
-                    onPressed: () {
-                      liked = !liked;
-                      liked ? likes++ : likes--;
-                      stateNotifier();
-                    },
+                    onPressed: () => onLike(this),
                     icon: FaIcon(
                       liked
                           ? FontAwesomeIcons.solidHeart
@@ -133,7 +116,7 @@ class PostModel {
                     icon: const FaIcon(
                       FontAwesomeIcons.comment,
                     ),
-                    label: Text("${comments.length} commentaires"),
+                    label: Text("$comments commentaires"),
                     style: ButtonStyle(
                         foregroundColor: WidgetStateProperty.all(Colors.black),
                         overlayColor:
@@ -146,5 +129,20 @@ class PostModel {
         ),
       ),
     );
+  }
+}
+
+class PostPaginator {
+  late List<PostModel> posts;
+  int currentPage = 0;
+  int totalPages = 1;
+
+  PostPaginator();
+
+  PostPaginator.fromJson(Map<String, dynamic> json) {
+    posts =
+        (json['posts'] as List).map((e) => PostModel.fromJson(e)).toList();
+    currentPage = json['current_page'] ?? 0;
+    totalPages = json['total_pages'] ?? 1;
   }
 }

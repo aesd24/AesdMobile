@@ -1,21 +1,19 @@
-import 'package:aesd_app/utils/extensions.dart';
-import 'package:intl/intl.dart';
+import 'package:aesd_app/models/user_model.dart';
 
-class Comment {
-  late String comment;
-  late String date;
-  late String userName;
-  late String userPhoto;
+class CommentModel {
+  late int id;
+  late String content;
+  late UserModel owner;
+  late DateTime date;
+  late String? imageUrl;
+  late int views;
 
-  Comment();
-
-  Comment.fromJson(Map<String, dynamic> json) {
-    comment = json['comment'];
-    DateTime dateTime = DateTime.parse(json['created_at']);
-    date = dateTime.isToday()
-        ? DateFormat('HH:mm').format(dateTime)
-        : DateFormat('d MMM').format(dateTime);
-    userName = json['commentator']['name'];
-    userPhoto = json['commentator']['profile_photo_path'];
+  CommentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    content = json['comment'];
+    owner = UserModel.fromJson(json['user']);
+    date = DateTime.parse(json['created_at']);
+    imageUrl = json['image'];
+    views = json['nombre_vue'] ?? 0;
   }
 }
