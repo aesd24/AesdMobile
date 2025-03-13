@@ -1,5 +1,4 @@
 import 'package:aesd_app/models/category.dart';
-import 'package:aesd_app/models/comment_model.dart';
 import 'package:intl/intl.dart';
 
 class ForumModel {
@@ -9,7 +8,6 @@ class ForumModel {
   late String date;
   late int commentCount;
   List<Category> categories = [];
-  List<Comment> comments = [];
 
   ForumModel();
 
@@ -24,10 +22,6 @@ class ForumModel {
 
     json['categories'].forEach((category) {
       categories.add(Category.fromJson(category));
-    });
-
-    json['comments'].forEach((comment) {
-      comments.add(Comment.fromJson(comment));
     });
   }
 }

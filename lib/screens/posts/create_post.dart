@@ -140,7 +140,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                 children: [
                   // zone d'affichage de l'image
                   if (image != null) Padding(
-                    padding: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(10),
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [

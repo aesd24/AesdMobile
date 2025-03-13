@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/models/post_model.dart';
 import 'package:aesd_app/providers/post.dart';
+import 'package:aesd_app/screens/posts/posts.dart';
+import 'package:aesd_app/screens/posts/servants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,48 +17,11 @@ class CommunityPage extends StatefulWidget {
 
 class _CommunityPageState extends State<CommunityPage> {
   bool isLoading = false;
-  final ScrollController _scrollController = ScrollController();
-
-  void scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !isLoading) {
-      loadPosts();
-    }
-  }
+  int _currentPage = 0;
+  final _pageController = PageController();
 
   stateNotifier() {
     setState(() {});
-  }
-
-  Future onLike(PostModel post) async {
-    try {
-      await Provider.of<PostProvider>(context, listen: false).likePost(
-        post.id
-      ).then((value) {
-        setState(() {
-          post.likes = value['likeCount'];
-          post.liked = value['like'];
-        });
-      });
-    } on DioException {
-      showSnackBar(
-        context: context,
-        message: "Erreur réseau. vérifiez votre connexion internet",
-        type: SnackBarType.danger
-      );
-    } on HttpException catch(e) {
-      showSnackBar(
-        context: context,
-        message: e.message,
-        type: SnackBarType.danger
-      );
-    } catch(e) {
-      showSnackBar(
-        context: context,
-        message: "Une erreur inattendu s'est produite !",
-        type: SnackBarType.danger
-      );
-      e.printError();
-    }
   }
 
   loadPosts() async {
@@ -67,7 +30,9 @@ class _CommunityPageState extends State<CommunityPage> {
         isLoading = true;
       });
       await Future.delayed(Duration(seconds: 1), () async {
-        await Provider.of<PostProvider>(context, listen: false).getPosts();
+        if (context.mounted){
+          await Provider.of<PostProvider>(context, listen: false).getPosts();
+        }
       });
     } on DioException {
       showSnackBar(
@@ -82,11 +47,13 @@ class _CommunityPageState extends State<CommunityPage> {
         type: SnackBarType.danger
       );
     } catch(e) {
-      showSnackBar(
-        context: context,
-        message: "Une erreur inattendu s'est produite !",
-        type: SnackBarType.danger
-      );
+      if (context.mounted) {
+        showSnackBar(
+          context: context,
+          message: "Une erreur inattendu s'est produite !",
+          type: SnackBarType.danger
+        );
+      }
       e.printError();
     } finally {
       setState(() {
@@ -98,30 +65,107 @@ class _CommunityPageState extends State<CommunityPage> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(scrollListener);
     loadPosts();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<PostModel> _posts = Provider.of<PostProvider>(context, listen: false).posts;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _posts.length,
-              itemBuilder: (context, index) => _posts[index].getWidget(
-                context, onLike: onLike
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    customTab(
+                      index: 0,
+                      text: "Posts",
+                      assetName: 'posts',
+                      color: Colors.blue
+                    ),
+
+                    customTab(
+                      index: 1,
+                      text: "Serviteurs",
+                      assetName: 'costume',
+                      color: Colors.purple
+                    ),
+
+                    customTab(
+                      index: 2,
+                      text: "Chantre",
+                      assetName: 'micro',
+                      color: Colors.pink
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          if (isLoading) LinearProgressIndicator(
-            borderRadius: BorderRadius.circular(20),
-          )
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (value) {
+                setState(() {
+                  _currentPage = value;
+                });
+              },
+              children: [
+                PostList(),
+                ServantList(),
+                Center(
+                  child: Text('Chantre'),
+                ),
+              ],
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget customTab({
+    required int index,
+    required String text,
+    required Color color,
+    required String assetName
+  }) {
+    bool selected = _currentPage == index;
+    return InkWell(
+      overlayColor: WidgetStatePropertyAll(color.withAlpha(50)),
+      onTap: () {
+        _pageController.animateToPage(
+          index, duration: Duration(milliseconds: 300), curve: Curves.easeInOut
+        );
+        setState(() {
+          _currentPage = index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        margin: EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: selected ? BoxDecoration(
+          color: color.withAlpha(20),
+          borderRadius: BorderRadius.circular(10),
+        ) : null,
+        child: Row(
+          children: [
+            Image.asset("assets/icons/$assetName.png", width: 35, height: 35),
+            SizedBox(width: 15),
+            Text(
+              text,
+              style: TextStyle(
+                color: color
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

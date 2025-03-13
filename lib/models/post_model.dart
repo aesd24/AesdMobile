@@ -1,7 +1,7 @@
 import 'package:aesd_app/functions/formatteurs.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/user_model.dart';
-import 'package:aesd_app/screens/posts/single_post.dart';
+import 'package:aesd_app/screens/posts/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -50,8 +50,10 @@ class PostModel {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(),
-                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(author.photo!),
+                    ),
+                    SizedBox(width: 10),
                     Text(
                       author.name,
                       style: Theme.of(context).textTheme.titleMedium
