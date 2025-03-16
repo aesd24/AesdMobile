@@ -26,6 +26,7 @@ class ServantModel {
     return GestureDetector(
       onTap: () => pushForm(context, destination: UserProfil(
         user: user,
+        servantId: id,
       )),
       child: Container(
         padding: EdgeInsets.all(20),
