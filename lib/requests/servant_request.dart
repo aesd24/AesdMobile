@@ -4,11 +4,19 @@ class ServantRequest extends DioClient {
   all({dynamic queryParameters}) async {
     final client = await getApiClient();
 
-    return client.get('/servants', queryParameters: queryParameters);
+    return client.get('/serviteurs');
   }
 
-  one() async {
+  one(int servantId) async {
     final client = await getApiClient();
-    return await client.get('servant/');
+    return await client.get('serviteurs/$servantId');
+  }
+
+  subscribe(int servantId, bool subscribe) async {
+    final client = await getApiClient();
+    return await client.post(
+      '/subscribe_serviteurs/$servantId',
+      data: {'subscriptionInput': subscribe == true ? 1 : 0},
+    );
   }
 }

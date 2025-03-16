@@ -11,6 +11,7 @@ import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -156,10 +157,10 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
           owner = UserModel.fromJson(value['user']);
         })
       });
-    } /* catch(e) {
+    } catch(e) {
       e.printError();
       showSnackBar(context: context, message: "Une erreur inattendu est survenue !", type: SnackBarType.danger);
-    } */ finally {
+    } finally {
       setState(() {
         _isLoading = false;
       });

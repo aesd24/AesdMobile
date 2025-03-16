@@ -1,12 +1,6 @@
-import 'dart:io';
-import 'package:aesd_app/components/snack_bar.dart';
-import 'package:aesd_app/providers/post.dart';
 import 'package:aesd_app/screens/posts/posts.dart';
-import 'package:aesd_app/screens/posts/servants.dart';
-import 'package:dio/dio.dart';
+import 'package:aesd_app/screens/servants/list.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -16,57 +10,8 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  bool isLoading = false;
   int _currentPage = 0;
   final _pageController = PageController();
-
-  stateNotifier() {
-    setState(() {});
-  }
-
-  loadPosts() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      await Future.delayed(Duration(seconds: 1), () async {
-        if (context.mounted){
-          await Provider.of<PostProvider>(context, listen: false).getPosts();
-        }
-      });
-    } on DioException {
-      showSnackBar(
-        context: context,
-        message: "Erreur réseau. vérifiez votre connexion internet",
-        type: SnackBarType.danger
-      );
-    } on HttpException catch(e) {
-      showSnackBar(
-        context: context,
-        message: e.message,
-        type: SnackBarType.danger
-      );
-    } catch(e) {
-      if (context.mounted) {
-        showSnackBar(
-          context: context,
-          message: "Une erreur inattendu s'est produite !",
-          type: SnackBarType.danger
-        );
-      }
-      e.printError();
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadPosts();
-  }
 
   @override
   Widget build(BuildContext context) {

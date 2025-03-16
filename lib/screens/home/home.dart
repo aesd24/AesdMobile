@@ -9,7 +9,7 @@ import 'package:aesd_app/screens/auth/login.dart';
 import 'package:aesd_app/screens/posts/community.dart';
 import 'package:aesd_app/screens/home/front.dart';
 import 'package:aesd_app/screens/posts/create_post.dart';
-import 'package:aesd_app/screens/home/profil.dart';
+import 'package:aesd_app/screens/user/profil.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -191,7 +191,7 @@ class _HomePageState extends State<HomePage> {
           const CommunityPage(),
           Consumer<User>(
             builder: (context, userProvider, child) {
-              return ProfilPage(user: userProvider.user);
+              return UserProfil(user: userProvider.user, isSelf: true);
             },
           ),
         ][_currentPageIndex] : Center(

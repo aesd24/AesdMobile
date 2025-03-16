@@ -51,11 +51,7 @@ class _PostListState extends State<PostList> {
 
   loadPosts() async {
     try {
-      await Future.delayed(Duration(seconds: 1), () async {
-        if (context.mounted){
-          await Provider.of<PostProvider>(context, listen: false).getPosts();
-        }
-      });
+      await Provider.of<PostProvider>(context, listen: false).getPosts();
     } on DioException {
       showSnackBar(
         context: context,
@@ -78,6 +74,12 @@ class _PostListState extends State<PostList> {
       }
       e.printError();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadPosts();
   }
 
   @override

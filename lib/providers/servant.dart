@@ -1,36 +1,45 @@
-import 'package:aesd_app/models/paginator.dart';
+import 'dart:io';
+
 import 'package:aesd_app/models/servant_model.dart';
 import 'package:aesd_app/requests/servant_request.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 class Servant extends ChangeNotifier {
-  final ServantRequest _servantService = ServantRequest();
-  List<ServantModel> _servants = [];
-  late Paginator _paginator;
+  final ServantRequest _request = ServantRequest();
+  final List<ServantModel> _servants = [];
 
-  // enregistrement des données de serviteur connecté
-  late ServantModel servant = ServantModel();
+  List<ServantModel> get servants => _servants;
 
-  Future getServant() async {
-    servant = ServantModel.fromJson(await _servantService.one());
+  Future getServant({required int servantId}) async {
+    final response = await _request.one(servantId);
+    if (response.statusCode == 200) {
+      return ServantModel.fromJson(response.data['serviteur']);
+    } else {
+      throw HttpException(response.data['message']);
+    }
+  }
+
+  Future fetchServants() async {
+    final response = await _request.all();
+
+    if (response.statusCode == 200){
+      _servants.clear();
+      for (var servant in response.data['serviteurs']) {
+        _servants.add(ServantModel.fromJson(servant));
+      }
+    } else {
+      throw HttpException(response.data['message']);
+    }
     notifyListeners();
   }
 
-  Future<Tuple2<List<ServantModel>, Paginator>> all({dynamic queryParameters}) async {
-    _servants = [];
-    try {
-      final data = await _servantService.all(queryParameters: queryParameters);
-
-      data['data'].forEach((d) {
-        _servants.add(ServantModel.fromJson(d));
-      });
-
-      _paginator = Paginator.fromJson(data);
-    } catch (e) {
-      ////print(e);
+  Future subscribe({required int servantId, required bool subscribe}) async {
+    final response = await _request.subscribe(servantId, subscribe);
+    print(response);
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw HttpException(response.data['message']);
     }
-
-    return Tuple2(_servants, _paginator);
   }
 }
