@@ -86,6 +86,11 @@ class _PostListState extends State<PostList> {
   Widget build(BuildContext context) {
     return Consumer<PostProvider>(
       builder: (context, postProvider, child){
+        if (postProvider.posts.isEmpty) {
+          return Center(
+            child: Text("Aucune publication pour le moment !"),
+          );
+        }
         return RefreshIndicator(
           onRefresh: () async => loadPosts(),
           child: ListView.builder(
