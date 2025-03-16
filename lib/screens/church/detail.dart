@@ -5,7 +5,6 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
 import 'package:aesd_app/models/day_program.dart';
-import 'package:aesd_app/models/event.dart';
 import 'package:aesd_app/models/user_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
