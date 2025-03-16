@@ -386,7 +386,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * .6,
+                    height: MediaQuery.of(context).size.height * .5,
                     child: PageView(
                       controller: _pageController,
                       onPageChanged: (value) => setPageIndex(value),
@@ -445,8 +445,7 @@ class Community extends StatefulWidget {
 class _CommunityState extends State<Community> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -499,8 +498,7 @@ class Ceremonies extends StatefulWidget {
 class _CeremoniesState extends State<Ceremonies> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    return SingleChildScrollView(
       child: Column(
         children: [
           customTextField(
@@ -557,46 +555,43 @@ class _ProgramState extends State<Program> {
     })
   });
 
-  var lastEvent = EventModel.fromJson({
+  /* var lastEvent = EventModel.fromJson({
     'id': 0,
     'titre':"Intitulé de l'évènement 1",
     'date_debut': DateTime.now(),
     'date_fin': DateTime.now(),
-  });
+  }); */
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Programme du jour",
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.keyboard_arrow_right),
-                    iconAlignment: IconAlignment.end,
-                    label: const Text("Tout voir"))
-              ],
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: lastEvent.getWidget(context)),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: currentProgram.getWidget(context),
-            )
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Programme du jour",
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              TextButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.keyboard_arrow_right),
+                  iconAlignment: IconAlignment.end,
+                  label: const Text("Tout voir"))
+            ],
+          ),
+          /* Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: lastEvent.getWidget(context)), */
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: currentProgram.getWidget(context),
+          )
+        ],
       ),
     );
   }
