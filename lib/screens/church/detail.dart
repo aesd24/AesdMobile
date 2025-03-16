@@ -4,11 +4,10 @@ import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/church_model.dart';
-import 'package:aesd_app/models/day_program.dart';
-import 'package:aesd_app/models/event.dart';
 import 'package:aesd_app/models/user_model.dart';
 import 'package:aesd_app/providers/church.dart';
 import 'package:aesd_app/providers/user.dart';
+import 'package:aesd_app/screens/church/day_program.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -391,7 +390,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                       controller: _pageController,
                       onPageChanged: (value) => setPageIndex(value),
                       children: [
-                        Program(),
+                        Program(churchId: widget.churchId),
                         Ceremonies(),
                         Community()
                       ],
@@ -528,68 +527,6 @@ class _CeremoniesState extends State<Ceremonies> {
                 ),
               );
             }),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class Program extends StatefulWidget {
-  const Program({super.key});
-
-  @override
-  State<Program> createState() => _ProgramState();
-}
-
-class _ProgramState extends State<Program> {
-  var currentProgram = DayProgramModel.fromJson({
-    'day': "Lundi",
-    'program': List.generate(3, (index) {
-      return {
-        'title': "Programme $index",
-        'startTime': "${index + 10}:00:00",
-        'endTime': "${index + 11}:00:00",
-        'place': "Lien $index"
-      };
-    })
-  });
-
-  /* var lastEvent = EventModel.fromJson({
-    'id': 0,
-    'titre':"Intitulé de l'évènement 1",
-    'date_debut': DateTime.now(),
-    'date_fin': DateTime.now(),
-  }); */
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Programme du jour",
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.keyboard_arrow_right),
-                  iconAlignment: IconAlignment.end,
-                  label: const Text("Tout voir"))
-            ],
-          ),
-          /* Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: lastEvent.getWidget(context)), */
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            child: currentProgram.getWidget(context),
           )
         ],
       ),
