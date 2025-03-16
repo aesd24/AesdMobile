@@ -30,7 +30,10 @@ class CeremonyModel {
     'church_id': churchId,
   };
 
-  Widget card(BuildContext context, {required Future Function() onDelete}) {
+  Widget card(BuildContext context,{
+    Future Function()? onDelete,
+    bool dashboardAccess = false
+  }) {
     return InkWell(
     overlayColor: WidgetStateProperty.all(Colors.orange.shade50),
     onTap: () => pushForm(context, destination: CeremonyViewer(ceremony: this)),
@@ -84,7 +87,7 @@ class CeremonyModel {
                     color: Colors.grey.shade700
                   )
                 ),
-                Padding(
+                if (dashboardAccess) Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -121,7 +124,7 @@ class CeremonyModel {
                               iconAlignment: IconAlignment.end,
                               onPressed: () async {
                                 closeForm(context);
-                                await onDelete();
+                                await onDelete!();
                               },
                               style: ButtonStyle(
                                 foregroundColor: WidgetStatePropertyAll(Colors.red),
