@@ -4,7 +4,7 @@ class ServantRequest extends DioClient {
   all({dynamic queryParameters}) async {
     final client = await getApiClient();
 
-    return client.get('/servants', queryParameters: queryParameters);
+    return client.get('/serviteurs');
   }
 
   one() async {
