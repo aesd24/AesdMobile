@@ -1,3 +1,5 @@
+import 'package:aesd_app/functions/navigation.dart';
+import 'package:aesd_app/screens/user/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:aesd_app/models/user_model.dart';
 
@@ -14,48 +16,40 @@ class SingerModel {
   }
 
   Widget card(BuildContext context){
-    //ColorScheme themeColors = Theme.of(context).colorScheme;
     TextTheme textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(width: 1, color: Colors.black))
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // zone de présentation du serviteur
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(radius: 30,),
-              SizedBox(width: 10),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(user.name, style: textTheme.titleMedium),
-                  /* Text(call, style: textTheme.bodySmall!.copyWith(
-                    color: Colors.black.withAlpha(150)
-                  )), */
-                ],
-              ),
-            ],
-          ),
-
-          /* if(church != null) Padding(
-            padding: EdgeInsets.only(top: 20, bottom: 10),
-            child: Row(
+    return GestureDetector(
+      onTap: () => pushForm(context, destination: UserProfil(user: user)),
+      child: Container(
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(width: 1, color: Colors.black))
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // zone de présentation du serviteur
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FaIcon(FontAwesomeIcons.church, size: 20),
+                CircleAvatar(radius: 30,),
                 SizedBox(width: 10),
-                Text(church!.name, style: textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-                )),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(user.name, style: textTheme.titleMedium),
+                    Text(
+                      "manager: $manager",
+                      style: textTheme.bodySmall!.copyWith(
+                        color: Colors.black.withAlpha(150)
+                      )
+                    ),
+                  ],
+                ),
               ],
-            )
-          ) */
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

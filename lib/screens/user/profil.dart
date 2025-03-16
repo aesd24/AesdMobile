@@ -42,10 +42,14 @@ class _UserProfilState extends State<UserProfil> {
       setState(() {
         isLoading = true;
       });
-      servant = await Provider.of<Servant>(context, listen: false).getServant(
-        servantId: widget.servantId!,
-      );
-      print(servant);
+      await Provider.of<Servant>(context, listen: false).getServant(
+        servantId: widget.servantId!
+      ).then((value) {
+        setState(() {
+          servant = ServantModel.fromJson(value);
+          subscribed = value['isSubscribed'];
+        });
+      });
     } on HttpException {
       showSnackBar(
         context: context,
@@ -70,6 +74,9 @@ class _UserProfilState extends State<UserProfil> {
         servantId: servant.id,
         subscribe: !subscribed
       ).then((value) async {
+        setState(() {
+          this.subscribed = !subscribed;
+        });
         showSnackBar(context: context, message: value['message'], type: SnackBarType.success);
       });
     } on HttpException {
@@ -95,7 +102,7 @@ class _UserProfilState extends State<UserProfil> {
   @override
   void initState() {
     super.initState();
-    init();
+    if(widget.servantId != null) init();
   }
   
   @override

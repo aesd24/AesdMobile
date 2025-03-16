@@ -1,29 +1,25 @@
-import 'package:aesd_app/models/paginator.dart';
+import 'dart:io';
+
 import 'package:aesd_app/models/singer_model.dart';
 import 'package:aesd_app/requests/singer_request.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 class Singer extends ChangeNotifier {
-  final SingerRequest _servantService = SingerRequest();
-  List<SingerModel> _singers = [];
-  late Paginator _paginator;
+  final SingerRequest _request = SingerRequest();
+  final List<SingerModel> _singers = [];
+  List<SingerModel> get singers => _singers;
 
-  Future<Tuple2<List<SingerModel>, Paginator>> all(
-      {dynamic queryParameters}) async {
-    _singers = [];
-    try {
-      final data = await _servantService.all(queryParameters: queryParameters);
+  Future fetchSingers() async {
+    final response = await _request.all();
 
-      data['data'].forEach((d) {
-        _singers.add(SingerModel.fromJson(d));
-      });
-
-      _paginator = Paginator.fromJson(data);
-    } catch (e) {
-      ////print(e);
+    if (response.statusCode == 200){
+      _singers.clear();
+      for (var singers in response.data['chantres']) {
+        _singers.add(SingerModel.fromJson(singers));
+      }
+    } else {
+      throw HttpException(response.data['message']);
     }
-
-    return Tuple2(_singers, _paginator);
+    notifyListeners();
   }
 }
