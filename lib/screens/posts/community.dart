@@ -1,5 +1,6 @@
 import 'package:aesd_app/screens/posts/posts.dart';
 import 'package:aesd_app/screens/servants/list.dart';
+import 'package:aesd_app/screens/singer/list.dart';
 import 'package:flutter/material.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -63,9 +64,7 @@ class _CommunityPageState extends State<CommunityPage> {
               children: [
                 PostList(),
                 ServantList(),
-                Center(
-                  child: Text('Chantre'),
-                ),
+                SingerList()
               ],
             ),
           ),
