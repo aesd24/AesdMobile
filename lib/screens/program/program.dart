@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChurchProgram extends StatefulWidget {
-  const ChurchProgram({super.key});
+  const ChurchProgram({super.key, required this.churchId});
+
+  final int churchId;
 
   @override
   State<ChurchProgram> createState() => _ChurchProgramState();

@@ -13,7 +13,7 @@ class Servant extends ChangeNotifier {
   Future getServant({required int servantId}) async {
     final response = await _request.one(servantId);
     if (response.statusCode == 200) {
-      return ServantModel.fromJson(response.data['serviteur']);
+      return response.data['serviteur'];
     } else {
       throw HttpException(response.data['message']);
     }

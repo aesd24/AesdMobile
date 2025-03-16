@@ -19,7 +19,6 @@ class Program extends StatefulWidget {
 }
 
 class _ProgramState extends State<Program> {
-  bool isLoading = false;
   var currentProgram = DayProgramModel.fromJson({
     'day': "Lundi",
     'program': List.generate(3, (index) {
@@ -41,9 +40,6 @@ class _ProgramState extends State<Program> {
 
   void init() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
       await Provider.of<Event>(context, listen: false).getEvents(churchId: widget.churchId);
     } on HttpException catch (e) {
       showSnackBar(
@@ -64,10 +60,6 @@ class _ProgramState extends State<Program> {
         message: "Une erreur inattendue s'est produite !",
         type: SnackBarType.danger
       );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
@@ -79,58 +71,46 @@ class _ProgramState extends State<Program> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Center(
-        child: SizedBox(
-          height: 30,
-          width: 30,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.0,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Programme du jour",
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              /* TextButton.icon(
+                  onPressed: () => null,//pushForm(context, destination: ),
+                  icon: const Icon(Icons.keyboard_arrow_right),
+                  iconAlignment: IconAlignment.end,
+                  label: const Text("Tout voir")) */
+            ],
           ),
-        ),
-      );
-    } else {
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Programme du jour",
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.keyboard_arrow_right),
-                    iconAlignment: IconAlignment.end,
-                    label: const Text("Tout voir"))
-              ],
-            ),
-            Consumer<Event>(
-              builder: (context, eventProvider, child){
-                EventModel? lastEvent;
-                if (eventProvider.events.isNotEmpty) {
-                  lastEvent = eventProvider.events.last;
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: lastEvent != null ? 
-                    lastEvent.getWidget(context) :
-                    Text("Aucun événement pour le moment..."),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: currentProgram.getWidget(context),
-            )
-          ],
-        ),
-      );
-    }
+          Consumer<Event>(
+            builder: (context, eventProvider, child){
+              EventModel? lastEvent;
+              if (eventProvider.events.isNotEmpty) {
+                lastEvent = eventProvider.events.last;
+              }
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: lastEvent != null ? 
+                  lastEvent.getWidget(context) :
+                  Text("Aucun événement pour le moment..."),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: currentProgram.getWidget(context),
+          )
+        ],
+      ),
+    );
   }
 }
