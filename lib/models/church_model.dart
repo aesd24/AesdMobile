@@ -1,6 +1,7 @@
 import 'package:aesd_app/models/day_program.dart';
 //import 'package:aesd_app/models/programm_model.dart';
 import 'package:aesd_app/models/servant_model.dart';
+import 'package:aesd_app/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ChurchModel {
