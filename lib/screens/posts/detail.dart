@@ -167,7 +167,7 @@ class _SinglePostState extends State<SinglePost> {
       setCommentingState();
     }
     setState(() {
-      showAllText = widget.post.content.length < 200;
+      showAllText = widget.post.content.length <= 300;
     });
   }
 
@@ -217,12 +217,12 @@ class _SinglePostState extends State<SinglePost> {
                       // Zone du contenu du post
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: RichText(
+                        child: widget.post.content.length > 300 ? RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
                                 text: showAllText ? widget.post.content :
-                                '${widget.post.content.substring(0, 200)}... ',
+                                '${widget.post.content.substring(0, 300)}... ',
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                               TextSpan(
@@ -240,6 +240,9 @@ class _SinglePostState extends State<SinglePost> {
                               )
                             ]
                           )
+                        ) : Text(
+                          widget.post.content,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         )
                       ),
 

@@ -94,9 +94,14 @@ class PostModel {
             // Image contenu dans le post
             if (image != null) Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Image.network(
-                image!,
-                fit: BoxFit.fill
+              child: Container(
+                height: 250,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(image!), fit: BoxFit.cover
+                  )
+                ),
               )
             ),
 

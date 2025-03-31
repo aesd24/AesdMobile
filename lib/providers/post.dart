@@ -17,7 +17,7 @@ class PostProvider extends ChangeNotifier {
   Future create(Map<String, dynamic> data) async {
     final FormData formData = FormData.fromMap({
       'contenu': data['content'],
-      'image': await MultipartFile.fromFile(data['image']),
+      'image': data['image'] != null ? await MultipartFile.fromFile(data['image']) : null,
     });
     var response = await _request.create(data: formData);
     print(response);
