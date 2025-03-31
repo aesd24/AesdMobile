@@ -3,14 +3,17 @@ import 'dart:io';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/formatteurs.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/post_model.dart';
 import 'package:aesd_app/models/user_model.dart';
 import 'package:aesd_app/providers/post.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
 class SinglePost extends StatefulWidget {
@@ -27,6 +30,7 @@ class _SinglePostState extends State<SinglePost> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   final _focusNode = FocusNode();
+  bool showAllText = false;
 
   // controller
   final _commentController = TextEditingController();
@@ -44,7 +48,7 @@ class _SinglePostState extends State<SinglePost> {
     });
   }
 
-  init() async {
+  loadPost() async {
     try {
       setState(() {
         isLoading = true;
@@ -158,10 +162,13 @@ class _SinglePostState extends State<SinglePost> {
   @override
   void initState() {
     super.initState();
-    init();
+    loadPost();
     if (widget.isCommenting == true) {
       setCommentingState();
     }
+    setState(() {
+      showAllText = widget.post.content.length < 200;
+    });
   }
 
   @override
@@ -169,7 +176,20 @@ class _SinglePostState extends State<SinglePost> {
     return LoadingOverlay(
       isLoading: isLoading,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                formatDate(widget.post.date),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(color: Colors.grey),
+              ),
+            )
+          ],
+        ),
         body: Stack(
           children: [
             Padding(
@@ -180,27 +200,16 @@ class _SinglePostState extends State<SinglePost> {
                     children: [
                       // zone du nom du postant et la date
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  widget.post.author.photo!
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text(widget.post.author.name,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium)
-                            ],
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              widget.post.author.photo!
+                            ),
                           ),
+                          SizedBox(width: 10),
                           Text(
-                            formatDate(widget.post.date),
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(color: Colors.grey),
+                            widget.post.author.name,
+                            style: Theme.of(context).textTheme.titleMedium
                           )
                         ],
                       ),
@@ -208,23 +217,77 @@ class _SinglePostState extends State<SinglePost> {
                       // Zone du contenu du post
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Text(
-                          widget.post.content,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: showAllText ? widget.post.content :
+                                '${widget.post.content.substring(0, 200)}... ',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              TextSpan(
+                                text: !showAllText ? 'Voir plus' : 'Voir moins',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                ..onTap = (){
+                                  setState(() {
+                                    showAllText = !showAllText;
+                                  });
+                                }
+                              )
+                            ]
+                          )
+                        )
                       ),
+
+                      // image (s'il y en a une)
                       if (widget.post.image != null) Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Container(
-                          width: double.infinity,
-                          height: 400,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(7),
-                            image: DecorationImage(
-                              image: NetworkImage(widget.post.image!),
-                            ),
-                            color: Colors.grey
+                        child: InkWell(
+                          onTap: () => showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: EdgeInsets.zero,
+                                child: Stack(
+                                  children: [
+                                    PhotoView(
+                                      imageProvider: NetworkImage(widget.post.image!),
+                                      backgroundDecoration: BoxDecoration(
+                                        color: Colors.black.withAlpha(150)
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 20,
+                                      right: 20,
+                                      child: GestureDetector(
+                                        onTap: () => closeForm(context),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withAlpha(50),
+                                            borderRadius: BorderRadius.circular(10)
+                                          ),
+                                          child: FaIcon(
+                                            FontAwesomeIcons.xmark,
+                                            color: Colors.white
+                                          )
+                                        ),
+                                      )
+                                    )
+                                  ],
+                                )
+                              );
+                            },
                           ),
+                          child: Image.network(
+                            widget.post.image!,
+                            fit: BoxFit.fill,
+                          )
                         )
                       ),
       
