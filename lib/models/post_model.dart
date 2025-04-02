@@ -95,7 +95,7 @@ class PostModel {
             if (image != null) Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Container(
-                height: 250,
+                height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -133,9 +133,10 @@ class PostModel {
                     ),
                     label: Text("$comments commentaires"),
                     style: ButtonStyle(
-                        foregroundColor: WidgetStateProperty.all(Colors.black),
-                        overlayColor:
-                            WidgetStateProperty.all(Colors.grey.shade200)),
+                      foregroundColor: WidgetStateProperty.all(Colors.black),
+                      iconColor: WidgetStateProperty.all(Colors.black),
+                      overlayColor: WidgetStateProperty.all(Colors.grey.shade200)
+                    ),
                   )
                 ],
               ),

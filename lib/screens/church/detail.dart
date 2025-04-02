@@ -223,10 +223,10 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          radius: 42,
+                          backgroundColor: Colors.black.withAlpha(75),
                           child: CircleAvatar(
-                            radius: 30,
+                            radius: 35,
                             backgroundColor: Colors.grey,
                             backgroundImage: church!.logo != null
                                 ? NetworkImage(church!.logo!)

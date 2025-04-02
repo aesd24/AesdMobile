@@ -21,6 +21,7 @@ class DioClient {
 
   Future<Dio> getApiClient({String? contentType}) async {
     final authToken = await UnExpiredCache().get(key: 'access_token');
+    print(authToken);
     if (authToken != '') {
       _dio.options.headers['Authorization'] = authToken;
     }

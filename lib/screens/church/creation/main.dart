@@ -253,7 +253,7 @@ class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
     bool update = widget.editMode;
     return LoadingOverlay(
       isLoading: isLoading,
-      color: Colors.black,
+      color: Colors.black.withAlpha(70),
       child: Scaffold(
         appBar: AppBar(
             title: Text(update

@@ -42,7 +42,7 @@ class UserModel {
     email = json['email'] ?? "";
     adress = json['adresse'] ?? "";
     phone = json['phone'] ?? "";
-    photo = json['profile_photo_url'];
+    photo = json['profile_photo'];
     accountType = json['account_type'];
     churchId = json['details'] == null ? null : json['details']['church_id'];
     church = json['church'] == null ? null : ChurchModel.fromJson(json['church']);
