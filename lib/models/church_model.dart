@@ -25,7 +25,7 @@ class ChurchModel {
     image = json['image'] ??
         'https://bretagneromantique.fr/wp-content/uploads/2021/04/IMG_4463-scaled.jpg';
     email = json['email'];
-    logo = json['logo_url'];
+    logo = json['logo'];
     cover = json['cover_url'];
     address = json['adresse'];
     description = json['description'];

@@ -72,23 +72,38 @@ class PostModel {
             // Contenu du post
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
+              child: content.length > 150 ? RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${content.substring(0, 150)}... ',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    TextSpan(
+                      text: 'Lire la suite',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)
+                    )
+                  ]
+                )
+              ) : Text(
                 content,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+                style: Theme.of(context).textTheme.bodyMedium,
+              )
             ),
 
             // Image contenu dans le post
-            if (image != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(7))),
-              ),
+            if (image != null) Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Container(
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(image!), fit: BoxFit.cover
+                  )
+                ),
+              )
+            ),
 
             Padding(
               padding: const EdgeInsets.only(bottom: 10, top: 20),
@@ -118,9 +133,10 @@ class PostModel {
                     ),
                     label: Text("$comments commentaires"),
                     style: ButtonStyle(
-                        foregroundColor: WidgetStateProperty.all(Colors.black),
-                        overlayColor:
-                            WidgetStateProperty.all(Colors.grey.shade200)),
+                      foregroundColor: WidgetStateProperty.all(Colors.black),
+                      iconColor: WidgetStateProperty.all(Colors.black),
+                      overlayColor: WidgetStateProperty.all(Colors.grey.shade200)
+                    ),
                   )
                 ],
               ),

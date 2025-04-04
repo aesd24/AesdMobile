@@ -26,6 +26,7 @@ class ChurchDetailPage extends StatefulWidget {
 class _ChurchDetailPageState extends State<ChurchDetailPage> {
   ChurchModel? church;
   UserModel? owner;
+  List<UserModel> members = [];
   bool _isLoading = false;
   int _pageIndex = 0;
   setPageIndex(int index) {
@@ -153,12 +154,20 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
       .then((value) => {
         setState(() {
           church = ChurchModel.fromJson(value['eglise']);
+          members.clear();
+          for(var member in value['members']) {
+            members.add(UserModel.fromJson(member));
+          }
           owner = UserModel.fromJson(value['user']);
         })
       });
     } catch(e) {
       e.printError();
-      showSnackBar(context: context, message: "Une erreur inattendu est survenue !", type: SnackBarType.danger);
+      showSnackBar(
+        context: context,
+        message: "Une erreur inattendu est survenue !",
+        type: SnackBarType.danger
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -214,10 +223,10 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          radius: 42,
+                          backgroundColor: Colors.black.withAlpha(75),
                           child: CircleAvatar(
-                            radius: 30,
+                            radius: 35,
                             backgroundColor: Colors.grey,
                             backgroundImage: church!.logo != null
                                 ? NetworkImage(church!.logo!)
@@ -376,7 +385,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                     customNavitem(context,
                       currentIndex: _pageIndex, index: 1, label: "Céremonies"),
                     customNavitem(context,
-                      currentIndex: _pageIndex, index: 2, label: "Communauté"),
+                      currentIndex: _pageIndex, index: 2, label: "Membres"),
                   ],
                 ),
       
@@ -392,7 +401,7 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
                       children: [
                         Program(churchId: widget.churchId),
                         CeremonyShortList(churchId: widget.churchId),
-                        Community()
+                        Community(members: members, subscribed: subscribed),
                       ],
                     ),
                   ),
@@ -435,7 +444,10 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
 }
 
 class Community extends StatefulWidget {
-  const Community({super.key});
+  const Community({super.key, required this.members, this.subscribed = false, });
+
+  final List<UserModel> members;
+  final bool subscribed;
 
   @override
   State<Community> createState() => _CommunityState();
@@ -459,25 +471,10 @@ class _CommunityState extends State<Community> {
             ),
           ),
           Column(
-            children: List.generate(5, (index) {
+            children: List.generate(widget.members.length, (index) {
+              var current = widget.members[index];
               return Card(
-                child: ListTile(
-                  title: const Text("Nom du serviteur"),
-                  subtitle: const Text("serviteur@email.com"),
-                  trailing: index == 0
-                      ? Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.green, width: 1.5),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: const Text(
-                            "Principale",
-                            style: TextStyle(color: Colors.green),
-                          ),
-                        )
-                      : null,
-                ),
+                child: current.tile()
               );
             }),
           )

@@ -34,7 +34,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
   }
 
   handleSubmit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (contentController.text.isEmpty && image == null) {
       showSnackBar(
         context: context,
         message: "Remplissez correctement le formulaire",
@@ -192,7 +192,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       autofocus: true,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: "Que voulez vous partager aujourd'hui ?",
+                        hintText: "Que voulez-vous partager aujourd'hui ?",
                         hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Colors.grey
                         )
