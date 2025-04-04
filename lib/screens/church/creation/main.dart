@@ -228,9 +228,9 @@ class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
         }
         print(church!.type);
       }
-    } /* catch (e) {
+    } catch (e) {
       e.printError();
-    } */ finally {
+    } finally {
       setState(() {
         isLoading = false;
       });
@@ -276,15 +276,24 @@ class _MainChurchCreationPageState extends State<MainChurchCreationPage> {
                             child: Column(
                               children: [
                                 GestureDetector(
-                                    onTap: () {
-                                      pickModeSelectionBottomSheet(
-                                          context: context,
-                                          setter: setChurchImage);
-                                    },
-                                    child: customRoundedAvatar(
-                                        image: _churchImage,
-                                        overlayText:
-                                            "Cliquez pour ajoutez une photo")),
+                                  onTap: () {
+                                    pickModeSelectionBottomSheet(
+                                        context: context,
+                                        setter: setChurchImage);
+                                  },
+                                  child: !widget.editMode ? customRoundedAvatar(
+                                    image: _churchImage,
+                                    overlayText: "Cliquez pour ajoutez une photo"
+                                  ):
+                                  CircleAvatar(
+                                    radius: 85,
+                                    child: CircleAvatar(
+                                      radius: 70,
+                                      backgroundImage: church?.logo != null ?
+                                      NetworkImage(church!.logo!) : null,
+                                    ),
+                                  )
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 20),
                                   child: Text(

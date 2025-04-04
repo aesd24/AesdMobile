@@ -190,8 +190,20 @@ class _DashboardState extends State<Dashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 35,
+                if(church.logo != null) Container(
+                  height: 80,
+                  width: 80,
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: NetworkImage(church.logo!),
+                      fit: BoxFit.cover
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: Colors.grey.shade200, blurRadius: 5, spreadRadius: 2)
+                    ]
+                  ),
                 ),
                 SizedBox(height: 5),
                 Text(church.name),
