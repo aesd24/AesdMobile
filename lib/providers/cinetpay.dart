@@ -26,7 +26,7 @@ class CinetPay extends ChangeNotifier{
     Map<String, dynamic> body = {
       'apikey' : _apiKey,
       'site_id' : _siteID,
-      'transaction_id': 'transac${const Uuid().v6()}',
+      'transaction_id': 'transac${const Uuid().v1()}',
       'channels' : _channels,
       "amount": amount,
       "currency": "XOF",

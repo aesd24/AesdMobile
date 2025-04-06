@@ -1,5 +1,7 @@
 import 'package:aesd_app/components/field.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/testimony.dart';
+import 'package:aesd_app/screens/testimony/form.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -25,7 +27,7 @@ class _TestimoniesListState extends State<TestimoniesList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Témoignages"),
+          title: Text("Les témoignages"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(10),
@@ -33,17 +35,24 @@ class _TestimoniesListState extends State<TestimoniesList> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: customTextField(
-                    prefixIcon: const Icon(Icons.search),
-                    label: "Rechercher",
-                    suffix: PopupMenuButton(
-                        icon: const FaIcon(FontAwesomeIcons.sort),
-                        itemBuilder: (context) => const [
-                              PopupMenuItem(
-                                  value: "date", child: Text("Trier par date")),
-                              PopupMenuItem(
-                                  value: "name", child: Text("Trier par nom")),
-                            ])),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: customTextField(
+                        prefixIcon: const Icon(Icons.search),
+                        label: "Rechercher",
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => pushForm(context, destination: TestimonyForm()),
+                      style: ButtonStyle(
+                        overlayColor: WidgetStatePropertyAll(Colors.green.shade200),
+                        iconColor: WidgetStatePropertyAll(Colors.green)
+                      ),
+                      icon: FaIcon(FontAwesomeIcons.plus, size: 16)
+                    )
+                  ],
+                ),
               ),
 
               // liste des témoignages

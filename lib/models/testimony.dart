@@ -17,35 +17,52 @@ class TestimonyModel {
   }
 
   getWidget(context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(15),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: Border.all(width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
+    String content = body.length > 100 ? '${body.substring(0, 100)}...' : body;
+    return GestureDetector(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.all(7),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border.all(width: 1),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w600
+                ),
+              ),
             ),
-          ),
-          Text(
-            "Témoignage de: ${user == null ? "Anonymous" : user!.name}",
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Colors.black87),
-          )
-        ],
+            user != null ? Row(
+              children: [
+                CircleAvatar(
+                  radius: 15,
+                  backgroundImage: NetworkImage(user!.photo!)
+                ),
+                SizedBox(width: 5),
+                Text(user!.name),
+              ],
+            ) : Text(
+              "Anonyme",
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                fontStyle: FontStyle.italic
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              content,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: Colors.grey.shade600
+              )
+            ),
+          ],
+        ),
       ),
     );
   }
