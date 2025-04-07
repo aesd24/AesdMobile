@@ -1,23 +1,26 @@
 import 'package:aesd_app/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TestimonyModel {
   late int id;
   late String title;
-  late String body;
   late bool isAnonymous;
+  late String mediaType;
+  late String mediaUrl;
   late UserModel? user;
 
   TestimonyModel.fromJson(json) {
     id = json['id'];
     title = json['title'];
-    body = json['body'];
-    isAnonymous = json['isAnonymous'];
+    isAnonymous = json['is_anonymous'] == 1;
+    mediaUrl = json['media'];
+    mediaType = json['mediaType'];
     user = json['user'] == null ? null : UserModel.fromJson(json['user']);
   }
 
   getWidget(context) {
-    String content = body.length > 100 ? '${body.substring(0, 100)}...' : body;
+    Color boxColor = mediaType == 'audio' ? Colors.blue : Colors.purple;
     return GestureDetector(
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
@@ -54,13 +57,36 @@ class TestimonyModel {
                 fontStyle: FontStyle.italic
               ),
             ),
-            SizedBox(height: 20),
-            Text(
-              content,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Colors.grey.shade600
+            Container(
+              margin: EdgeInsets.only(top: 22, bottom: 10),
+              padding: EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: boxColor,
+                  width: 1
+                ),
+                borderRadius: BorderRadius.circular(10),
+                color: boxColor.withAlpha(30)
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: boxColor,
+                  child: FaIcon(
+                    mediaType == 'audio' ?
+                    FontAwesomeIcons.music : FontAwesomeIcons.clapperboard,
+                    color: Colors.white,
+                    size: 15
+                  ),
+                ),
+                title: Text(
+                  'Témoignage ${mediaType == 'audio'? 'audio' : 'vidéo'}',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: boxColor
+                  ),
+                ),
               )
-            ),
+            )
           ],
         ),
       ),

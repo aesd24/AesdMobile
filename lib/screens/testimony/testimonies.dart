@@ -17,8 +17,9 @@ class _TestimoniesListState extends State<TestimoniesList> {
     return TestimonyModel.fromJson({
       'id': index,
       'title': "Titre du témoignage $index",
-      'body': "Corps du témoignage $index",
-      'isAnonymous': false,
+      'is_anonymous': 1,
+      'media': '',
+      'mediaType': index % 2 == 0 ? 'video' : 'audio',
       'user': null
     });
   });
@@ -33,6 +34,15 @@ class _TestimoniesListState extends State<TestimoniesList> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () => pushForm(context, destination: TestimonyForm()),
+                  label: Text('Ajouter'),
+                  icon: FaIcon(FontAwesomeIcons.plus),
+                  iconAlignment: IconAlignment.end
+                )
+              ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
@@ -43,14 +53,6 @@ class _TestimoniesListState extends State<TestimoniesList> {
                         label: "Rechercher",
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => pushForm(context, destination: TestimonyForm()),
-                      style: ButtonStyle(
-                        overlayColor: WidgetStatePropertyAll(Colors.green.shade200),
-                        iconColor: WidgetStatePropertyAll(Colors.green)
-                      ),
-                      icon: FaIcon(FontAwesomeIcons.plus, size: 16)
-                    )
                   ],
                 ),
               ),

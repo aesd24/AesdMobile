@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,8 +33,16 @@ class _TestimonyFormState extends State<TestimonyForm> {
   }
 
   Future<void> _playAudio() async {
-    if (_audioPath != null) {
-      await audioPlayer.play(DeviceFileSource(_audioPath!));
+    try{
+      if (recordPath != null) {
+        await audioPlayer.play(DeviceFileSource(recordPath!));
+      }
+    } catch(e) {
+      showSnackBar(
+        context: context,
+        message: "Impossible de jouer l'audio",
+        type: SnackBarType.danger
+      );
     }
   }
 
@@ -41,19 +51,33 @@ class _TestimonyFormState extends State<TestimonyForm> {
   }
 
   Future<void> _seekAudio(Duration position) async {
-    await audioPlayer.seek(position);
+    setState(() {
+      _position = position;
+    });
+    await audioPlayer.seek(_position);
   }
 
   // variable d'enregistrement
   bool _isAnonymous = false;
   String mediaType = 'audio';
-  String obtainingWay = 'record';
+  String? obtainingWay;
   File? media;
   List<String> allowedExtensions = ['mp3', 'm4a', 'ogg'];
   String? recordPath;
 
   bool isRecording = false;
-  bool recordStarted = true;
+  bool isPaused = false;
+  bool recordStarted = false;
+
+  reinitVars() {
+    setState(() {
+      isRecording = false;
+      isPaused = false;
+      recordStarted = false;
+      recordPath = null;
+      obtainingWay = null;
+    });
+  }
 
   // functions
   getTestimonyFromFiles() async {
@@ -70,7 +94,7 @@ class _TestimonyFormState extends State<TestimonyForm> {
   startRecording() async {
     if (await recorder.hasPermission()){
       final dir = await getTemporaryDirectory();
-      final path = '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.mp4';
+      final path = '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.mp3';
       await recorder.start(RecordConfig(), path: path);
       isRecording = await recorder.isRecording();
 
@@ -89,11 +113,14 @@ class _TestimonyFormState extends State<TestimonyForm> {
 
   pauseOrUnpauseRecording() async {
     if (isRecording) {
-      if (await recorder.isPaused()){
+      if (isPaused){
         await recorder.resume();
       } else {
         await recorder.pause();
       }
+      setState(() {
+        isPaused = !isPaused;
+      });
     }
   }
 
@@ -101,6 +128,13 @@ class _TestimonyFormState extends State<TestimonyForm> {
     isRecording = await recorder.isRecording();
     recordPath = await recorder.stop();
     setState(() {});
+  }
+
+  saveRecord() {
+    setState(() {
+      media = File(recordPath!);
+    });
+    reinitVars();
   }
 
   @override
@@ -213,37 +247,93 @@ class _TestimonyFormState extends State<TestimonyForm> {
                               ),
                               Padding(
                                 padding: EdgeInsets.only(left: 8.0),
-                                child: Text("Enregistrement en cours..."),
+                                child: Text(!isPaused ? "Enregistrement en cours..." : "Enregistrement en pause."),
                               ),
                               IconButton(
                                 onPressed: () => pauseOrUnpauseRecording(),
-                                icon: FaIcon(FontAwesomeIcons.pause, color: Colors.black),
+                                icon: FaIcon(
+                                  !isPaused ? FontAwesomeIcons.pause : FontAwesomeIcons.play,
+                                  color: Colors.black
+                                ),
                               ),
                               IconButton(
                                 onPressed: () => stopRecording(),
                                 icon: FaIcon(FontAwesomeIcons.stop, color: Colors.red),
                               )
                             ],
-                          ) : 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          ) :
+                          Column(
                             children: [
-                              IconButton(
-                                onPressed: _playerState == PlayerState.playing
-                                  ? _pauseAudio
-                                  : _playAudio,
-                                icon: FaIcon(_playerState == PlayerState.playing
-                                  ? FontAwesomeIcons.pause
-                                  : FontAwesomeIcons.play),
-                              ),
-                              Expanded(
-                                child: Slider(
+                              ListTile(
+                                leading: IconButton(
+                                  onPressed: _playerState == PlayerState.playing
+                                      ? _pauseAudio
+                                      : _playAudio,
+                                  icon: FaIcon(_playerState == PlayerState.playing
+                                      ? FontAwesomeIcons.pause
+                                      : FontAwesomeIcons.play,
+                                  ),
+                                  style: ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(Colors.blue),
+                                      iconColor: WidgetStatePropertyAll(Colors.white),
+                                  )
+                                ),
+                                title: Slider(
                                   min: 0,
                                   max: _duration.inMilliseconds.toDouble(),
                                   value: _position.inMilliseconds.toDouble(),
-                                  onChanged: (value) => _seekAudio(Duration(milliseconds: value.toInt())),
+                                  onChanged: (value) {
+                                    _seekAudio(Duration(milliseconds: value.toInt()));
+                                  },
+                                  activeColor: Colors.blueGrey,
+                                  inactiveColor: Colors.blueGrey.shade200,
+                                  thumbColor: Colors.blue,
+                                ),
+                                subtitle: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _position.toString().split('.').first,
+                                      style: TextStyle(color: Colors.blueGrey),
+                                    ),
+                                    Text(' / '),
+                                    Text(
+                                      _duration.toString().split('.').first,
+                                      style: TextStyle(color: Colors.blueGrey),
+                                    ),
+                                  ]
                                 ),
                               ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => saveRecord(),
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.check,
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(Colors.green),
+                                      iconColor: WidgetStatePropertyAll(Colors.white),
+                                    )
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      startRecording();
+                                      setState(() {
+                                        recordPath = null;
+                                      });
+                                    },
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.arrowRotateLeft,
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStatePropertyAll(Colors.amber),
+                                      iconColor: WidgetStatePropertyAll(Colors.white),
+                                    )
+                                  )
+                                ],
+                              )
                             ],
                           )
                         ],
@@ -311,7 +401,7 @@ class _TestimonyFormState extends State<TestimonyForm> {
                                 backgroundColor: Colors.deepPurple,
                                 child: FaIcon(
                                   FontAwesomeIcons.video,
-                                  size: 30, 
+                                  size: 30,
                                   color: Colors.white,
                                 ),
                               ),
@@ -387,6 +477,7 @@ class _TestimonyFormState extends State<TestimonyForm> {
                         side: BorderSide(color: Colors.green)
                       ),
                       child: ListTile(
+                        contentPadding: EdgeInsets.all(10),
                         leading: CircleAvatar(
                           child: FaIcon(
                             FontAwesomeIcons.check,
@@ -419,6 +510,15 @@ class _TestimonyFormState extends State<TestimonyForm> {
                     "Dévoiler mon identitée",
                   )
                 ],
+              ),
+              Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: customButton(
+                  context: context,
+                  text: 'Partager le témoignage',
+                  onPressed: () => null
+                ),
               ),
             ],
           ),
