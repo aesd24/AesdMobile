@@ -15,7 +15,7 @@ class Testimony extends ChangeNotifier {
       return HttpException(response.message);
     }
     _testimonies.clear();
-    for (const piece in response.data) {
+    for (var piece in response.data) {
       _testimonies.add(TestimonyModel.fromJson(piece));
     }
     notifyListeners();
@@ -25,12 +25,13 @@ class Testimony extends ChangeNotifier {
     final formData = FormData.fromMap({
       'title': data['title'],
       'is_anonymous': data['is_anonymous'] ? 1 : 0,
-      'confession_file_path': data['media'],
-      'mediaType': data['mediaType']
+      'confession_file_path': await MultipartFile.fromFile(data['media']),
+      'user_id': data['user_id'],
+      'mediaType': data['mediaType'],
     });
-    final response = await _request.create(data);
+    final response = await _request.create(formData);
     if (response.statusCode != 201) {
-      return HttpException(response.message);
+      throw HttpException(response.data['message']);
     }
   }
 }

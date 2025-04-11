@@ -3,12 +3,20 @@ import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/camera_functions.dart';
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:record/record.dart';
+
+import '../../providers/testimony.dart';
+import '../../providers/user.dart';
 
 class TestimonyForm extends StatefulWidget {
   const TestimonyForm({super.key});
@@ -18,8 +26,13 @@ class TestimonyForm extends StatefulWidget {
 }
 
 class _TestimonyFormState extends State<TestimonyForm> {
+  int? meId;
+
+  bool _isLoading = false;
   final recorder = AudioRecorder();
   final AudioPlayer audioPlayer = AudioPlayer();
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
 
   // préécoute
   Duration _duration = Duration.zero;
@@ -60,22 +73,19 @@ class _TestimonyFormState extends State<TestimonyForm> {
   // variable d'enregistrement
   bool _isAnonymous = false;
   String mediaType = 'audio';
-  String? obtainingWay;
   File? media;
   List<String> allowedExtensions = ['mp3', 'm4a', 'ogg'];
   String? recordPath;
 
   bool isRecording = false;
   bool isPaused = false;
-  bool recordStarted = false;
 
   reinitVars() {
     setState(() {
       isRecording = false;
       isPaused = false;
-      recordStarted = false;
       recordPath = null;
-      obtainingWay = null;
+      media = null;
     });
   }
 
@@ -97,11 +107,7 @@ class _TestimonyFormState extends State<TestimonyForm> {
       final path = '${dir.path}/rec_${DateTime.now().millisecondsSinceEpoch}.mp3';
       await recorder.start(RecordConfig(), path: path);
       isRecording = await recorder.isRecording();
-
-      setState(() {
-        recordStarted = true;
-        obtainingWay = 'record';
-      });
+      setState(() {});
     } else {
       showSnackBar(
         context: context,
@@ -134,392 +140,188 @@ class _TestimonyFormState extends State<TestimonyForm> {
     setState(() {
       media = File(recordPath!);
     });
-    reinitVars();
+  }
+
+  handleCreation() async {
+    if (media == null) {
+      return showSnackBar(
+        context: context,
+        message: "Ajouter le fichier du témoignage",
+        type: SnackBarType.warning
+      );
+    }
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading= true;
+      });
+      try {
+        await Provider.of<Testimony>(context, listen: false).create({
+          'title': _titleController.text,
+          'is_anonymous': _isAnonymous,
+          'media': media!.path,
+          'mediaType': mediaType,
+          'user_id': meId,
+        }).then(
+          (value) async {
+            Provider.of<Testimony>(context, listen: false).getAll().then(
+              (value) => closeForm(context)
+            );
+            showSnackBar(
+              context: context,
+              message: "Témoignage enregistré avec succès !",
+              type: SnackBarType.success
+            );
+          }
+        );
+      } on HttpException catch (e) {
+        showSnackBar(
+          context: context,
+          message: e.message,
+          type: SnackBarType.danger
+        );
+      } on DioException {
+        showSnackBar(
+          context: context,
+          message: "Erreur de connexion. Vérifiez votre connexion internet",
+          type: SnackBarType.danger
+        );
+      } catch(e) {
+        showSnackBar(
+          context: context,
+          message: "Une erreur inattendu s'est produit !",
+          type: SnackBarType.danger
+        );
+        e.printError();
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     _initAudioPlayer();
+    meId = Provider.of<User>(context, listen: false).user.id;
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    recorder.stop();
+    recorder.dispose();
+    audioPlayer.stop();
+    audioPlayer.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Faire un témoignage'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: Form(
+    return LoadingOverlay(
+      isLoading: _isLoading,
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Row(
-                children: [
-                  mediaTypeSelector(
-                    icon: FontAwesomeIcons.microphone,
-                    label: "Audio",
-                    isSelected: mediaType == "audio",
-                    value: 'audio',
-                    mainColor: Colors.blue,
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.blue,
-                        Colors.blueAccent,
-                        Colors.lightBlue,
-                        Colors.lightBlueAccent
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  ),
-                  mediaTypeSelector(
-                    icon: FontAwesomeIcons.video,
-                    label: "video",
-                    isSelected: mediaType == "video",
-                    value: 'video',
-                    mainColor: Colors.purple,
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.purple,
-                        Colors.purpleAccent,
-                        Colors.deepPurple,
-                        Colors.deepPurpleAccent
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  )
-                ]
-              ),
-              SizedBox(
-                height: 20
-              ),
-              customTextField(
-                label: "Titre du témoignage",
-                placeholder: "Choisissez un titre"
-              ),
-              if(media == null) Container(
-                height: 200,
-                margin: EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                child: Row(
-                  children: mediaType == 'audio' ? [
-                    customColoredBox(
-                      color: Colors.blue,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: !recordStarted ? [
-                          IconButton(
-                            onPressed: () => startRecording(),
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(Colors.blue),
-                              foregroundColor: WidgetStatePropertyAll(Colors.white),
-                              padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 15, horizontal: 20))
-                            ),
-                            icon: FaIcon(
-                              FontAwesomeIcons.microphone, size: 30
-                            )
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          buildCustomSelector(
+                            color: Colors.blue,
+                            icon: FontAwesomeIcons.microphone,
+                            isSelected: mediaType == 'audio',
+                            label: 'Audio',
+                            onTap: () => setState(() => mediaType = 'audio'),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Flexible(
-                              child: Text(
-                                "Enregistrer mon témoignage",
-                                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                  color: Colors.blue
-                                ),
-                                overflow: TextOverflow.clip,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          )
-                        ] :
-                        [
-                          recordPath == null ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              FaIcon(
-                                FontAwesomeIcons.solidCircle,
-                                color: Colors.red,
-                                size: 17
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Text(!isPaused ? "Enregistrement en cours..." : "Enregistrement en pause."),
-                              ),
-                              IconButton(
-                                onPressed: () => pauseOrUnpauseRecording(),
-                                icon: FaIcon(
-                                  !isPaused ? FontAwesomeIcons.pause : FontAwesomeIcons.play,
-                                  color: Colors.black
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () => stopRecording(),
-                                icon: FaIcon(FontAwesomeIcons.stop, color: Colors.red),
-                              )
-                            ],
-                          ) :
-                          Column(
-                            children: [
-                              ListTile(
-                                leading: IconButton(
-                                  onPressed: _playerState == PlayerState.playing
-                                      ? _pauseAudio
-                                      : _playAudio,
-                                  icon: FaIcon(_playerState == PlayerState.playing
-                                      ? FontAwesomeIcons.pause
-                                      : FontAwesomeIcons.play,
-                                  ),
-                                  style: ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(Colors.blue),
-                                      iconColor: WidgetStatePropertyAll(Colors.white),
-                                  )
-                                ),
-                                title: Slider(
-                                  min: 0,
-                                  max: _duration.inMilliseconds.toDouble(),
-                                  value: _position.inMilliseconds.toDouble(),
-                                  onChanged: (value) {
-                                    _seekAudio(Duration(milliseconds: value.toInt()));
-                                  },
-                                  activeColor: Colors.blueGrey,
-                                  inactiveColor: Colors.blueGrey.shade200,
-                                  thumbColor: Colors.blue,
-                                ),
-                                subtitle: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      _position.toString().split('.').first,
-                                      style: TextStyle(color: Colors.blueGrey),
-                                    ),
-                                    Text(' / '),
-                                    Text(
-                                      _duration.toString().split('.').first,
-                                      style: TextStyle(color: Colors.blueGrey),
-                                    ),
-                                  ]
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  IconButton(
-                                    onPressed: () => saveRecord(),
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.check,
-                                    ),
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(Colors.green),
-                                      iconColor: WidgetStatePropertyAll(Colors.white),
-                                    )
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      startRecording();
-                                      setState(() {
-                                        recordPath = null;
-                                      });
-                                    },
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.arrowRotateLeft,
-                                    ),
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(Colors.amber),
-                                      iconColor: WidgetStatePropertyAll(Colors.white),
-                                    )
-                                  )
-                                ],
-                              )
-                            ],
-                          )
+                          buildCustomSelector(
+                            color: Colors.purple,
+                            icon: FontAwesomeIcons.video,
+                            isSelected: mediaType == 'video',
+                            label: 'Vidéo',
+                            onTap: () => setState(() => mediaType = 'video')
+                          ),
                         ],
                       ),
-                    ),
 
-                    if (obtainingWay != 'record') customColoredBox(
-                      color: Colors.green,
-                      child: GestureDetector(
-                        onTap: () => getTestimonyFromFiles(),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:  EdgeInsets.symmetric(vertical: 10),
-                              child: FaIcon(
-                                FontAwesomeIcons.download, size: 35, color: Colors.green,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Flexible(
-                                child: Text(
-                                  "Télécharger mon témoignage",
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Colors.green
-                                  ),
-                                  overflow: TextOverflow.clip,
-                                  textAlign: TextAlign.center
-                                ),
-                              ),
-                            ),
-                            Spacer(),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                "Formats: ${allowedExtensions.map((e) => e).toList()}",
-                                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                  color: Colors.grey
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                  ] :
-                  [
-                    customColoredBox(
-                      color: Colors.deepPurple,
-                      child: GestureDetector(
-                        onTap: () async {
-                          var file = await pickVideo(camera: true);
-                          if (file != null) {
-                            setState(() => media = file);
+                      Form(
+                        key: _formKey,
+                        child: Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: customTextField(
+                          label: "Titre du témoignage",
+                          placeholder: "Ajoutez un titre au témoignage",
+                          controller: _titleController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Veuillez remplir le champ';
+                            }
+                            return null;
                           }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding:  EdgeInsets.symmetric(vertical: 10),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.deepPurple,
-                                child: FaIcon(
-                                  FontAwesomeIcons.video,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Flexible(
-                                child: Text(
-                                  "Enregistrer mon témoignage",
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Colors.deepPurple
-                                  ),
-                                  overflow: TextOverflow.clip,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                        )
                       ),
-                    ),
+                      ),
+                      CheckboxMenuButton(
+                        value: _isAnonymous,
+                        onChanged: (value){
+                          setState(() {
+                            _isAnonymous = value!;
+                          });
+                        },
+                        child: Text('Faire un témoignage anonyme')
+                      ),
 
-                    customColoredBox(
-                      color: Colors.green,
-                      child: GestureDetector(
-                        onTap: () async {
-                          var file = await pickVideo();
-                          if (file != null) {
-                            setState(() {
-                              media = file;
-                            });
-                          }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding:  EdgeInsets.symmetric(vertical: 10),
+                      if (recordPath == null && media == null) mediaType == 'audio' ?
+                        buildAudioSection() : buildVideoSection(),
+                      if (recordPath != null && media == null) buildAudioPlayingSection(),
+
+                      if (media != null) Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Card(
+                          elevation: 0,
+                          color: Colors.green.withAlpha(70),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.white,
                               child: FaIcon(
-                                FontAwesomeIcons.download, size: 45, color: Colors.green,
+                                FontAwesomeIcons.file,
+                                color: Colors.green
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Flexible(
-                                child: Text(
-                                  "Téléchargez la vidéo du témoignage",
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Colors.green
-                                  ),
-                                  overflow: TextOverflow.clip,
-                                  textAlign: TextAlign.center
-                                ),
+                            title: Text(
+                              media!.path.split('/').last,
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                color: Colors.green, fontWeight: FontWeight.bold
+                              )
+                            ),
+                            trailing: IconButton(
+                              onPressed: () => reinitVars(),
+                              icon: FaIcon(FontAwesomeIcons.xmark),
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                                iconColor: WidgetStatePropertyAll(Colors.red),
+                                iconSize: WidgetStatePropertyAll(20)
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ]
-                ),
-              ),
-              if(media != null) Builder(
-                builder: (context) {
-                  String mediaName = media!.path.split('/').last;
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Card(
-                      elevation: 0,
-                      color: Colors.green.shade50,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.green)
-                      ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: CircleAvatar(
-                          child: FaIcon(
-                            FontAwesomeIcons.check,
-                            size: 20,
-                            color: Colors.green
-                          ),
-                        ),
-                        title: Text(mediaName),
-                        trailing: IconButton(
-                          onPressed: () => setState(() => media = null),
-                          icon: FaIcon(
-                            FontAwesomeIcons.xmark,
-                            color: Colors.red,
-                            size: 17
                           )
-                        ),
+                        )
                       ),
-                    ),
-                  );
-                }
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: !_isAnonymous, onChanged: (value) => setState(() {
-                      _isAnonymous = !_isAnonymous;
-                    })
+                    ],
                   ),
-                  Text(
-                    "Dévoiler mon identitée",
-                  )
-                ],
-              ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: customButton(
-                  context: context,
-                  text: 'Partager le témoignage',
-                  onPressed: () => null
                 ),
               ),
+              customButton(
+                context: context,
+                text: "Soumettre le témoignage",
+                onPressed: () => handleCreation(),
+              ),
+              SizedBox(height: 30)
             ],
           ),
         ),
@@ -527,68 +329,298 @@ class _TestimonyFormState extends State<TestimonyForm> {
     );
   }
 
-  Widget customColoredBox({
+  Widget buildAudioPlayingSection() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          Card(
+            elevation: 0,
+            child: ListTile(
+              leading: IconButton(
+                onPressed: () async {
+                  if (_playerState == PlayerState.paused) {
+                    await _playAudio();
+                  } else {
+                    await _pauseAudio();
+                  }
+                },
+                icon: FaIcon(
+                  _playerState != PlayerState.playing ?
+                  FontAwesomeIcons.play : FontAwesomeIcons.pause
+                ),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.blue),
+                  iconColor: WidgetStatePropertyAll(Colors.white),
+                  iconSize: WidgetStatePropertyAll(17)
+                )
+              ),
+              title: Slider(
+                min: 0,
+                max: _duration.inMilliseconds.toDouble(),
+                value: _position.inMilliseconds.toDouble(),
+                onChanged: (value) {
+                  _seekAudio(Duration(milliseconds: value.toInt()));
+                }
+              ),
+              subtitle: Text(
+                '${_position.toString().split('.').first} / ${_duration.toString().split('.').first}',
+                style: TextStyle(color: Colors.blueGrey),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () => reinitVars(),
+                  icon: FaIcon(FontAwesomeIcons.xmark),
+                  style: ButtonStyle(
+                    iconColor: WidgetStatePropertyAll(Colors.red),
+                    iconSize: WidgetStatePropertyAll(20)
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    reinitVars();
+                    startRecording();
+                  },
+                  icon: FaIcon(FontAwesomeIcons.arrowRotateRight),
+                  style: ButtonStyle(
+                      iconColor: WidgetStatePropertyAll(Colors.amber),
+                      iconSize: WidgetStatePropertyAll(18)
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => saveRecord(),
+                  icon: FaIcon(FontAwesomeIcons.check),
+                  style: ButtonStyle(
+                      iconColor: WidgetStatePropertyAll(Colors.green),
+                      iconSize: WidgetStatePropertyAll(20)
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      )
+    );
+  }
+
+  Widget buildAudioSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade100,
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: ListTile(
+              leading: !isRecording ? InkWell(
+                onTap: () => startRecording(),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  child: FaIcon(
+                    FontAwesomeIcons.microphone,
+                    size: 17,
+                    color: Colors.blue,
+                  ),
+                ),
+              ) :
+              IconButton(
+                onPressed: () => pauseOrUnpauseRecording(),
+                icon: FaIcon(
+                  isPaused ? FontAwesomeIcons.play : FontAwesomeIcons.pause,
+                  size: 20,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.white),
+                ),
+              ),
+              title: Text(
+                isRecording ? "Enregistrement en cours..."
+                : "Enregistrez votre témoignage",
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.blue
+                ),
+              ),
+              trailing: isRecording ? IconButton(
+                onPressed: () => stopRecording(),
+                icon: FaIcon(
+                  FontAwesomeIcons.stop,
+                  size: 20,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.white),
+                  iconColor: WidgetStatePropertyAll(Colors.red),
+                ),
+              ) : null
+            ),
+          ),
+          if (! isRecording) Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '- ou -',
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: Theme.of(context).colorScheme.tertiary.withAlpha(150)
+              ),
+            ),
+          ),
+          if (! isRecording) Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.green.shade100,
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: ListTile(
+              onTap: () => getTestimonyFromFiles(),
+              leading: FaIcon(
+                FontAwesomeIcons.download,
+                color: Colors.green
+              ),
+              title: Text(
+                "Télécharger un fichier audio",
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.green, fontWeight: FontWeight.bold
+                )
+              ),
+              subtitle: Text(
+                allowedExtensions.map((e) => e).toString(),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: Colors.grey
+                )
+              )
+            )
+          )
+        ]
+      ),
+    );
+  }
+
+  Widget buildVideoSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.purple.shade100,
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: ListTile(
+              onTap: () async {
+                var f = await pickVideo(camera: true);
+                if (f != null) {
+                  setState(() => media = File(f.path));
+                }
+              },
+              leading: CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.white,
+                child: FaIcon(
+                  FontAwesomeIcons.video,
+                  size: 17,
+                  color: Colors.purple,
+                ),
+              ),
+              title: Text(
+                "Enregistrer la vidéo de votre témoignage",
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.purple
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '- ou -',
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.tertiary.withAlpha(150)
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.green.shade100,
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: ListTile(
+              onTap: () async {
+                var f = await pickVideo();
+                if (f != null) {
+                  setState(() {media = File(f.path);});
+                }
+              },
+              leading: FaIcon(
+                FontAwesomeIcons.download,
+                color: Colors.green
+              ),
+              title: Text(
+                "Télécharger un fichier Vidéo",
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Colors.green, fontWeight: FontWeight.bold
+                )
+              ),
+            )
+          )
+        ]
+      ),
+    );
+  }
+
+  Widget buildCustomSelector({
     required Color color,
-    required Widget child
+    required IconData icon,
+    required bool isSelected,
+    required String label,
+    required Function onTap,
   }) {
-    return Expanded(
+    Color displayedColor = isSelected ? color : Colors.blueGrey;
+    return GestureDetector(
+      onTap: () => onTap(),
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 300),
         margin: EdgeInsets.symmetric(horizontal: 5),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          border: Border.all(color: color, width: 1.5),
-          color: color.withAlpha(20),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: child
-      ),
-    );
-  }
-
-  Widget mediaTypeSelector({
-    required IconData icon,
-    required String label,
-    required bool isSelected,
-    required String value,
-    required Color mainColor,
-    required LinearGradient gradient
-  }) {
-    return GestureDetector(
-      onTap: () => setState(() {
-        mediaType = value;
-      }),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        padding: EdgeInsets.all(15),
-        margin: EdgeInsets.symmetric(horizontal: 5),
-        decoration: BoxDecoration(
-          color: !isSelected ? Colors.blueGrey.withAlpha(50) : mainColor,
+          color: displayedColor.withAlpha(20),
           borderRadius: BorderRadius.circular(100),
-          gradient: isSelected ? gradient : null
+          border: Border.all(width: 1.5, color: displayedColor),
         ),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: 20, minHeight: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(
-                icon,
-                size: 17,
-                color: isSelected ? Colors.white : Colors.blueGrey
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FaIcon(
+              icon,
+              color: displayedColor,
+              size: 20,
+            ),
+            if (isSelected) Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: displayedColor, fontWeight: FontWeight.bold
+                )
               ),
-              if (isSelected) Padding(
-                padding: EdgeInsets.only(left: 10),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold
-                  )
-                ),
-              )
-            ],
-          ),
-        )
+            )
+          ],
+        ),
       ),
     );
   }

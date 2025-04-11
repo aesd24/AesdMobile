@@ -9,7 +9,7 @@ import 'package:aesd_app/screens/church/detail.dart';
 import 'package:aesd_app/screens/events/events.dart';
 import 'package:aesd_app/screens/forum/list.dart';
 import 'package:aesd_app/screens/quiz/list.dart';
-import 'package:aesd_app/screens/testimony/testimonies.dart';
+import 'package:aesd_app/screens/testimony/list.dart';
 import 'package:flutter/material.dart';
 
 class FrontPage extends StatefulWidget {
