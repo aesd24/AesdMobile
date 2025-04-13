@@ -140,7 +140,8 @@ class _TestimonyDetailState extends State<TestimonyDetail> {
                 children: [
                   CircleAvatar(
                     radius: 13,
-                    backgroundImage: NetworkImage(widget.testimony.user!.photo!)
+                    backgroundImage: widget.testimony.user?.photo != null ?
+                      NetworkImage(widget.testimony.user!.photo!) : null
                   ),
                   SizedBox(width: 10),
                   Text(

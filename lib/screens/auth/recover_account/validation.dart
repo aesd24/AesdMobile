@@ -5,10 +5,10 @@ import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/auth/recover_account/change_pass.dart';
-import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
@@ -99,8 +99,8 @@ class _ValidateOtpPageState extends State<ValidateOtpPage> {
           .copyWith(color: Colors.green.shade900, fontWeight: FontWeight.bold),
     );
 
-    return AuthOverlayLoading(
-      loading: isLoading,
+    return LoadingOverlay(
+      isLoading: isLoading,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Vérification OTP"),

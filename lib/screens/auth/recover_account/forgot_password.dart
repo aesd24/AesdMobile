@@ -6,11 +6,11 @@ import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/auth/recover_account/validation.dart';
-import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -67,8 +67,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AuthOverlayLoading(
-      loading: isLoading,
+    return LoadingOverlay(
+      isLoading: isLoading,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Mot de passe oublié"),

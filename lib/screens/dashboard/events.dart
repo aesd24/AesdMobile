@@ -115,7 +115,8 @@ class _ChurchEventsState extends State<ChurchEvents> {
             onPressed: () => closeForm(context),
             icon: FaIcon(FontAwesomeIcons.xmark, size: 20)
           ),
-          title: Text('Evènements', style: TextStyle(fontSize: 20)),
+          centerTitle: true,
+          title: Text('Evènements', style: TextStyle(fontSize: 20))
         ),
         body: Padding(
           padding: const EdgeInsets.all(15),

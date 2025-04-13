@@ -7,6 +7,7 @@ import 'package:aesd_app/screens/church/creation/main.dart';
 import 'package:aesd_app/screens/church/detail.dart';
 import 'package:aesd_app/screens/dashboard/ceremony.dart';
 import 'package:aesd_app/screens/dashboard/church_wallet.dart';
+import 'package:aesd_app/screens/dashboard/community.dart';
 import 'package:aesd_app/screens/dashboard/events.dart';
 import 'package:aesd_app/screens/dashboard/programs.dart';
 import 'package:flutter/material.dart';
@@ -241,6 +242,7 @@ class _DashboardState extends State<Dashboard> {
                         label: "Cérémonies"
                       ),
                       customIconButton(
+                        destination: DashboardCommunityPage(churchId: church.id),
                         color: Colors.blue,
                         icon: FontAwesomeIcons.peopleGroup,
                         label: "Communauté"
@@ -262,15 +264,17 @@ class _DashboardState extends State<Dashboard> {
     Color color = Colors.blue,
     Widget? destination
   }) {
-    return IconButton(
+    return TextButton.icon(
       onPressed: destination != null ?
       () => pushForm(context, destination: destination) : null,
       icon: FaIcon(icon, size: 18),
+      label: Text(label),
       style: ButtonStyle(
         backgroundColor: WidgetStatePropertyAll(
           color.withAlpha(80)
         ),
         iconColor: WidgetStatePropertyAll(color),
+        foregroundColor: WidgetStatePropertyAll(color),
         overlayColor: WidgetStatePropertyAll(
           color.withAlpha(100)
         ),

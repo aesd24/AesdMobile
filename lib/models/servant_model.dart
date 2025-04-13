@@ -39,7 +39,11 @@ class ServantModel {
             // zone de présentation du serviteur
             Row(
               children: [
-                CircleAvatar(radius: 27, backgroundImage: NetworkImage(user.photo!)),
+                CircleAvatar(
+                  radius: 27,
+                  backgroundImage: user.photo != null ?
+                    NetworkImage(user.photo!) : null
+                ),
                 SizedBox(width: 13),
                 Column(
                   mainAxisSize: MainAxisSize.min,

@@ -14,17 +14,19 @@ import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/user.dart';
+
 class UserProfil extends StatefulWidget {
   const UserProfil({
     super.key,
     required this.user,
-    this.isSelf = false,
-    this.servantId
+    this.servantId,
+    this.showAppBar = true
   });
 
   final UserModel user;
-  final bool isSelf;
   final int? servantId;
+  final bool showAppBar;
 
   @override
   State<UserProfil> createState() => _UserProfilState();
@@ -34,6 +36,7 @@ class _UserProfilState extends State<UserProfil> {
   bool isLoading = false;
   bool isSubscribing = false;
   bool subscribed = false;
+  bool isSelf = false;
 
   late ServantModel servant;
 
@@ -102,6 +105,7 @@ class _UserProfilState extends State<UserProfil> {
   @override
   void initState() {
     super.initState();
+    isSelf = widget.user.id == Provider.of<User>(context, listen: false).user.id;
     if(widget.servantId != null) init();
   }
   
@@ -111,7 +115,7 @@ class _UserProfilState extends State<UserProfil> {
     return LoadingOverlay(
       isLoading: isLoading,
       child: Scaffold(
-        appBar: widget.isSelf ? null : AppBar(),
+        appBar: !widget.showAppBar ? null : AppBar(),
         body: Padding(
           padding: EdgeInsets.all(15),
           child: SingleChildScrollView(
@@ -131,7 +135,7 @@ class _UserProfilState extends State<UserProfil> {
                         boxShadow: [BoxShadow(color: Colors.green.shade100, blurRadius: 1, spreadRadius: 1)]
                       ),
                       alignment: Alignment.topRight,
-                      child: widget.isSelf ? Row(
+                      child: isSelf ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
@@ -202,7 +206,7 @@ class _UserProfilState extends State<UserProfil> {
                 ),
             
                 SizedBox(height: 60),
-                if(!widget.isSelf && widget.user.accountType == Type.servant.code) Align(
+                if(!isSelf && widget.user.accountType == Type.servant.code) Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),

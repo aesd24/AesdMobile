@@ -16,7 +16,6 @@ class _ChurchCommunityState extends State<ChurchCommunity> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          customTitle(context, text: "Liste des serviteurs"),
           SizedBox(
             height: 250,
             child: ListView(
