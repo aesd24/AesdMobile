@@ -56,7 +56,7 @@ class TestimonyModel {
                 children: [
                   CircleAvatar(
                     radius: 13,
-                    backgroundImage: NetworkImage(user!.photo!)
+                    backgroundImage: user?.photo != null ? NetworkImage(user!.photo!) : null
                   ),
                   SizedBox(width: 10),
                   Text(

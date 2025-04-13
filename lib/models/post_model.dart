@@ -51,7 +51,8 @@ class PostModel {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage(author.photo!),
+                      backgroundImage: author.photo != null ?
+                        NetworkImage(author.photo!) : null,
                     ),
                     SizedBox(width: 10),
                     Text(
