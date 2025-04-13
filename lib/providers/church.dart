@@ -46,7 +46,6 @@ class Church extends ChangeNotifier {
 
   Future fetchChurch(int id) async {
     var response = await _request.one(id);
-    print(response);
     if (response.statusCode == 200) {
       return response.data;
     } else {

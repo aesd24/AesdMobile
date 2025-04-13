@@ -135,27 +135,6 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: getAppBarColor(),
           elevation: 0.0,
           foregroundColor: _currentPageIndex == 0 ? Colors.white : null,
-          /* actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 7),
-              child: Stack(
-                children: [
-                  IconButton(
-                      onPressed: () => pushForm(context,
-                          destination: const NotificationsPage()),
-                      icon: const FaIcon(FontAwesomeIcons.solidBell)),
-                  const Positioned(
-                    top: 7,
-                    right: 10,
-                    child: CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Colors.red,
-                    ),
-                  )
-                ],
-              ),
-            )
-          ], */
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentPageIndex,
@@ -191,7 +170,7 @@ class _HomePageState extends State<HomePage> {
           const CommunityPage(),
           Consumer<User>(
             builder: (context, userProvider, child) {
-              return UserProfil(user: userProvider.user, isSelf: true);
+              return UserProfil(user: userProvider.user, showAppBar: false);
             },
           ),
         ][_currentPageIndex] : Center(

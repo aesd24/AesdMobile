@@ -71,16 +71,13 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   padding: const EdgeInsets.all(10),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.black),
+                      border: Border.all(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(10)),
                   child: Column(
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(100)),
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(user.photo!),
                       ),
                       const SizedBox(height: 15),
                       Padding(

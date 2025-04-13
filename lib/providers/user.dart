@@ -10,6 +10,10 @@ class User extends ChangeNotifier {
   late UserModel _userData;
   UserModel get user => _userData;
 
+  // sauvegarde des données d'enregistrement ou de mise a jour d'utilisateur
+  final Map _registerData = {};
+  get registerData => _registerData;
+
   getUserData() async {
     var response = await _request.getUserData();
     if (response.statusCode == 200) {
@@ -20,10 +24,6 @@ class User extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  // sauvegarde des données d'enregistrement ou de mise a jour d'utilisateur
-  final Map _registerData = {};
-  get registerData => _registerData; // getter
 
   // setter
   void setRegisterData(Map<String, dynamic> data) {
