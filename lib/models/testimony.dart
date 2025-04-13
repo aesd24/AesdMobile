@@ -1,51 +1,108 @@
+import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/models/user_model.dart';
+import 'package:aesd_app/screens/testimony/detail.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TestimonyModel {
   late int id;
   late String title;
-  late String body;
   late bool isAnonymous;
+  late String mediaType;
+  late String mediaUrl;
   late UserModel? user;
+  late DateTime date;
 
   TestimonyModel.fromJson(json) {
     id = json['id'];
     title = json['title'];
-    body = json['body'];
-    isAnonymous = json['isAnonymous'];
+    isAnonymous = json['is_anonymous'] == 1;
+    mediaUrl = json['confession_file_path'];
+    mediaType = json['type'];
     user = json['user'] == null ? null : UserModel.fromJson(json['user']);
+    date = DateTime.parse(json['published_at']);
   }
 
   getWidget(context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(15),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: Border.all(width: 2),
-        borderRadius: BorderRadius.circular(10),
+    Color boxColor = mediaType == 'audio' ? Colors.blue : Colors.purple;
+    return GestureDetector(
+      onTap: () => pushForm(
+        context,
+        destination: TestimonyDetail(testimony: this)
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.all(7),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border.all(width: 1),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w600
+                ),
+              ),
             ),
-          ),
-          Text(
-            "Témoignage de: ${user == null ? "Anonymous" : user!.name}",
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Colors.black87),
-          )
-        ],
+            user != null ? Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 13,
+                    backgroundImage: NetworkImage(user!.photo!)
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    user!.name,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ) : Text(
+              "Anonyme",
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                fontStyle: FontStyle.italic
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 22, bottom: 10),
+              padding: EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: boxColor,
+                  width: 1
+                ),
+                borderRadius: BorderRadius.circular(10),
+                color: boxColor.withAlpha(30)
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: boxColor,
+                  child: FaIcon(
+                    mediaType == 'audio' ?
+                    FontAwesomeIcons.music : FontAwesomeIcons.clapperboard,
+                    color: Colors.white,
+                    size: 15
+                  ),
+                ),
+                title: Text(
+                  'Témoignage ${mediaType == 'audio'? 'audio' : 'vidéo'}',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: boxColor
+                  ),
+                ),
+              )
+            )
+          ],
+        ),
       ),
     );
   }

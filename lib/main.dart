@@ -1,4 +1,5 @@
 import 'package:aesd_app/providers/event.dart';
+import 'package:aesd_app/providers/testimony.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
@@ -17,21 +18,24 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (context) => Auth()),
-      ChangeNotifierProvider(create: (context) => User()),
-      ChangeNotifierProvider(create: (context) => Church()),
-      ChangeNotifierProvider(create: (context) => Servant()),
-      ChangeNotifierProvider(create: (context) => Singer()),
-      ChangeNotifierProvider(create: (context) => PostProvider()),
-      ChangeNotifierProvider(create: (context) => Ceremonies()),
-      ChangeNotifierProvider(create: (context) => Event()),
-      ChangeNotifierProvider(create: (context) => Quiz()),
-      ChangeNotifierProvider(create: (context) => CinetPay())
-    ],
-    child: const MyApp(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Auth()),
+        ChangeNotifierProvider(create: (context) => User()),
+        ChangeNotifierProvider(create: (context) => Church()),
+        ChangeNotifierProvider(create: (context) => Servant()),
+        ChangeNotifierProvider(create: (context) => Singer()),
+        ChangeNotifierProvider(create: (context) => PostProvider()),
+        ChangeNotifierProvider(create: (context) => Ceremonies()),
+        ChangeNotifierProvider(create: (context) => Event()),
+        // ChangeNotifierProvider(create: (context) => Quiz()),
+        ChangeNotifierProvider(create: (context) => CinetPay()),
+        ChangeNotifierProvider(create: (context) => Testimony())
+      ],
+      child: const MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatefulWidget {

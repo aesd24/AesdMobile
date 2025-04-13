@@ -132,11 +132,11 @@ class _VideoPostPreviewState extends State<VideoPostPreview> {
         additionalOptions: (context) {
           return <OptionItem>[
             OptionItem(
-                onTap: () => {}, //print("Option 1"),
+                onTap: (context) => null,
                 iconData: Icons.share,
                 title: "Partager"),
             OptionItem(
-                onTap: () => {}, //print("Option 2"),
+                onTap: (context) => null,
                 iconData: Icons.info,
                 title: "details")
           ];
