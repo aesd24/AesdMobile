@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/field.dart';
-import 'package:aesd_app/components/auth_overlay_loading.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/home/home.dart';
@@ -11,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -81,8 +81,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AuthOverlayLoading(
-      loading: isLoading,
+    return LoadingOverlay(
+      isLoading: isLoading,
       child: Scaffold(
         appBar: AppBar(title: const Text("Modification")),
         body: Padding(

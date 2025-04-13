@@ -4,12 +4,10 @@ import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/components/field.dart';
 import 'package:aesd_app/components/toggle_form.dart';
-//import 'package:aesd_app/exceptions/http_form_validation_exception.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/auth.dart';
 import 'package:aesd_app/screens/auth/recover_account/forgot_password.dart';
 import 'package:aesd_app/screens/auth/register/register.dart';
-//import 'package:aesd_app/screens/home_screen.dart';
 import 'package:aesd_app/screens/home/home.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:aesd_app/components/auth_overlay_loading.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -88,8 +86,8 @@ class _LoginPageState extends State<LoginPage> {
     Size size = MediaQuery.of(context).size;
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
 
-    return AuthOverlayLoading(
-      loading: _isProcessing,
+    return LoadingOverlay(
+      isLoading: _isProcessing,
       child: Scaffold(
         body: FutureBuilder(
             future: precacheImage(backgroundImage, context),

@@ -14,6 +14,8 @@ import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '../chats/message_on.dart';
+
 class ChurchDetailPage extends StatefulWidget {
   ChurchDetailPage({super.key, required this.churchId});
 
@@ -414,32 +416,35 @@ class _ChurchDetailPageState extends State<ChurchDetailPage> {
     );
   }
 
-  InkWell customNavitem(BuildContext context,
-      {required int index, required String label, required int currentIndex}) {
+  InkWell customNavitem(BuildContext context, {
+    required int index,
+    required String label,
+    required int currentIndex
+  }) {
     return InkWell(
-        onTap: () {
-          _pageController.animateToPage(
-            index,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.ease,
-          );
-        },
-        child: AnimatedContainer(
-          padding: const EdgeInsets.all(7),
-          duration: const Duration(milliseconds: 300),
-          decoration: BoxDecoration(
-              border: index == currentIndex
-                  ? const Border(
-                      bottom: BorderSide(width: 5, color: Colors.green))
-                  : null),
-          child: Text(
-            label,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(color: index == currentIndex ? Colors.green : null),
-          ),
-        ));
+      onTap: () {
+        _pageController.animateToPage(
+          index,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.ease,
+        );
+      },
+      child: AnimatedContainer(
+        padding: const EdgeInsets.all(7),
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+            border: index == currentIndex
+                ? const Border(
+                    bottom: BorderSide(width: 5, color: Colors.green))
+                : null),
+        child: Text(
+          label,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: index == currentIndex ? Colors.green : null),
+        ),
+      ));
   }
 }
 
@@ -460,23 +465,61 @@ class _CommunityState extends State<Community> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            child: Text(
-              "Serviteurs de l'église",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
+          Text(
+            "Serviteurs de l'église",
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall!
+                .copyWith(fontWeight: FontWeight.bold),
           ),
           Column(
             children: List.generate(widget.members.length, (index) {
               var current = widget.members[index];
               return Card(
-                child: current.tile()
+                child: current.tile(context)
               );
             }),
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(top: 30),
+            child: Text(
+              "Groupes de discution",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Column(
+            children: List.generate(3, (index) => Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                border: Border.all(color: Colors.blue, width: 1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListTile(
+                onTap: () => pushForm(context, destination: MessageOnPage()),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.blueGrey.shade100,
+                  child: FaIcon(
+                    FontAwesomeIcons.userGroup,
+                    size: 18,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                title: Text(
+                  "Nom du groupe de chat",
+                  style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!.copyWith(
+                      color: Colors.blueGrey.shade700,
+                    )
+                ),
+              )
+            ))
           )
         ],
       ),

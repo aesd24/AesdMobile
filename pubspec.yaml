@@ -45,7 +45,6 @@ dependencies:
   cinetpay: ^1.0.3
   get: ^4.6.1
   uuid: ^4.2.1
-  # carousel_slider: ^5.0.0
 
   # new adds
   http: ^1.0.0
@@ -60,6 +59,7 @@ dependencies:
   record: ^6.0.0
   audioplayers: ^6.4.0
   path_provider: ^2.1.5
+  marquee: ^2.3.0
 
 #flutter_icons:
 #  android: "launcher_icon"

@@ -7,7 +7,6 @@ import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/splash_screen.dart';
 import '/providers/auth.dart';
 import 'providers/church.dart';
-import 'providers/quiz.dart';
 import 'providers/servant.dart';
 import 'providers/singer.dart';
 import 'providers/post.dart';
