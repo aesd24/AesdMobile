@@ -99,6 +99,8 @@ class PostModel {
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
+                  color: Colors.blueGrey.withAlpha(100),
+                  borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
                     image: NetworkImage(image!), fit: BoxFit.cover
                   )

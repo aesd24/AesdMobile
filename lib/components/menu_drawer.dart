@@ -10,7 +10,7 @@ import 'package:aesd_app/providers/user.dart';
 import 'package:aesd_app/screens/dashboard/dashboard.dart';
 import 'package:aesd_app/screens/home/home.dart';
 import 'package:aesd_app/screens/wallet/wallet.dart';
-import 'package:aesd_app/screens/splash_screen.dart';
+import 'package:aesd_app/components/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';

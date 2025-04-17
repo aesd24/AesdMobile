@@ -14,7 +14,7 @@ import "package:aesd_app/screens/auth/login.dart";
 import "package:aesd_app/screens/auth/register/finish.dart";
 import "package:aesd_app/screens/auth/register/add_photo.dart";
 import "package:aesd_app/screens/home/home.dart";
-import "package:aesd_app/screens/webview.dart";
+import "package:aesd_app/components/webview.dart";
 import "package:dio/dio.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";

@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:aesd_app/components/button.dart';
 import 'package:aesd_app/components/field.dart';
-import 'package:aesd_app/components/loader.dart';
 import 'package:aesd_app/components/snack_bar.dart';
 import 'package:aesd_app/functions/navigation.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
@@ -11,6 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class CeremoniesManagement extends StatefulWidget {
@@ -91,7 +90,7 @@ class _CeremoniesManagementState extends State<CeremoniesManagement> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomFileLoader(
+    return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
         appBar: AppBar(
