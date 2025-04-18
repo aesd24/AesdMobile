@@ -158,46 +158,55 @@ class _TestimonyDetailState extends State<TestimonyDetail> {
                 color: Colors.blueGrey.shade100,
                 borderRadius: BorderRadius.circular(10)
               ),
-              child: ListTile(
-                leading: IconButton(
+              child: Row(
+                children: [
+                  IconButton(
                     onPressed: _playerState == PlayerState.playing
-                        ? _pauseAudio
-                        : _playAudio,
+                      ? _pauseAudio
+                      : _playAudio,
                     icon: FaIcon(_playerState == PlayerState.playing
-                        ? FontAwesomeIcons.pause
-                        : FontAwesomeIcons.play,
+                      ? FontAwesomeIcons.pause
+                      : FontAwesomeIcons.play,
                       size: 20
                     ),
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(Colors.blue),
                       iconColor: WidgetStatePropertyAll(Colors.white),
                     )
-                ),
-                title: Slider(
-                  min: 0,
-                  max: _duration.inMilliseconds.toDouble(),
-                  value: _position.inMilliseconds.toDouble(),
-                  onChanged: (value) {
-                    _seekAudio(Duration(milliseconds: value.toInt()));
-                  },
-                  activeColor: Colors.blueGrey,
-                  inactiveColor: Colors.blueGrey.shade200,
-                  thumbColor: Colors.blue,
-                ),
-                subtitle: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _position.toString().split('.').first,
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                      Text(' / '),
-                      Text(
-                        _duration.toString().split('.').first,
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                    ]
-                ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 7),
+                    child: Column(
+                      children: [
+                        Slider(
+                          min: 0,
+                          max: _duration.inMilliseconds.toDouble(),
+                          value: _position.inMilliseconds.toDouble(),
+                          onChanged: (value) {
+                            _seekAudio(Duration(milliseconds: value.toInt()));
+                          },
+                          activeColor: Colors.blueGrey,
+                          inactiveColor: Colors.blueGrey.shade200,
+                          thumbColor: Colors.blue,
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _position.toString().split('.').first,
+                              style: TextStyle(color: Colors.blueGrey),
+                            ),
+                            Text(' / '),
+                            Text(
+                              _duration.toString().split('.').first,
+                              style: TextStyle(color: Colors.blueGrey),
+                            ),
+                          ]
+                        )
+                      ],
+                    ),
+                  )
+                ]
               ),
             ),
 

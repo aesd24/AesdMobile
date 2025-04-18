@@ -361,7 +361,10 @@ class _TestimonyFormState extends State<TestimonyForm> {
                 value: _position.inMilliseconds.toDouble(),
                 onChanged: (value) {
                   _seekAudio(Duration(milliseconds: value.toInt()));
-                }
+                },
+                activeColor: Colors.blueGrey,
+                inactiveColor: Colors.blueGrey.shade200,
+                thumbColor: Colors.blue,
               ),
               subtitle: Text(
                 '${_position.toString().split('.').first} / ${_duration.toString().split('.').first}',

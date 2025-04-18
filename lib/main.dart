@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aesd_app/providers/ceremonies.dart';
 import 'package:aesd_app/providers/cinetpay.dart';
 import 'package:aesd_app/providers/user.dart';
-import 'package:aesd_app/screens/splash_screen.dart';
+import 'package:aesd_app/components/splash_screen.dart';
 import '/providers/auth.dart';
 import 'providers/church.dart';
 import 'providers/servant.dart';

@@ -202,9 +202,10 @@ class _SinglePostState extends State<SinglePost> {
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(
+                            backgroundImage: widget.post.author.photo != null ?
+                            NetworkImage(
                               widget.post.author.photo!
-                            ),
+                            ) : null,
                           ),
                           SizedBox(width: 10),
                           Text(
@@ -434,7 +435,9 @@ class _SinglePostState extends State<SinglePost> {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage(author.photo!),
+                      backgroundImage: author.photo != null ? NetworkImage(
+                        author.photo!
+                      ) : null,
                     ),
                     SizedBox(width: 5),
                     Text(author.name)

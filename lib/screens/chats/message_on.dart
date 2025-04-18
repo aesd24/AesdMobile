@@ -93,14 +93,14 @@ class _MessageOnPageState extends State<MessageOnPage> {
                     borderRadius: BorderRadius.circular(12)
                   ),
                   prefixIcon: IconButton(
-                    onPressed: () => null,
+                    onPressed: () {},
                     icon: FaIcon(
                       FontAwesomeIcons.circlePlus,
                       color: colorScheme.onSurface.withAlpha(150)
                     )
                   ),
                   suffixIcon: IconButton(
-                    onPressed: () => null,
+                    onPressed: () {},
                     icon: FaIcon(
                       FontAwesomeIcons.solidPaperPlane,
                       size: 20,

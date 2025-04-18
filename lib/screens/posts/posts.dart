@@ -87,8 +87,18 @@ class _PostListState extends State<PostList> {
     return Consumer<PostProvider>(
       builder: (context, postProvider, child){
         if (postProvider.posts.isEmpty) {
-          return Center(
-            child: Text("Aucune publication pour le moment !"),
+          return Column(
+            children: [
+              SizedBox(
+                height: 1.5,
+                child: LinearProgressIndicator(),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text("Aucune publication pour le moment !"),
+                ),
+              ),
+            ],
           );
         }
         return RefreshIndicator(

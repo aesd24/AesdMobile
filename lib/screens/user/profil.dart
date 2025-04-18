@@ -190,7 +190,8 @@ class _UserProfilState extends State<UserProfil> {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundImage: NetworkImage(widget.user.photo!),
+                            backgroundImage: widget.user.photo != null ?
+                            NetworkImage(widget.user.photo!) : null,
                           ),
                           SizedBox(width: 15),
                           Text(
