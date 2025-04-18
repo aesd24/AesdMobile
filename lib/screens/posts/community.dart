@@ -16,59 +16,37 @@ class _CommunityPageState extends State<CommunityPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    customTab(
-                      index: 0,
-                      text: "Posts",
-                      assetName: 'posts',
-                      color: Colors.blue
-                    ),
-
-                    customTab(
-                      index: 1,
-                      text: "Serviteurs",
-                      assetName: 'costume',
-                      color: Colors.purple
-                    ),
-
-                    customTab(
-                      index: 2,
-                      text: "Chantre",
-                      assetName: 'micro',
-                      color: Colors.pink
-                    ),
-                  ],
-                ),
-              ),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 10,
+          elevation: 0,
+          bottom: TabBar(
+            dividerHeight: 0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer.withAlpha(150),
+              borderRadius: BorderRadius.circular(5)
             ),
+            padding: EdgeInsets.all(10),
+            tabs: [
+              customIcon(assetName: 'posts'),
+              customIcon(assetName: 'costume'),
+              customIcon(assetName: 'micro'),
+            ]
           ),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (value) {
-                setState(() {
-                  _currentPage = value;
-                });
-              },
-              children: [
-                PostList(),
-                ServantList(),
-                SingerList()
-              ],
-            ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: TabBarView(
+            children: [
+              PostList(),
+              ServantList(),
+              SingerList()
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -100,7 +78,7 @@ class _CommunityPageState extends State<CommunityPage> {
         ) : null,
         child: Row(
           children: [
-            Image.asset("assets/icons/$assetName.png", width: 35, height: 35),
+            customIcon(assetName: assetName),
             SizedBox(width: 15),
             Text(
               text,
@@ -112,5 +90,8 @@ class _CommunityPageState extends State<CommunityPage> {
         ),
       ),
     );
+  }
+  Widget customIcon({required String assetName}) {
+    return Image.asset("assets/icons/$assetName.png", width: 35, height: 35);
   }
 }

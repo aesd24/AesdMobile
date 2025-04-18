@@ -89,17 +89,14 @@ class _PostListState extends State<PostList> {
         if (postProvider.posts.isEmpty) {
           return Column(
             children: [
-              const SizedBox(
-                height: 20,
-                width: double.infinity,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.5,
-                  ),
-                ),
+              SizedBox(
+                height: 1.5,
+                child: LinearProgressIndicator(),
               ),
-              Center(
-                child: Text("Aucune publication pour le moment !"),
+              Expanded(
+                child: Center(
+                  child: Text("Aucune publication pour le moment !"),
+                ),
               ),
             ],
           );

@@ -54,8 +54,18 @@ class _ServantListState extends State<ServantList> {
     return Consumer<Servant>(
       builder: (context, servantProvider, child){
         if (servantProvider.servants.isEmpty) {
-          return Center(
-            child: Text("Aucun serviteur trouvé"),
+          return Column(
+            children: [
+              SizedBox(
+                height: 1.5,
+                child: LinearProgressIndicator(),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text("Aucun serviteur trouvé !"),
+                ),
+              ),
+            ],
           );
         } else {
           return RefreshIndicator(

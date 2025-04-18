@@ -51,18 +51,28 @@ class _SingerListState extends State<SingerList> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Singer>(
-      builder: (context, servantProvider, child){
-        if (servantProvider.singers.isEmpty) {
-          return Center(
-            child: Text("Aucun chantre retrouvé"),
+      builder: (context, singerProvider, child){
+        if (singerProvider.singers.isEmpty) {
+          return Column(
+            children: [
+              SizedBox(
+                height: 1.5,
+                child: LinearProgressIndicator(),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text("Aucun(e) chantre trouvé(e) !"),
+                ),
+              ),
+            ],
           );
         } else {
           return RefreshIndicator(
             onRefresh: () async {},
             child: ListView.builder(
-              itemCount: servantProvider.singers.length,
+              itemCount: singerProvider.singers.length,
               itemBuilder: (context, index) {
-                var current = servantProvider.singers[index];
+                var current = singerProvider.singers[index];
                 return current.card(context);
               }
             ),
